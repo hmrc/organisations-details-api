@@ -1,0 +1,23 @@
+@import play.api.libs.json.Json
+@()
+{
+  "scopes": [
+    {
+      "key": "assigned",
+      "name": "The scopes you have been assigned",
+      "description": "An OAuth 2.0 Bearer Token with the scopes you have been assigned"
+    }
+  ],
+    "api": {
+      "name": "Organisations Details",
+      "description": "Retrieves details information for an organisation",
+      "context": "organisations/details",
+      "versions": [
+        {
+          "version": "P1.0",
+          "status": "PUBLISHED",
+          "access" : {"type":"PRIVATE"}
+        }
+      ]
+    }
+}
