@@ -1,5 +1,8 @@
 @import play.api.libs.json.Json
-@()
+@(
+    v1EndpointsEnabled: Boolean,
+    v1Status: String
+)
 {
   "scopes": [
     {
@@ -15,7 +18,8 @@
       "versions": [
         {
           "version": "P1.0",
-          "status": "PUBLISHED",
+          "status":@Json.toJson(v1Status),
+          "endpointsEnabled":@Json.toJson(v1EndpointsEnabled),
           "access" : {"type":"PRIVATE"}
         }
       ]

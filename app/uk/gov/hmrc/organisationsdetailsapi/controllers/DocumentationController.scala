@@ -27,8 +27,18 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class DocumentationController @Inject()(cc: ControllerComponents, assets: Assets, config: Configuration)
   extends BackendController(cc) {
 
+  private lazy val v1EndpointsEnabled: Boolean =
+    config
+      .getOptional[Boolean]("api.access.version-1.0.endpointsEnabled")
+      .getOrElse(true)
+
+  private lazy val v1Status: String =
+    config
+      .getOptional[String]("api.access.version-1.0.status")
+      .getOrElse("BETA")
+
   def definition(): Action[AnyContent] = Action {
-    Ok(txt.definition())
+    Ok(txt.definition(v1EndpointsEnabled, v1Status))
       .withHeaders(CONTENT_TYPE -> JSON)
   }
   def documentation(
