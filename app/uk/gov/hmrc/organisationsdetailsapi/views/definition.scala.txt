@@ -17,7 +17,7 @@
       "context": "organisations/details",
       "versions": [
         {
-          "version": "P1.0",
+          "version": "1.0",
           "status":@Json.toJson(v1Status),
           "endpointsEnabled":@Json.toJson(v1EndpointsEnabled),
           "access" : {"type":"PRIVATE"}
