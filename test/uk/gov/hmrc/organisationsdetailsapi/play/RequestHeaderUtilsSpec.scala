@@ -18,9 +18,13 @@ package uk.gov.hmrc.organisationsdetailsapi.play
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.typedmap.TypedMap
+import play.api.mvc.request.{RemoteConnection, RequestTarget}
+import play.api.mvc.{Headers, RequestHeader}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{ACCEPT, GET}
-import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{CLIENT_ID_HEADER, extractUriContext, getClientIdHeader, getVersionedRequest}
+import uk.gov.hmrc.http.BadRequestException
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{CLIENT_ID_HEADER, extractUriContext, getClientIdHeader, getVersionedRequest, maybeCorrelationId, validateCorrelationId}
 
 import java.util.UUID
 
@@ -67,6 +71,109 @@ class RequestHeaderUtilsSpec extends AnyWordSpec with Matchers {
 
     "generate a new header with the default value dash (-) if the header is not present" in {
       getClientIdHeader(FakeRequest(GET, "/")) shouldBe (CLIENT_ID_HEADER -> "-")
+    }
+
+    "validate correlationId successfully when CorrelationId header exists in correct format" in {
+
+      val requestHeader: RequestHeader = new RequestHeader {
+        override def headers: Headers = new Headers(Seq(("CorrelationId", "1ed32c2b-7f45-4b30-b15e-64166dd97e9b")))
+
+        override def connection: RemoteConnection = ???
+        override def method: String = ???
+        override def target: RequestTarget = ???
+        override def version: String = ???
+        override def attrs: TypedMap = ???
+      }
+
+      val result = validateCorrelationId(requestHeader)
+
+      result shouldBe UUID.fromString("1ed32c2b-7f45-4b30-b15e-64166dd97e9b")
+
+    }
+
+    "validateCorrelationId throws exception when CorrelationId header exists in incorrect format" in {
+
+      val requestHeader: RequestHeader = new RequestHeader {
+        override def headers: Headers = new Headers(Seq(("CorrelationId", "IncorrectFormat")))
+
+        override def connection: RemoteConnection = ???
+        override def method: String = ???
+        override def target: RequestTarget = ???
+        override def version: String = ???
+        override def attrs: TypedMap = ???
+      }
+
+      val exception = intercept[BadRequestException] { validateCorrelationId(requestHeader) }
+
+      exception.message shouldBe "Malformed CorrelationId"
+    }
+
+    "validateCorrelationId throws exception when CorrelationId header is missing" in {
+
+      val requestHeader: RequestHeader = new RequestHeader {
+        override def headers: Headers = new Headers(Seq())
+
+        override def connection: RemoteConnection = ???
+        override def method: String = ???
+        override def target: RequestTarget = ???
+        override def version: String = ???
+        override def attrs: TypedMap = ???
+      }
+
+      val exception = intercept[BadRequestException] { validateCorrelationId(requestHeader) }
+
+      exception.message shouldBe "CorrelationId is required"
+    }
+
+    "maybeCorrelationId successfully when CorrelationId header exists in correct format" in {
+
+      val requestHeader: RequestHeader = new RequestHeader {
+        override def headers: Headers = new Headers(Seq(("CorrelationId", "1ed32c2b-7f45-4b30-b15e-64166dd97e9b")))
+
+        override def connection: RemoteConnection = ???
+        override def method: String = ???
+        override def target: RequestTarget = ???
+        override def version: String = ???
+        override def attrs: TypedMap = ???
+      }
+
+      val result = maybeCorrelationId(requestHeader)
+
+      result shouldBe Some("1ed32c2b-7f45-4b30-b15e-64166dd97e9b")
+    }
+
+    "maybeCorrelationId returns None when CorrelationId header is missing" in {
+
+      val requestHeader: RequestHeader = new RequestHeader {
+        override def headers: Headers = new Headers(Seq())
+
+        override def connection: RemoteConnection = ???
+        override def method: String = ???
+        override def target: RequestTarget = ???
+        override def version: String = ???
+        override def attrs: TypedMap = ???
+      }
+
+      val result =  maybeCorrelationId(requestHeader)
+
+      result shouldBe None
+    }
+
+    "maybeCorrelationId returns None when CorrelationId header is malformed" in {
+
+      val requestHeader: RequestHeader = new RequestHeader {
+        override def headers: Headers = new Headers(Seq(("CorrelationId", "IncorrectFormat")))
+
+        override def connection: RemoteConnection = ???
+        override def method: String = ???
+        override def target: RequestTarget = ???
+        override def version: String = ???
+        override def attrs: TypedMap = ???
+      }
+
+      val result =  maybeCorrelationId(requestHeader)
+
+      result shouldBe None
     }
   }
 }
