@@ -1,0 +1,18 @@
+#%RAML 1.0
+---
+title: Organisations Details
+version: 1.0
+protocols: [ HTTPS ]
+baseUri: https://api.service.hmrc.gov.uk/
+
+/organisations/details:
+  /hello-world:
+    get:
+      displayName: Hello World
+      description: An endpoint that returns hello world
+      responses:
+        200:
+          description: Return hello world
+          body:
+            application/json:
+              example: "Hello World"
