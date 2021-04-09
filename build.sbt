@@ -10,7 +10,12 @@ lazy val scoverageSettings = {
   Seq(
     // Semicolon-separated list of regexs matching classes to exclude
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;" +
-      ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;",
+      ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;" +
+      //All after this is due to Early project and getting pipelines up and running. May be removed later.
+      "uk.gov.hmrc.organisationsdetailsapi.views;" +
+      ".*DocumentationController*;" +
+      "uk.gov.hmrc.organisationsdetailsapi.handlers;" +
+      ".*definition*;",
     ScoverageKeys.coverageMinimum := 80,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
