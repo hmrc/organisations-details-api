@@ -15,11 +15,13 @@ object AppDependencies {
     hmrc                  %% "json-encryption"            % "4.10.0-play-27"
   )
 
-  val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-27"   % "4.1.0"  % Test,
-    "org.scalatest"           %% "scalatest"                % "3.2.5"  % Test,
-    "com.typesafe.play"       %% "play-test"                % PlayVersion.current  % Test,
-    "com.vladsch.flexmark"    %  "flexmark-all"             % "0.36.8" % "test, it",
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"  % "test, it"
+  def test(scope: String = "test, it") = Seq(
+    hmrc                      %% "bootstrap-test-play-27"   % "4.1.0"             % scope,
+    "org.scalatest"           %% "scalatest"                % "3.2.5"             % scope,
+    "com.typesafe.play"       %% "play-test"                % PlayVersion.current % scope,
+    "com.vladsch.flexmark"    %  "flexmark-all"             % "0.36.8"            % scope,
+    "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"             % scope,
+    hmrcMongo                 %% "hmrc-mongo-test-play-27"  % "0.49.0"            % scope,
+    hmrc                      %% "service-integration-test" % "1.1.0-play-27"     % scope
   )
 }
