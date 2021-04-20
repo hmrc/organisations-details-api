@@ -17,88 +17,91 @@
 package it.uk.gov.hmrc.organisationsdetailsapi.cache
 
 import org.scalatest.wordspec.AsyncWordSpec
-
 import java.util.UUID
+
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterEach, TestSuite}
 import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.integration.ServiceSpec
 import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
-import utils.TestSupport
+import utils.{TestSupport, UnitSpec}
 
-class ShortLivedCacheSpec
-  extends AsyncWordSpec with Matchers with MongoSupport with ServiceSpec with BeforeAndAfterEach with TestSuite with TestSupport{
+class ShortLivedCacheSpecextends extends UnitSpec with Matchers with GuiceOneAppPerTest  with ScalaFutures with BeforeAndAfterEach {
 
-  private val cacheTtl = 60
-  private val id = UUID.randomUUID().toString
-  private val cachekey = "test-class-key"
-  private val testValue = TestClass("one", "two")
+    private val cacheTtl = 60
+    private val id = UUID.randomUUID().toString
+    private val cachekey = "test-class-key"
+    //  private val testValue = TestClass("one", "two")
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
-    .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
-    .bindings(bindModules: _*)
-    .build()
+    //  override lazy val fakeApplication = new GuiceApplicationBuilder()
+    //    .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
+    //    .bindings(bindModules: _*)
+    //    .build()
 
-  private val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCache]
+    //  private val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCache]
 
-  def externalServices: Seq[String] = Seq.empty
+    def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() {
+    override def beforeEach() {
     super.beforeEach()
-    await(shortLivedCache.drop)
+    //    await(shortLivedCache.drop)
   }
 
-  override def afterEach() {
+    override def afterEach() {
     super.afterEach()
-    await(shortLivedCache.drop)
+    //    await(shortLivedCache.drop)
   }
 
-  "cache" should {
-    "store the encrypted version of a value" in {
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
+    "cache" should {
+      "store the encrypted version of a value" in {
+        //      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
+        //        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
+        //      }
+
+        "hello" shouldBe "world"
       }
+      //
+      //    "update a cached value for a given id and key" in {
+      //      val newValue = TestClass("three", "four")
+      //
+      //      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
+      //        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
+      //      }
+      //
+      //      shortLivedCache.cache(id, cachekey, newValue)(TestClass.format) map { _ =>
+      //        retrieveRawCachedValue(id, cachekey) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
+      //      }
+      //    }
     }
-
-    "update a cached value for a given id and key" in {
-      val newValue = TestClass("three", "four")
-
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
-      }
-
-      shortLivedCache.cache(id, cachekey, newValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
-      }
-    }
-  }
-
-  "fetch" should {
-    "retrieve the unencrypted cached value for a given id and key" in {
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) flatMap { _ =>
-        shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
-          value shouldBe Some(testValue)
-        }
-      }
-    }
-
-    "return None if no cached value exists for a given id and key" in {
-      shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
-        value shouldBe None
-      }
-    }
-  }
-
-  private def retrieveRawCachedValue(id: String, key: String) = {
-    val storedValue = await(shortLivedCache.findById(id)).get
-    (storedValue.data.get \ cachekey).get
-  }
-
-  case class TestClass(one: String, two: String)
-
-  object TestClass {
-    implicit val format: OFormat[TestClass] = Json.format[TestClass]
-  }
+    //
+    //  "fetch" should {
+    //    "retrieve the unencrypted cached value for a given id and key" in {
+    //      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) flatMap { _ =>
+    //        shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
+    //          value shouldBe Some(testValue)
+    //        }
+    //      }
+    //    }
+    //
+    //    "return None if no cached value exists for a given id and key" in {
+    //      shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
+    //        value shouldBe None
+    //      }
+    //    }
+    //  }
+    //
+    //  private def retrieveRawCachedValue(id: String, key: String) = {
+    //    val storedValue = await(shortLivedCache.findById(id)).get
+    //    (storedValue.data.get \ cachekey).get
+    //  }
+    //
+    //  case class TestClass(one: String, two: String)
+    //
+    //  object TestClass {
+    //    implicit val format: OFormat[TestClass] = Json.format[TestClass]
+    //  }
 }
