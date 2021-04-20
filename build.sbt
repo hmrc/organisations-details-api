@@ -1,9 +1,13 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.DefaultBuildSettings
 
 val appName = "organisations-details-api"
 
 val silencerVersion = "1.7.1"
+
+def intTestFilter(name: String): Boolean = name startsWith "it"
+def unitFilter(name: String): Boolean = name startsWith "unit"
+def componentFilter(name: String): Boolean = name startsWith "component"
 
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
@@ -38,8 +42,18 @@ lazy val microservice = Project(appName, file("."))
     // ***************
   )
   .settings(publishingSettings: _*)
-  .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
   .settings(scoverageSettings: _*)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
+  .settings(unitSettings)
+  .configs(IntegrationTest)
+  .settings(DefaultBuildSettings.integrationTestSettings())
+  .settings(inConfig(IntegrationTest)(itSettings): _*)
+
+lazy val unitSettings = Seq(
+  testOptions in Test := Seq(Tests.Filter(_.startsWith("unit")))
+)
+
+lazy val itSettings = Defaults.itSettings ++ Seq(
+  testOptions in IntegrationTest := Seq(Tests.Filter(_.startsWith("it"))),
+)

@@ -16,7 +16,7 @@
 
 package it.uk.gov.hmrc.organisationsdetailsapi.cache
 
-import org.scalatest.wordspec.{AnyWordSpec, AsyncWordSpec}
+import org.scalatest.wordspec.AsyncWordSpec
 
 import java.util.UUID
 import org.scalatest.{BeforeAndAfterEach, TestSuite}
@@ -24,8 +24,8 @@ import org.scalatest.matchers.should.Matchers
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.integration.ServiceSpec
-import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
 import uk.gov.hmrc.mongo.test.MongoSupport
+import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
 import utils.TestSupport
 
 class ShortLivedCacheSpec
