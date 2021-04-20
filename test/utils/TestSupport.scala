@@ -20,22 +20,24 @@ import java.nio.charset.Charset
 import akka.stream.Materializer
 import akka.util.ByteString
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.{AnyWordSpec, AsyncWordSpec}
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 
 import scala.concurrent.duration.{Duration, FiniteDuration}
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
-trait TestSupport extends AsyncWordSpec with Matchers {
-
+trait TestSupport extends AnyWordSpec with Matchers {
   implicit val defaultTimeout: FiniteDuration = 5 seconds
 
   def await[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
   def bindModules: Seq[GuiceableModule] = Seq()
+
+  // Convenience to avoid having to wrap andThen() parameters in Future.successful
+  implicit def liftFuture[A](v: A): Future[A] = Future.successful(v)
 
   def status(of: Result): Int = of.header.status
 
@@ -43,9 +45,6 @@ trait TestSupport extends AsyncWordSpec with Matchers {
 
   def jsonBodyOf(result: Result)(implicit mat: Materializer): JsValue =
     Json.parse(bodyOf(result))
-
-  def jsonBodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[JsValue] =
-    resultF.map(jsonBodyOf)
 
   def bodyOf(result: Result)(implicit mat: Materializer): String = {
     val bodyBytes: ByteString = await(result.body.consumeData)
@@ -56,9 +55,6 @@ trait TestSupport extends AsyncWordSpec with Matchers {
     // specified by the result's headers.
     bodyBytes.decodeString(Charset.defaultCharset().name)
   }
-
-  def bodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[String] =
-    resultF.map(bodyOf)
 
   case class ExternalService(
                               serviceName: String,

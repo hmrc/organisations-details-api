@@ -24,12 +24,12 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
-import utils.UnitSpec
+import utils.TestSupport
 
 import scala.concurrent.ExecutionContext
 
 class ShortLivedCacheSpec
-  extends UnitSpec
+  extends TestSupport
     with Matchers
     with GuiceOneAppPerTest
     with BeforeAndAfterEach
