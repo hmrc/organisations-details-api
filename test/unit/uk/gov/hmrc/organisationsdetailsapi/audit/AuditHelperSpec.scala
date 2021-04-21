@@ -39,10 +39,9 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
   val request = FakeRequest()
   val endpoint = "/test"
   val ifResponse = "bar"
-  val nino = "CS700100A"
+  val crn = "12345678"
   val scopes = "test"
-  val ifUrl =
-    s"host/individuals/details/contact/nino/$nino?startDate=2019-01-01&endDate=2020-01-01&fields=some(vals(val1),val2)"
+  val ifUrl = s"host/organisations/corporation-tax/$crn/company/details"
 
   "auditAuthScopes" in {
 
