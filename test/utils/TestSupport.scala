@@ -16,18 +16,17 @@
 
 package utils
 
-import java.nio.charset.Charset
 import akka.stream.Materializer
 import akka.util.ByteString
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.{AnyWordSpec, AsyncWordSpec}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 
-import scala.concurrent.duration.{Duration, FiniteDuration}
-import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration._
+import java.nio.charset.Charset
+import scala.concurrent.duration.{Duration, FiniteDuration, _}
+import scala.concurrent.{Await, Future}
 
 trait TestSupport extends AnyWordSpec with Matchers {
   implicit val defaultTimeout: FiniteDuration = 5 seconds

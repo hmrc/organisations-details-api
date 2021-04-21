@@ -16,10 +16,8 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
-import java.util.UUID
-import org.joda.time.{Interval, LocalDate}
-import org.mockito.BDDMockito.`given`
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{verify, verifyNoInteractions}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
@@ -28,6 +26,7 @@ import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLived
 import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService, PayeCacheId, SaCacheId}
 import utils.TestSupport
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class CacheServiceSpec extends TestSupport with MockitoSugar {
