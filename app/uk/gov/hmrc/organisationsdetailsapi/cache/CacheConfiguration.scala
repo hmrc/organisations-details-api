@@ -24,31 +24,31 @@ import javax.inject.{Inject, Singleton}
 class CacheConfiguration @Inject()(configuration: Configuration) {
   lazy val cacheEnabled = configuration
     .getOptional[Boolean](
-      "cacheV1.enabled"
+      "cache.enabled"
     )
     .getOrElse(true)
 
   lazy val cacheTtl = configuration
     .getOptional[Int](
-      "cacheV1.ttlInSeconds"
+      "cache.ttlInSeconds"
     )
     .getOrElse(60 * 15)
 
   lazy val collName = configuration
     .getOptional[String](
-      "cacheV1.collName"
+      "cache.collName"
     )
-    .getOrElse("individuals-employments-v1-cache")
+    .getOrElse("organisations-details-cache")
 
   lazy val saKey = configuration
     .getOptional[String](
-      "cacheV1.saKey"
+      "cache.saKey"
     )
     .getOrElse("sa-income")
 
   lazy val payeKey = configuration
     .getOptional[String](
-      "cacheV1.payeKey"
+      "cache.payeKey"
     )
     .getOrElse("paye-income")
 }

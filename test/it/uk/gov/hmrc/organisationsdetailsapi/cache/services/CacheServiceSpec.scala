@@ -25,7 +25,7 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.MongoSupport
-import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, PayeIncomeCacheService, SaIncomeCacheService}
+import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, PayeCacheService, SaCacheService}
 
 import scala.concurrent.Future
 
@@ -52,7 +52,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[SaIncomeCacheService]
+          val svc = app.injector.instanceOf[SaCacheService]
 
           svc
             .get(cacheId, Future.successful(TestClass("bar")))
@@ -68,7 +68,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[SaIncomeCacheService]
+          val svc = app.injector.instanceOf[SaCacheService]
 
           svc
             .get(cacheId1, Future.successful(TestClass("bar")))
@@ -92,7 +92,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[PayeIncomeCacheService]
+          val svc = app.injector.instanceOf[PayeCacheService]
 
           svc
             .get(cacheId, Future.successful(TestClass("bar")))
@@ -108,7 +108,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[PayeIncomeCacheService]
+          val svc = app.injector.instanceOf[PayeCacheService]
 
           svc
             .get(cacheId1, Future.successful(TestClass("foo")))

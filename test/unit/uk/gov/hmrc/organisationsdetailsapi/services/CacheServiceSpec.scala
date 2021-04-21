@@ -86,17 +86,9 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
     "produce a cache id based on matchId and scopes" in {
 
       val matchId = UUID.randomUUID()
-      val fromDateString = "2017-03-02"
-      val toDateString = "2017-05-31"
 
-      val interval = new Interval(
-        new LocalDate(fromDateString).toDateTimeAtStartOfDay,
-        new LocalDate(toDateString).toDateTimeAtStartOfDay)
-
-      val fields = "ABDFH"
-
-      PayeCacheId(matchId, interval, fields).id shouldBe
-        s"$matchId-${interval.getStart}-${interval.getEnd}-ABDFH"
+      PayeCacheId(matchId).id shouldBe
+        s"$matchId-paye"
 
     }
 
@@ -107,12 +99,9 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
     "produce a cache id based on matchId and scopes" in {
 
       val matchId = UUID.randomUUID()
-      val interval = "INTERVAL AS STRING"
 
-      val fields = "ABCDGK"
-
-      SaCacheId(matchId, interval, fields).id shouldBe
-        "ID"
+      SaCacheId(matchId).id shouldBe
+        s"$matchId-sa"
 
     }
 

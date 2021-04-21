@@ -50,7 +50,7 @@ trait CacheService {
 }
 
 @Singleton
-class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+class SaCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
   extends CacheService {
 
   val key = conf.saKey
@@ -58,7 +58,7 @@ class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val c
 }
 
 @Singleton
-class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+class PayeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
   extends CacheService {
 
   val key: String = conf.payeKey
@@ -72,15 +72,14 @@ trait CacheIdBase {
   override def toString: String = id
 }
 
-case class PayeCacheId(matchId: UUID, interval: Interval, fields: String) extends CacheIdBase {
+case class PayeCacheId(matchId: UUID) extends CacheIdBase {
 
-  lazy val id: String =
-    s"$matchId-${interval.getStart}-${interval.getEnd}-$fields"
+  lazy val id: String = s"$matchId-paye"
 
 }
 
-case class SaCacheId(matchId: UUID, interval: String, fields: String) extends CacheIdBase {
+case class SaCacheId(matchId: UUID) extends CacheIdBase {
 
-  lazy val id: String = "ID"
+  lazy val id: String = s"$matchId-sa"
 
 }
