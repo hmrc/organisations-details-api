@@ -83,7 +83,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
 
   "PayeCacheId" should {
 
-    "produce a cache id based on matchId and scopes" in {
+    "produce a cache id based on matchId" in {
 
       val matchId = UUID.randomUUID()
 
@@ -96,7 +96,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
 
   "SaCacheId" should {
 
-    "produce a cache id based on matchId and scopes" in {
+    "produce a cache id based on matchId" in {
 
       val matchId = UUID.randomUUID()
 
