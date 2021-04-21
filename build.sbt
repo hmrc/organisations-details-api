@@ -1,5 +1,5 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.DefaultBuildSettings
 
 val appName = "organisations-details-api"
 
@@ -22,24 +22,40 @@ lazy val scoverageSettings = {
   )
 }
 
+
+def intTestFilter(name: String): Boolean = name startsWith "it"
+def unitFilter(name: String): Boolean = name startsWith "unit"
+def componentFilter(name: String): Boolean = name startsWith "component"
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
   .settings(
     majorVersion                     := 0,
     scalaVersion                     := "2.12.12",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test(),
     // ***************
     // Use the silencer plugin to suppress warnings
     scalacOptions += "-P:silencer:pathFilters=routes",
     libraryDependencies ++= Seq(
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
-    )
+    ),
     // ***************
+    testOptions in Test := Seq(Tests.Filter(unitFilter))
   )
-  .settings(publishingSettings: _*)
+
+  // Integration tests
+
   .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+  .settings(
+    Keys.fork in IntegrationTest := true,
+    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
+      base => Seq(base / "test")).value,
+    testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter))
+  )
+
+  .settings(publishingSettings: _*)
   .settings(scoverageSettings: _*)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")

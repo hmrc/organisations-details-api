@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.play
+package unit.uk.gov.hmrc.organisationsdetailsapi.play
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -24,7 +24,7 @@ import play.api.mvc.{Headers, RequestHeader}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{ACCEPT, GET}
 import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{CLIENT_ID_HEADER, extractUriContext, getClientIdHeader, getVersionedRequest, maybeCorrelationId, validateCorrelationId}
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
 
 import java.util.UUID
 
