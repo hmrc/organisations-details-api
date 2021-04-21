@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.controllers
+package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -25,6 +25,7 @@ import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.organisationsdetailsapi.config.AppConfig
+import uk.gov.hmrc.organisationsdetailsapi.controllers.MicroserviceHelloWorldController
 
 class MicroserviceHelloWorldControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
