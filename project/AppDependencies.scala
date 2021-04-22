@@ -24,6 +24,7 @@ object AppDependencies {
     "com.vladsch.flexmark"    %  "flexmark-all"             % "0.36.8"            % scope,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"             % scope,
     hmrcMongo                 %% "hmrc-mongo-test-play-27"  % "0.49.0"            % scope,
-    hmrc                      %% "service-integration-test" % "1.1.0-play-27"     % scope
+    hmrc                      %% "service-integration-test" % "1.1.0-play-27"     % scope,
+    "com.github.tomakehurst"  % "wiremock-jre8"             % "2.27.2"            % scope
   )
 }
