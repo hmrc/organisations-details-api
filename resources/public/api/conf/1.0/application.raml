@@ -18,15 +18,99 @@ documentation:
    content: !include docs/testing.md
 
 mediaType: [ application/json, application/hal+json ]
+uses:
+  sec: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/securitySchemes.raml
+  headers: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/headers.raml
+  annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
+  types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 
 /organisations/details:
-  /hello-world:
+  /paye:
     get:
-      displayName: Hello World
-      description: An endpoint that returns hello world
+      displayName: "Get an Organisation's Pay As You Earn details."
+      description: "Get details such as registered date, tax solvency status and accounting periods."
+      is: [headers.acceptHeader]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
+      (annotations.sandboxData): !include sandbox/paye-sandbox-data.md
+      headers:
+        CorrelationId:
+          description: !include ./includes/correlationId.md
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      queryParameters:
+        matchId:
+          description: "A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Organisations Matching API."
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
       responses:
         200:
-          description: Return hello world
+          description: The organisations Pay As You Earn income for the given period
           body:
             application/json:
-              example: "Hello World"
+              example: !include examples/paye-response.json
+              type: !include schemas/paye-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+
+  /self-assessment:
+    get:
+      displayName: "Get an Organisation's Self Assessment details."
+      description: "Get details such as SA Start date, tax solvency status and SA Returns."
+      is: [headers.acceptHeader]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
+      (annotations.sandboxData): !include sandbox/sa-sandbox-data.md
+      headers:
+        CorrelationId:
+          description: !include ./includes/correlationId.md
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      queryParameters:
+        matchId:
+          description: "A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Organisations Matching API."
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      responses:
+        200:
+          description: The organisation's Self Assessment income for the given period
+          body:
+            application/json:
+              example: !include examples/sa-response.json
+              type: !include schemas/sa-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
