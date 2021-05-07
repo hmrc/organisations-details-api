@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Pay As You Earn",
+  "description": "Number of employees response",
   "type": "object",
   "properties": {
     "returns": {
@@ -10,6 +10,7 @@
         "properties": {
           "payeReference": {
             "type": "string",
+            "pattern": "^[0-9]{3}[\\/][a-zA-Z0-9]{1,10}$",
             "example": "RT882d/456"
           },
           "counts": {
