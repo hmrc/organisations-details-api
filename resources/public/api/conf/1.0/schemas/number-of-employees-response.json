@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Pay As You Earn",
+  "type": "object",
+  "properties": {
+    "returns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "payeReference": {
+            "type": "string",
+            "example": "RT882d/456"
+          },
+          "counts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "numberOfEmployees": {
+                  "type": "integer",
+                  "example": "1234",
+                  "description": "Minimum of 1, maximum of 99999999, multiple of 1"
+                },
+                "dateOfCount": {
+                  "type": "string",
+                  "example": "2019-03",
+                  "pattern": "^[1-2][0-9]{3}-[0-9]{2}$"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
