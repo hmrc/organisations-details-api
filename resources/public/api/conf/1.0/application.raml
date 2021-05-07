@@ -30,8 +30,8 @@ uses:
       displayName: "Get an Organisation's Pay As You Earn details."
       description: "Get details such as registered date, tax solvency status and accounting periods."
       is: [headers.acceptHeader]
-      (annotations.scope): "assigned"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
+      (annotations.scope): "read:organisations-details"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
       (annotations.sandboxData): !include sandbox/paye-sandbox-data.md
       headers:
         CorrelationId:
@@ -75,8 +75,8 @@ uses:
       displayName: "Get an Organisation's Self Assessment details."
       description: "Get details such as SA Start date, tax solvency status and SA Returns."
       is: [headers.acceptHeader]
-      (annotations.scope): "assigned"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
+      (annotations.scope): "read:organisations-details"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
       (annotations.sandboxData): !include sandbox/sa-sandbox-data.md
       headers:
         CorrelationId:
