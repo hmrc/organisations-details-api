@@ -73,7 +73,7 @@ uses:
   /self-assessment/{matchId}:
     get:
       displayName: "Get an Organisation's Self Assessment details."
-      description: "Get details such as SA Start date, tax solvency status and SA Returns."
+      description: "Get details such as self assessment start date, tax solvency status and self assessment returns."
       is: [headers.acceptHeader]
       (annotations.scope): "read:organisations-details"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
