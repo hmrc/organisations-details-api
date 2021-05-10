@@ -39,40 +39,23 @@
     </thead>
     <tbody>
     <tr>
-        <td><p>Successful match</p>
-        <td><p>fromDate = &quot;123456789A&quot;
-            <br/>employerName = &quot;Waitrose&quot;
-            <br/>addressLine1 = &quot;123 Long Road&quot;
-            <br/>addressLine2 = &quot;Some City&quot;
-            <br/>addressLine3 = &quot;Some County&quot;
-            <br/>addressLine4 = &quot;&quot;
-            <br/>postcode = &quot;AB12 3CD&quot;</p></td>
+        <td><p>Data found</p>
+        <td><p>As above.</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>
-        <td><p>No match</p></td>
-        <td>
-            <p>Any details that are not an exact match.</p>
-        </td>
-        <td><p>403 (Forbidden)</p>
-        <p>{ &quot;code&quot; : &quot;MATCHING_FAILED&quot;,<br/>&quot;message&quot; : &quot;There is no match for the information provided&quot; }</p></td>
-    </tr>
-    <tr>
           <td>
-            <p>Missing companyRegistrationNumber &#47; 
-                    employerName &#47; 
-                    addressLine1 &#47; 
-                    addressLine2 &#47;
-                    postcode
+            <p>
+              Missing payload
             </p>
           </td>
-          <td><p>Any field missing</p></td>
+          <td><p>Missing payload</p></td>
           <td><p>400 (Bad Request)</p>
-          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;&#60;field_name&#62; is required&quot; }</p></td>
+          <p>{ &quot;code&quot; : &quot;PAYLOAD_REQUIRED&quot;,<br/>&quot;message&quot; : &quot;Payload is required&quot; }</p></td>
     </tr>
     <tr>
-        <td><p>Malformed companyRegistrationNumber</p></td>
-        <td><p>Any CRN that does not meet the validation rule</p></td>
+        <td><p>Malformed payload</p></td>
+        <td><p>Any payload that does not meet the validation rules</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CRN submitted&quot; }</p></td>
@@ -91,7 +74,7 @@
         <td><p>CorrelationId header is malformed</p></td>
         <td>
             <p>400 (Bad Request)</p>
-            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CorrelationId&quot; }</p></td>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CorrelationId&quot; }</p>
         </td>
     </tr>
   </tbody>
