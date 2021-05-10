@@ -1,0 +1,14 @@
+{
+  "fromDate": "2019-10-01",
+  "toDate": "2020-04-05",
+  "payeReference": [
+    {
+      "districtNumber": "456",
+      "schemeReference": "RT882d"
+    },
+    {
+      "districtNumber": "123",
+      "schemeReference": "AB888666"
+    }
+  ]
+}

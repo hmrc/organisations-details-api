@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "required": [
+    "fromDate",
+    "toDate",
+    "payeReference"
+  ],
+  "properties": {
+    "fromDate": {
+      "type": "string",
+      "id": "full-date",
+      "example": "2019-10-01"
+    },
+    "toDate": {
+      "type": "string",
+      "id": "full-date",
+      "example": "2020-04-05"
+    },
+    "payeReference": {
+      "type": "array",
+      "description": "The organisation's PAYE reference.",
+      "required": [
+        "districtNumber",
+        "schemeReference"
+      ],
+      "items": {
+        "type": "object",
+        "properties": {
+          "districtNumber": {
+            "type": "string",
+            "description": "The organisation's district number",
+            "example": "456"
+          },
+          "schemeReference": {
+            "type": "string",
+            "description": "The organisation's scheme reference",
+            "example": "RT882d"
+          }
+        }
+      }
+    }
+  }
+}
