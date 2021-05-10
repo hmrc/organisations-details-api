@@ -7,23 +7,23 @@
     },
     {
       "dateOfCount": "2019-11",
-      "numberOfEmployees": 1466
+      "numberOfEmployees": "1466"
     },
     {
       "dateOfCount": "2019-12",
-      "numberOfEmployees": 1765
+      "numberOfEmployees": "1765"
     },
     {
       "dateOfCount": "2020-01",
-      "numberOfEmployees": 1666
+      "numberOfEmployees": "1666"
     },
     {
       "dateOfCount": "2020-02",
-      "numberOfEmployees": 1589
+      "numberOfEmployees": "1589"
     },
     {
       "dateOfCount": "2020-03",
-      "numberOfEmployees": 1555
+      "numberOfEmployees": "1555"
     }
   ]
 }

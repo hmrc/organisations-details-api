@@ -24,15 +24,18 @@
         "schemeReference"
       ],
       "items": {
-        "districtNumber": {
-          "type": "string",
-          "description": "The organisation's district number",
-          "example": "456"
-        },
-        "schemeReference": {
-          "type": "string",
-          "description": "The organisation's scheme reference",
-          "example": "RT882d"
+        "type": "object",
+        "properties": {
+          "districtNumber": {
+            "type": "string",
+            "description": "The organisation's district number",
+            "example": "456"
+          },
+          "schemeReference": {
+            "type": "string",
+            "description": "The organisation's scheme reference",
+            "example": "RT882d"
+          }
         }
       }
     }
