@@ -15,6 +15,7 @@
       "name": "Organisations Details",
       "description": "Retrieves details information for an organisation",
       "context": "organisations/details",
+      "categories": ["PRIVATE_GOVERNMENT"],
       "versions": [
         {
           "version": "1.0",
