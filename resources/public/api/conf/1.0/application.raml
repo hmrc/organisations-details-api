@@ -27,8 +27,8 @@ uses:
 /organisations/details:
   /paye/{matchId}:
     get:
-      displayName: "Get an Organisation's Pay As You Earn details."
-      description: "Get details such as registered date, tax solvency status and accounting periods."
+      displayName: "Get an organisation's PAYE (Pay As You Earn) details"
+      description: "Use a matchId to get an organisation's PAYE details. This includes registration date, tax solvency status and accounting periods."
       is: [headers.acceptHeader]
       (annotations.scope): "read:organisations-details"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
@@ -41,7 +41,7 @@ uses:
           example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
       queryParameters:
         matchId:
-          description: "A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Organisations Matching API."
+          description: "A short-lived universally unique identifier (UUID), typically valid for 5 hours. Generated through the Organisations Matching API."
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
       responses:
@@ -72,8 +72,8 @@ uses:
 
   /self-assessment/{matchId}:
     get:
-      displayName: "Get an Organisation's Self Assessment details."
-      description: "Get details such as self assessment start date, tax solvency status and self assessment returns."
+      displayName: "Get an organisation's Self Assessment details"
+      description: "Use a matchId to get an organisation's Self Assessment details. This includes registration date, tax solvency status and accounting periods."
       is: [headers.acceptHeader]
       (annotations.scope): "read:organisations-details"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
@@ -86,7 +86,7 @@ uses:
           example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
       queryParameters:
         matchId:
-          description: "A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Organisations Matching API."
+          description: "A short-lived universally unique identifier (UUID), typically valid for 5 hours. Generated through the Organisations Matching API."
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
       responses:

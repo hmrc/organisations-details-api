@@ -5,36 +5,45 @@
   "properties": {
     "paye": {
       "type": "object",
-      "description": "The response encapsulating object",
+      "description": "PAYE details for an organisation.",
       "properties": {
         "dateOfRegistration": {
           "type": "string",
+          "description": "The registration date for the company.",
           "id": "full-date",
-          "example": "2015-04-21"
+          "example": "2018-04-06"
         },
         "taxSolvencyStatus": {
           "type": "string",
-          "description": "The tax solvency status. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent",
-          "example": "A"
+          "description": "The tax solvency status for the organisation. This is the ability for an organisation to pay long-term debts and financial obligations. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent",
+          "enum": [
+            "A",
+            "V",
+            "S",
+            "I"
+          ]
         },
         "periods":{
           "type": "array",
+          "description": "The accounting periods.",
           "items": {
             "type": "object",
             "properties": {
               "accountingPeriodStartDate": {
                 "type": "string",
+                "description": "The start date of the accounting period.",
                 "id": "full-date",
                 "example": "2018-04-06"
               },
               "accountingPeriodEndDate": {
                 "type": "string",
+                "description": "The end date of the accounting period.",
                 "id": "full-date",
                 "example": "2018-10-05"
               },
               "turnover": {
                 "type": "number",
-                "description": "The turnover in the accounting period in the range of -1 to 99999999999",
+                "description": "The amount of money taken by an organisation in the accounting period, in the range of -1 to 99999999999.",
                 "example": "2340"
               }
             },
