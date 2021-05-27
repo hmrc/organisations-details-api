@@ -15,7 +15,7 @@
         },
         "taxSolvencyStatus": {
           "type": "string",
-          "description": "The tax solvency status for the organisation. This is the ability for an organisation to pay long-term debts and financial obligations. I – Insolvent S – Solvent",
+          "description": "The tax solvency status for the organisation. I – Insolvent S – Solvent",
           "enum": [
             "I",
             "S"
