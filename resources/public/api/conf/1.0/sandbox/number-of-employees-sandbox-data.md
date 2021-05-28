@@ -66,7 +66,7 @@
         <td><p>CorrelationId is missing. Check the request headers section for what should be included.</p></td>
         <td>
             <p>400 (Bad Request)</p>
-            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;CorrelationId is required&quot; }</p></td>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;CorrelationId is required&quot; }</p>
         </td>
     </tr>
     <tr>
