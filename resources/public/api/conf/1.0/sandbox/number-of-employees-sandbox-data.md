@@ -58,7 +58,7 @@
         <td><p>Any payload that does not meet the validation rules</p></td>
         <td>
             <p>400 (Bad Request)</p>
-            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CRN submitted&quot; }</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed payload&quot; }</p>
         </td>
     </tr>
     <tr>
