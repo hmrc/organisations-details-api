@@ -38,7 +38,7 @@
         </td>
     </tr>
     <tr>
-        <td><p>Incorrect format for CorrelationId</p></td>
+        <td><p>Malformed CorrelationId</p></td>
         <td><p>CorrelationId is in the incorrect format. Check the request headers section for the correct format.</p></td>
         <td>
             <p>400 (Bad Request)</p>

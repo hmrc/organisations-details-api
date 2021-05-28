@@ -39,17 +39,17 @@
     </thead>
     <tbody>
     <tr>
-        <td><p>Data found</p>
-        <td><p>As above.</p></td>
+        <td><p>Number of employees data found</p>
+        <td><p>A valid, successful request for the number of employees as described in the valid payload section.</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>
           <td>
             <p>
-              Missing payload
+              Payload is not included
             </p>
           </td>
-          <td><p>Missing payload</p></td>
+          <td><p>Payload is missing. Check the valid payloads section for what should be included.</p></td>
           <td><p>400 (Bad Request)</p>
           <p>{ &quot;code&quot; : &quot;PAYLOAD_REQUIRED&quot;,<br/>&quot;message&quot; : &quot;Payload is required&quot; }</p></td>
     </tr>
@@ -58,12 +58,12 @@
         <td><p>Any payload that does not meet the validation rules</p></td>
         <td>
             <p>400 (Bad Request)</p>
-            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CRN submitted&quot; }</p></td>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CRN submitted&quot; }</p>
         </td>
     </tr>
     <tr>
         <td><p>Missing CorrelationId</p></td>
-        <td><p>CorrelationId header is missing</p></td>
+        <td><p>CorrelationId is missing. Check the request headers section for what should be included.</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;CorrelationId is required&quot; }</p></td>
@@ -71,7 +71,7 @@
     </tr>
     <tr>
         <td><p>Malformed CorrelationId</p></td>
-        <td><p>CorrelationId header is malformed</p></td>
+        <td><p>CorrelationId is in the incorrect format. Check the request headers section for the correct format.</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CorrelationId&quot; }</p>

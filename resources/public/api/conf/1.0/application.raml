@@ -117,8 +117,8 @@ uses:
 
   /number-of-employees/{matchId}:
     post:
-      displayName: "Number of employees"
-      description: "Get number of employees for provided dates."
+      displayName: "Find the number of employees for an organisation"
+      description: "Use a matchId to find data about the number of employees for the requested time period."
       is: [headers.acceptHeader]
       (annotations.scope): "read:organisations-details"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]

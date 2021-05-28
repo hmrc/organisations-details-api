@@ -17,7 +17,7 @@
     </tr>
     <tr>
         <td><p>matchId is not included</p></td>
-        <td><p>the request is missing the matchId. Check the query parameters section for what should be included.</p></td>
+        <td><p>The request is missing the matchId. Check the query parameters section for what should be included.</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
@@ -38,7 +38,7 @@
         </td>
     </tr>
     <tr>
-        <td><p>Incorrect format for CorrelationId</p></td>
+        <td><p>Malformed CorrelationId</p></td>
         <td><p>CorrelationId is in the incorrect format. Check the request headers section for the correct format.</p></td>
         <td>
             <p>400 (Bad Request)</p>

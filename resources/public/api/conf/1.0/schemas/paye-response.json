@@ -15,7 +15,7 @@
         },
         "taxSolvencyStatus": {
           "type": "string",
-          "description": "The tax solvency status for the organisation. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent",
+          "description": "The tax solvency status for the organisation. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent.",
           "enum": [
             "A",
             "V",

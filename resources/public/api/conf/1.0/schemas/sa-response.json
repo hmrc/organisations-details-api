@@ -15,7 +15,7 @@
         },
         "taxSolvencyStatus": {
           "type": "string",
-          "description": "The tax solvency status for the organisation. I – Insolvent S – Solvent",
+          "description": "The tax solvency status for the organisation. I – Insolvent, S – Solvent.",
           "enum": [
             "I",
             "S"
