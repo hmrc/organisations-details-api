@@ -5,7 +5,7 @@
   "properties": {
     "selfAssessment": {
       "type": "object",
-      "description": "Self Assessment details for an organisation",
+      "description": "Self Assessment details for an organisation.",
       "properties": {
         "selfAssessmentStartDate": {
           "type": "string",
