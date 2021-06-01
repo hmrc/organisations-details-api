@@ -16,10 +16,17 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.paye
 
-import org.joda.time.LocalDate
+import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.json.{JsPath, Writes}
 
-case class PayeResponse(dateOfRegistration: LocalDate, taxSolvencyStatus: Char, periods: Seq[AccountingPeriod])
+import java.time.LocalDate
+
+case class PayeResponse(dateOfRegistration: LocalDate, taxSolvencyStatus: String, periods: Seq[AccountingPeriod])
 
 object PayeResponse {
-
+  implicit val payeResponseWrites : Writes[PayeResponse] = (
+    (JsPath \ "dateOfRegistration").write[LocalDate] and
+      (JsPath \ "taxSolvencyStatus").write[String] and
+      (JsPath \ "periods").write[Seq[AccountingPeriod]]
+  )(unlift(PayeResponse.unapply))
 }

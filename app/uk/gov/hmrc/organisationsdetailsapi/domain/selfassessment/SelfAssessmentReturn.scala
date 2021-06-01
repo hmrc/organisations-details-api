@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.numberofemployees.request
+package uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Writes}
 
-case class IfNumberOfEmployeesRequest(startDate: String, endDate: String, references: Seq[IfNumberOfEmployeeReferencesRequest])
+case class SelfAssessmentReturn(totalBusinessSalesTurnover: Double, taxYear: String)
 
-object IfNumberOfEmployeesRequest {
-  implicit val createNumberOfEmployeesRequestFormat: Writes[IfNumberOfEmployeesRequest] = (
-      (JsPath \ "startDate").write[String] and
-        (JsPath \ "endDate").write[String] and
-        (JsPath \ "references").write[Seq[IfNumberOfEmployeeReferencesRequest]]
-      )(unlift(IfNumberOfEmployeesRequest.unapply))
+object SelfAssessmentReturn {
+  implicit val selfAssessmentReturnWrites : Writes[SelfAssessmentReturn] = (
+    (JsPath \ "totalBusinessSalesTurnover").write[Double] and
+      (JsPath \ "taxYear").write[String]
+  )(unlift(SelfAssessmentReturn.unapply))
 }
+
+

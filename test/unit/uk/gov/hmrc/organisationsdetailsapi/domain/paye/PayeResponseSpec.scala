@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.request
+package unit.uk.gov.hmrc.organisationsdetailsapi.domain.paye
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.numberofemployees.request.IfNumberOfEmployeeReferencesRequest
+import uk.gov.hmrc.organisationsdetailsapi.domain.paye.PayeResponse
 
-class IfNumberOfEmployeeReferencesResponseRequestSpec extends AnyWordSpec with Matchers {
-  "IfNumberOfEmployeeReferencesRequest writes to JSON successfully" in {
+import java.time.LocalDate
+
+class PayeResponseSpec extends AnyWordSpec with Matchers {
+  "Writes to json successfully" in {
     val json =
       """
         |{
-        |  "districtNumber": "456",
-        |  "payeReference": "1234567890"
+        |   "dateOfRegistration": "2015-04-21",
+        |   "taxSolvencyStatus" : "V",
+        |   "periods" : []
         |}
         |""".stripMargin
 
-    val numberOfEmployeeReferencesRequest = IfNumberOfEmployeeReferencesRequest("456", "1234567890")
+    val payeResponse = PayeResponse(LocalDate.parse("2015-04-21"), "V", Seq.empty)
 
-    val result = Json.toJson(numberOfEmployeeReferencesRequest)
     val expectedResult = Json.parse(json)
+    val result = Json.toJson(payeResponse)
 
     result shouldBe expectedResult
   }

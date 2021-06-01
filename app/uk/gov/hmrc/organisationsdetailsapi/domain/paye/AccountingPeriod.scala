@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.paye
 
-import org.joda.time.LocalDate
+
 import play.api.libs.functional.syntax._
-import play.api.libs.json.JodaWrites._
 import play.api.libs.json.{JsPath, Writes}
+
+import java.time.LocalDate
 
 case class AccountingPeriod(accountingPeriodStartDate: LocalDate, accountingPeriodEndDate: LocalDate, turnover: Int)
 
@@ -28,5 +29,5 @@ object AccountingPeriod {
     (JsPath \ "accountingPeriodStartDate").write[LocalDate] and
       (JsPath \ "accountingPeriodEndDate").write[LocalDate] and
       (JsPath \ "turnover").write[Int]
-  )(AccountingPeriod.apply _)
+  )(unlift(AccountingPeriod.unapply))
 }

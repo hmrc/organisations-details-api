@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
+package uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads.pattern
-import play.api.libs.json.{JsPath, Reads}
+import play.api.libs.json.{JsPath, Writes}
 
-case class IfTaxYear(taxYear: String, businessSalesTurnover: Double)
+import java.time.LocalDate
 
-object IfTaxYear {
+case class SelfAssessmentResponse(selfAssessmentStartDate: LocalDate, taxSolvencyStatus: String, returns: Seq[SelfAssessmentReturn])
 
-  private val taxYearPattern = "^20[0-9]{2}$".r
-
-  implicit val taxYearFormat: Reads[IfTaxYear] = (
-      (JsPath \ "taxYear").read[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
-        (JsPath \ "businessSalesTurnover").read[Double]
-      )(IfTaxYear.apply _)
+object SelfAssessmentResponse {
+  implicit val selfAssessmentResponseWrites : Writes[SelfAssessmentResponse] = (
+    (JsPath \ "selfAssessmentStartDate").write[LocalDate] and
+      (JsPath \ "taxSolvencyStatus").write[String] and
+      (JsPath \ "returns").write[Seq[SelfAssessmentReturn]]
+  ) (unlift(SelfAssessmentResponse.unapply))
 }

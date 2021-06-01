@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.request
+package unit.uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.numberofemployees.request.IfNumberOfEmployeesRequest
+import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.SelfAssessmentResponse
 
-class IfNumberOfEmployeesRequestSpec extends AnyWordSpec with Matchers {
-  "IfNumberOfEmployeesRequest writes to JSON successfully" in {
-    val json =
+import java.time.LocalDate
+
+class SelfAssessmentResponseSpec extends AnyWordSpec with Matchers {
+  "Writes to json successfully" in {
+    val expectedJson =
       """
         |{
-        |  "startDate": "2019-10-01",
-        |  "endDate": "2020-04-05",
-        |  "references": []
+        |   "selfAssessmentStartDate": "2015-04-21",
+        |   "taxSolvencyStatus": "I",
+        |   "returns": []
         |}
         |""".stripMargin
 
-    val numberOfEmployeesRequest = IfNumberOfEmployeesRequest("2019-10-01", "2020-04-05", Seq.empty)
+    val selfAssessmentResponse = SelfAssessmentResponse(LocalDate.parse("2015-04-21"), "I", Seq.empty)
 
-    val expectedResult = Json.parse(json)
-    val result = Json.toJson(numberOfEmployeesRequest)
+    val expectedResponse = Json.parse(expectedJson)
 
-    result shouldBe expectedResult
+    val result = Json.toJson(selfAssessmentResponse)
+
+    result shouldBe expectedResponse
   }
 }
