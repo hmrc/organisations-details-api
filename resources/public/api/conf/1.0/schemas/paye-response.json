@@ -3,47 +3,48 @@
   "description": "Pay As You Earn",
   "type": "object",
   "properties": {
-    "paye": {
-      "type": "object",
-      "description": "The response encapsulating object",
-      "properties": {
-        "dateOfRegistration": {
-          "type": "string",
-          "id": "full-date",
-          "example": "2015-04-21"
-        },
-        "taxSolvencyStatus": {
-          "type": "string",
-          "description": "The tax solvency status. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent",
-          "example": "A"
-        },
-        "periods":{
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "accountingPeriodStartDate": {
-                "type": "string",
-                "id": "full-date",
-                "example": "2018-04-06"
-              },
-              "accountingPeriodEndDate": {
-                "type": "string",
-                "id": "full-date",
-                "example": "2018-10-05"
-              },
-              "turnover": {
-                "type": "number",
-                "description": "The turnover in the accounting period in the range of -1 to 99999999999",
-                "example": "2340"
-              }
-            },
-            "required": ["accountingPeriodStartDate", "accountingPeriodEndDate", "turnover"]
+    "dateOfRegistration": {
+      "type": "string",
+      "id": "full-date",
+      "example": "2015-04-21"
+    },
+    "taxSolvencyStatus": {
+      "type": "string",
+      "description": "The tax solvency status. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent",
+      "example": "A"
+    },
+    "periods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "accountingPeriodStartDate": {
+            "type": "string",
+            "id": "full-date",
+            "example": "2018-04-06"
+          },
+          "accountingPeriodEndDate": {
+            "type": "string",
+            "id": "full-date",
+            "example": "2018-10-05"
+          },
+          "turnover": {
+            "type": "number",
+            "description": "The turnover in the accounting period in the range of -1 to 99999999999",
+            "example": "2340"
           }
-        }
-      },
-      "required": ["dateOfRegistration", "taxSolvencyStatus", "periods"]
+        },
+        "required": [
+          "accountingPeriodStartDate",
+          "accountingPeriodEndDate",
+          "turnover"
+        ]
+      }
     }
   },
-  "required": ["paye"]
+  "required": [
+    "dateOfRegistration",
+    "taxSolvencyStatus",
+    "periods"
+  ]
 }
