@@ -1,3 +1,4 @@
+import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.DefaultBuildSettings
 
@@ -21,7 +22,6 @@ lazy val scoverageSettings = {
     ScoverageKeys.coverageHighlighting := true
   )
 }
-
 
 def intTestFilter(name: String): Boolean = name startsWith "it"
 def unitFilter(name: String): Boolean = name startsWith "unit"
@@ -54,8 +54,24 @@ lazy val microservice = Project(appName, file("."))
       base => Seq(base / "test")).value,
     testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter))
   )
-
+  .configs(ComponentTest)
+  .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
+  .settings(
+    testOptions in ComponentTest := Seq(Tests.Filter(componentFilter)),
+    unmanagedSourceDirectories in ComponentTest := (baseDirectory in ComponentTest)(base => Seq(base / "test")).value,
+    testGrouping in ComponentTest := oneForkedJvmPerTest((definedTests in ComponentTest).value),
+    parallelExecution in ComponentTest := false
+  )
   .settings(publishingSettings: _*)
   .settings(scoverageSettings: _*)
-  .settings(resolvers += Resolver.jcenterRepo)
+  .settings(resolvers ++= Seq(
+    Resolver.bintrayRepo("hmrc", "releases"),
+    Resolver.jcenterRepo
+  ))
   .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
+
+def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
+  tests.map { test =>
+    new Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
+  }
+lazy val ComponentTest = config("component") extend Test
