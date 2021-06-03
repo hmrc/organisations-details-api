@@ -26,7 +26,7 @@ class NumberOfEmployeeCountsSpec extends AnyWordSpec with Matchers {
     val expectedJson =
       """
         |{
-        |   "numberOfEmployees": "1234",
+        |   "numberOfEmployees": 1234,
         |   "dateOfCount": "2019-03"
         |}
         |""".stripMargin
