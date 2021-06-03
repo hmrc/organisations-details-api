@@ -168,7 +168,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
           .willReturn(aResponse().withStatus(404)))
 
-      intercept[NotFoundException]{
+      intercept[InternalServerException]{
         await(
           underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
             hc,

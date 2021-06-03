@@ -137,9 +137,15 @@ class IfConnector @Inject()(
       Future.failed(new TooManyRequestException(msg))
     }
     case Upstream4xxResponse(msg, 404, _, _) => {
-      logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
-      Future.failed(new NotFoundException(msg))
+      msg.contains("NO_DATA_FOUND") match {
+        case true =>
+          logger.warn("Integration Framework NotFoundException encountered")
+          Future.failed(new NotFoundException(msg))
+        case _ =>
+          logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
+          Future.failed(new InternalServerException("Something went wrong."))
+      }
     }
     case Upstream4xxResponse(msg, code, _, _) => {
       logger.warn(s"Integration Framework Upstream4xxResponse encountered: $code")
