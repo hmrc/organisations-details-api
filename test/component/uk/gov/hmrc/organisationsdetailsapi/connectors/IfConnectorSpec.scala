@@ -351,6 +351,39 @@ class IfConnectorSpec
 
       }
     }
+
+    "successfully handle invalid EmployeeCountRequest from IF response" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
+      val jsonRequest = Json.prettyPrint(Json.toJson(employeeCountRequest))
+      val jsonResponse = """{
+                            |  "failures": [
+                            |    {
+                            |      "code": "INVALID_PAYLOAD",
+                            |      "reason": "Submission has not passed validation. Invalid payload."
+                            |    }
+                            |  ]
+                            |}""".stripMargin
+
+      stubFor(
+        post(urlPathMatching(s"/organisations/employers/employee/counts"))
+          .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+          .willReturn(aResponse().withStatus(400).withBody(jsonResponse)))
+
+      intercept[InternalServerException] {
+        await(
+          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest)(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        )
+      }
+
+      verify(underTest.auditHelper,
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+    }
   }
 }
 
