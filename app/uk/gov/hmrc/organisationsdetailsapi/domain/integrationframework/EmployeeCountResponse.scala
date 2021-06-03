@@ -34,18 +34,6 @@ case class PayeReferenceAndCount(districtNumber: String, payeReference: String, 
 
 case class PayeReference(districtNumber: String, payeReference: String)
 
-
-/*
-employeeCount:
-                      minimum: 1
-                      maximum: 99999999
-                      exclusiveMinimum: false
-                      exclusiveMaximum: false
-                      multipleOf: 1
-
-                      dateTaken*	string
-pattern: ^[1-2]{1}[0-9]{3}-[0-9]{2}$
- */
 case class Count(dateTaken: String, employeeCount: Double)
 
 object Count {
