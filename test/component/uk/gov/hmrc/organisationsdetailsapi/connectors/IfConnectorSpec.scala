@@ -22,7 +22,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.matching.EqualToJsonPattern
-import org.mockito.ArgumentMatchers.{any, matches}
+import org.mockito.ArgumentMatchers.{any, matches, contains}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
 import org.scalatest.BeforeAndAfterEach
@@ -160,7 +160,28 @@ class IfConnectorSpec
         times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "Fail when IF returns a NOT_FOUND" in new Setup {
+    "Fail when IF returns a NOT_FOUND and return error with empty body" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
+      stubFor(
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .willReturn(aResponse().withStatus(404)))
+
+      intercept[NotFoundException]{
+        await(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        )
+      }
+      verify(underTest.auditHelper,
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+    }
+
+    "Fail when IF returns a NOT_DATA_FOUND and return error in body" in new Setup {
 
       Mockito.reset(underTest.auditHelper)
 
@@ -186,7 +207,7 @@ class IfConnectorSpec
         )
       }
       verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
     }
 
     "getCtReturnDetails" should {
@@ -324,7 +345,7 @@ class IfConnectorSpec
 
       }
 
-      "successfully parse invalid EmployeeCountResponse from IF response" in new Setup {
+      "successfully audit and consume invalid EmployeeCountResponse from IF response" in new Setup {
 
         Mockito.reset(underTest.auditHelper)
 
@@ -352,7 +373,7 @@ class IfConnectorSpec
       }
     }
 
-    "successfully handle invalid EmployeeCountRequest from IF response" in new Setup {
+    "successfully audit and consume invalid EmployeeCountRequest from IF response" in new Setup {
 
       Mockito.reset(underTest.auditHelper)
 
@@ -382,7 +403,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("INVALID_PAYLOAD"))(any())
     }
   }
 }

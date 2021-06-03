@@ -126,11 +126,6 @@ class IfConnector @Inject()(
         s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
     }
-    case notFound: NotFoundException => {
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, notFound.getMessage)
-      logger.warn(notFound.getMessage)
-      Future.failed(notFound)
-    }
     case Upstream5xxResponse(msg, code, _, _) => {
       logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
@@ -142,7 +137,7 @@ class IfConnector @Inject()(
       Future.failed(new TooManyRequestException(msg))
     }
     case Upstream4xxResponse(msg, 404, _, _) => {
-      logger.warn("Integration Framework NotFoundException encountered")
+      logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       Future.failed(new NotFoundException(msg))
     }
