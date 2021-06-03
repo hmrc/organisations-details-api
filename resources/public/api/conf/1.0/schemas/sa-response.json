@@ -5,27 +5,31 @@
   "properties": {
     "selfAssessment": {
       "type": "object",
-      "description": "The encapsulating object for SA data",
+      "description": "Self Assessment details for an organisation.",
       "properties": {
         "selfAssessmentStartDate": {
           "type": "string",
+          "description": "The start date for Self Assessment data.",
           "id": "full-date",
           "example": "2015-04-21"
         },
         "taxSolvencyStatus": {
           "type": "string",
-          "description": "The tax solvency status. I – Insolvent S – Solvent",
-          "example": "I"
+          "description": "The tax solvency status for the organisation. I – Insolvent, S – Solvent.",
+          "enum": [
+            "I",
+            "S"
+          ]
         },
         "returns": {
           "type": "array",
-          "description": "Tax returns",
+          "description": "Self Assessment tax returns.",
           "items": {
             "type": "object",
             "properties": {
               "totalBusinessSalesTurnover": {
                 "type": "number",
-                "description": "Total Business sales turnover in range of -99999999999.99 to 99999999999.99",
+                "description": "Total Business sales turnover, in range of -99999999999.99 to 99999999999.99.",
                 "example": "1234.56"
               },
               "taxYear": {

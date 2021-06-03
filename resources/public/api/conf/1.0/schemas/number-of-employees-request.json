@@ -8,11 +8,13 @@
   "properties": {
     "fromDate": {
       "type": "string",
+      "description": "The date that the data is requested from.",
       "id": "full-date",
       "example": "2019-10-01"
     },
     "toDate": {
       "type": "string",
+      "description": "The date that the data is requested to. If missing, it defaults to today's date.",
       "id": "full-date",
       "example": "2020-04-05"
     },
@@ -28,12 +30,12 @@
         "properties": {
           "districtNumber": {
             "type": "string",
-            "description": "The organisation's district number",
+            "description": "The organisation's district number.",
             "example": "456"
           },
           "schemeReference": {
             "type": "string",
-            "description": "The organisation's scheme reference",
+            "description": "The organisation's scheme reference.",
             "example": "RT882d"
           }
         }
