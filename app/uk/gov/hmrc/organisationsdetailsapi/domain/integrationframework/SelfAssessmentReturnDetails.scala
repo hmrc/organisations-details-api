@@ -38,28 +38,28 @@ object SelfAssessmentReturnDetail {
   implicit val taxYearFormat: Format[TaxYear] = Format(
     (
       (JsPath \ "taxYear").read[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
-        (JsPath \ "businessSalesTurnover").read[Double]
-      )(TaxYear.apply _),
+      (JsPath \ "businessSalesTurnover").read[Double]
+    )(TaxYear.apply _),
     (
       (JsPath \ "taxYear").write[String] and
-        (JsPath \ "businessSalesTurnover").write[Double]
-      )(unlift(TaxYear.unapply))
+      (JsPath \ "businessSalesTurnover").write[Double]
+    )(unlift(TaxYear.unapply))
   )
 
   implicit val selfAssessmentResponseFormat: Format[SelfAssessmentReturnDetailResponse] = Format(
     (
       (JsPath \ "utr").read[String](pattern(utrPattern, "UTR pattern is incorrect")) and
-        (JsPath \ "startDate").read[String](pattern(datePattern, "Date pattern is incorrect")) and
-        (JsPath \ "taxpayerType").read[String](pattern(taxPayerTypePattern, "Invalid taxpayer type")) and
-        (JsPath \ "taxSolvencyStatus").read[String](verifying(taxSolvencyStatusValidator)) and
-        (JsPath \ "taxyears").read[Seq[TaxYear]]
-      )(SelfAssessmentReturnDetailResponse.apply _),
+      (JsPath \ "startDate").read[String](pattern(datePattern, "Date pattern is incorrect")) and
+      (JsPath \ "taxpayerType").read[String](pattern(taxPayerTypePattern, "Invalid taxpayer type")) and
+      (JsPath \ "taxSolvencyStatus").read[String](verifying(taxSolvencyStatusValidator)) and
+      (JsPath \ "taxyears").read[Seq[TaxYear]]
+    )(SelfAssessmentReturnDetailResponse.apply _),
     (
       (JsPath \ "utr").write[String] and
-        (JsPath \ "startDate").write[String] and
-        (JsPath \ "taxpayerType").write[String] and
-        (JsPath \ "taxSolvencyStatus").write[String] and
-        (JsPath \ "taxyears").write[Seq[TaxYear]]
-      )(unlift(SelfAssessmentReturnDetailResponse.unapply))
+      (JsPath \ "startDate").write[String] and
+      (JsPath \ "taxpayerType").write[String] and
+      (JsPath \ "taxSolvencyStatus").write[String] and
+      (JsPath \ "taxyears").write[Seq[TaxYear]]
+    )(unlift(SelfAssessmentReturnDetailResponse.unapply))
   )
 }

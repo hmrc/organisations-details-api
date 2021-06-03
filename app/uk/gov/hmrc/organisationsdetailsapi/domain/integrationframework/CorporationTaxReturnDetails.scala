@@ -23,8 +23,6 @@ import play.api.libs.json.{Format, JsPath}
 
 case class AccountingPeriod(apStartDate: String, apEndDate: String, turnover: Int)
 
-case class CreateCorporationTaxReturnDetailsRequest(utr: String, taxpayerStartDate: String, taxSolvencyStatus: String, accountingPeriods: Seq[AccountingPeriod])
-
 case class CorporationTaxReturnDetailsResponse(utr: String, taxpayerStartDate: String, taxSolvencyStatus: String, accountingPeriods: Seq[AccountingPeriod])
 
 object CorporationTaxReturnDetails {
@@ -37,43 +35,28 @@ object CorporationTaxReturnDetails {
   implicit val accountingPeriodFormat = Format[AccountingPeriod](
     (
       (JsPath \ "apStartDate").read[String](pattern(apDatePattern, "apStartDate not in correct format")) and
-        (JsPath \ "apEndDate").read[String](pattern(apDatePattern, "apEndDate not in correct format")) and
-        (JsPath \ "turnover").read[Int]
-      )(AccountingPeriod.apply _),
+      (JsPath \ "apEndDate").read[String](pattern(apDatePattern, "apEndDate not in correct format")) and
+      (JsPath \ "turnover").read[Int]
+    )(AccountingPeriod.apply _),
     (
       (JsPath \ "apStartDate").write[String] and
-        (JsPath \ "apEndDate").write[String] and
-        (JsPath \ "turnover").write[Int]
-      )(unlift(AccountingPeriod.unapply))
-  )
-
-  implicit val createCorporationTaxReturnDetailsRequestFormat = Format[CreateCorporationTaxReturnDetailsRequest](
-    (
-      (JsPath \ "utr").read[String](pattern(utrPattern, "Invalid UTR format")) and
-        (JsPath \ "taxpayerStartDate").read[String](pattern(taxpayerStartDatePattern, "Invalid taxpayer start date")) and
-        (JsPath \ "taxSolvencyStatus").read[String](verifying(validTaxSolvencyStatus)) and
-        (JsPath \ "accountingPeriods").read[Seq[AccountingPeriod]]
-      )(CreateCorporationTaxReturnDetailsRequest.apply _),
-    (
-      (JsPath \ "utr").write[String] and
-        (JsPath \ "taxpayerStartDate").write[String] and
-        (JsPath \ "taxSolvencyStatus").write[String] and
-        (JsPath \ "accountingPeriods").write[Seq[AccountingPeriod]]
-      )(unlift(CreateCorporationTaxReturnDetailsRequest.unapply))
+      (JsPath \ "apEndDate").write[String] and
+      (JsPath \ "turnover").write[Int]
+    )(unlift(AccountingPeriod.unapply))
   )
 
   implicit val corporationTaxReturnDetailsResponseFormat = Format[CorporationTaxReturnDetailsResponse](
     (
       (JsPath \ "utr").read[String](pattern(utrPattern, "Invalid UTR format")) and
-        (JsPath \ "taxpayerStartDate").read[String](pattern(taxpayerStartDatePattern, "Invalid taxpayer start date")) and
-        (JsPath \ "taxSolvencyStatus").read[String](verifying(validTaxSolvencyStatus)) and
-        (JsPath \ "accountingPeriods").read[Seq[AccountingPeriod]]
-      )(CorporationTaxReturnDetailsResponse.apply _),
+      (JsPath \ "taxpayerStartDate").read[String](pattern(taxpayerStartDatePattern, "Invalid taxpayer start date")) and
+      (JsPath \ "taxSolvencyStatus").read[String](verifying(validTaxSolvencyStatus)) and
+      (JsPath \ "accountingPeriods").read[Seq[AccountingPeriod]]
+    )(CorporationTaxReturnDetailsResponse.apply _),
     (
       (JsPath \ "utr").write[String] and
-        (JsPath \ "taxpayerStartDate").write[String] and
-        (JsPath \ "taxSolvencyStatus").write[String] and
-        (JsPath \ "accountingPeriods").write[Seq[AccountingPeriod]]
-      )(unlift(CorporationTaxReturnDetailsResponse.unapply))
+      (JsPath \ "taxpayerStartDate").write[String] and
+      (JsPath \ "taxSolvencyStatus").write[String] and
+      (JsPath \ "accountingPeriods").write[Seq[AccountingPeriod]]
+    )(unlift(CorporationTaxReturnDetailsResponse.unapply))
   )
 }

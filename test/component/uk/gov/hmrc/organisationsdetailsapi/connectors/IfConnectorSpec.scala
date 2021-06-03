@@ -113,7 +113,7 @@ class IfConnectorSpec
   val invalidEmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = "")
 
-  "fetch foo" should {
+  "IF Connector" should {
 
     "Fail when IF returns an error" in new Setup {
 
