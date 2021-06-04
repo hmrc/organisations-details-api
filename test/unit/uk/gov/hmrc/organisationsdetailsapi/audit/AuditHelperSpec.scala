@@ -55,9 +55,9 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
       captor.capture())(any(), any(), any())
 
     val capturedEvent = captor.getValue.asInstanceOf[ScopesAuditEventModel]
-    capturedEvent.asInstanceOf[ScopesAuditEventModel].apiVersion shouldEqual "1.0"
-    capturedEvent.asInstanceOf[ScopesAuditEventModel].matchId shouldEqual matchId
-    capturedEvent.asInstanceOf[ScopesAuditEventModel].scopes shouldBe scopes
+    capturedEvent.apiVersion shouldEqual "1.0"
+    capturedEvent.matchId shouldEqual matchId
+    capturedEvent.scopes shouldBe scopes
 
   }
 
@@ -94,10 +94,10 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
       captor.capture())(any(), any(), any())
 
     val capturedEvent = captor.getValue.asInstanceOf[IfApiResponseEventModel]
-    capturedEvent.asInstanceOf[IfApiResponseEventModel].matchId shouldEqual matchId
-    capturedEvent.asInstanceOf[IfApiResponseEventModel].correlationId shouldEqual correlationId
-    capturedEvent.asInstanceOf[IfApiResponseEventModel].requestUrl shouldBe ifUrl
-    capturedEvent.asInstanceOf[IfApiResponseEventModel].ifResponse shouldBe ifResponse
+    capturedEvent.matchId shouldEqual matchId
+    capturedEvent.correlationId shouldEqual correlationId
+    capturedEvent.requestUrl shouldBe ifUrl
+    capturedEvent.ifResponse shouldBe ifResponse
 
   }
 
@@ -120,5 +120,21 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.requestUrl shouldEqual ifUrl
     capturedEvent.response shouldEqual msg
 
+  }
+
+  "auditApiResponse" in {
+    Mockito.reset(auditConnector)
+
+    val captor = ArgumentCaptor.forClass(classOf[ApiResponseEventModel])
+
+    auditHelper.auditApiResponse(correlationId, matchId, scopes, request, ifUrl)
+
+    verify(auditConnector, times(1)).sendExplicitAudit(eqTo("ApiResponseEvent"),
+      captor.capture())(any(), any(), any())
+
+    val capturedEvent = captor.getValue.asInstanceOf[ApiResponseEventModel]
+    capturedEvent.matchId shouldEqual matchId
+    capturedEvent.correlationId shouldEqual Some(correlationId)
+    capturedEvent.returnLinks shouldEqual ifUrl
   }
 }
