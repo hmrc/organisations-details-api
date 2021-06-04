@@ -1,16 +1,14 @@
 {
-  "selfAssessment": {
-    "selfAssessmentStartDate": "2015-04-21",
-    "taxSolvencyStatus": "I",
-    "returns": [
-      {
-        "totalBusinessSalesTurnover": 1234.56,
-        "taxYear": "2019-20"
-      },
-      {
-        "totalBusinessSalesTurnover": 4567.89,
-        "taxYear": "2020-21"
-      }
-    ]
-  }
+  "selfAssessmentStartDate": "2015-04-21",
+  "taxSolvencyStatus": "I",
+  "returns": [
+    {
+      "totalBusinessSalesTurnover": 1234.56,
+      "taxYear": "2019-20"
+    },
+    {
+      "totalBusinessSalesTurnover": 4567.89,
+      "taxYear": "2020-21"
+    }
+  ]
 }
