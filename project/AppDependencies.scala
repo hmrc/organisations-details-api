@@ -9,10 +9,11 @@ object AppDependencies {
   val hmrcMongo = "uk.gov.hmrc.mongo"
 
   val compile = Seq(
-    hmrc                  %% "bootstrap-backend-play-27"  % "4.1.0",
-    hmrcMongo             %% "hmrc-mongo-play-27"         % "0.49.0",
-    hmrc                  %% "mongo-caching"              % "7.0.0-play-27",
-    hmrc                  %% "json-encryption"            % "4.10.0-play-27"
+    hmrc                %% "bootstrap-backend-play-27"  % "4.1.0",
+    hmrcMongo           %% "hmrc-mongo-play-27"         % "0.49.0",
+    hmrc                %% "mongo-caching"              % "7.0.0-play-27",
+    hmrc                %% "json-encryption"            % "4.10.0-play-27",
+    hmrc                %% "play-hal"                   % "2.1.0-play-27"
   )
 
   def test(scope: String = "test, it") = Seq(
