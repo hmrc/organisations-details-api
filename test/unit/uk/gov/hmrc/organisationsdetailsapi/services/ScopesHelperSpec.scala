@@ -35,17 +35,10 @@ class ScopesHelperSpec
 
     val scopesHelper = new ScopesHelper(scopesService)
 
-    "return replaced employerRef" in {
-      val employerRef = "247%2FZT6767895A"
-      val result =
-        scopesHelper.getQueryStringWithParameterisedFilters(List(mockScope8), mockEndpoint4, employerRef)
-      result shouldBe s"employer(employerAddress(line1,line2,line3),employerDistrictNumber,employerName,employerSchemeReference),payments&filter=employerRef eq '$employerRef'"
-    }
-
     "return correct query string" in {
       val result =
         scopesHelper.getQueryStringFor(List(mockScope2), mockEndpoint1)
-      result shouldBe "employer(employerAddress(line1,line2,line3),employerDistrictNumber,employerName,employerSchemeReference),payments"
+      result shouldBe "field1,field2(subfield1,subfield2),field3"
     }
 
     "generate Hal response" in {
@@ -73,17 +66,14 @@ class ScopesHelperSpec
 
       val response2 = scopesHelper.getHalResponse(
         endpoint = mockEndpoint2,
-        scopes = List(mockScope4, mockScope5),
+        scopes = List(mockScope1, mockScope2),
         data = Option(mockData)
       )
 
-      response2.links.links.size shouldBe 3
+      response2.links.links.size shouldBe 2
 
       response2.links.links.exists(halLink =>
-        halLink.rel == mockEndpoint2 && halLink.href == "/a/b/d?matchId=<matchId>{&fromDate,toDate}") shouldBe true
-
-      response2.links.links.exists(halLink =>
-        halLink.rel == mockEndpoint3 && halLink.href == "/a/b/e?matchId=<matchId>{&fromDate,toDate}") shouldBe true
+        halLink.rel == mockEndpoint1 && halLink.href == "/a/b/c?matchId=<matchId>{&fromDate,toDate}") shouldBe true
 
       response2.links.links.exists(halLink =>
         halLink.rel == "self" && halLink.href == "/a/b/d?matchId=<matchId>{&fromDate,toDate}") shouldBe true

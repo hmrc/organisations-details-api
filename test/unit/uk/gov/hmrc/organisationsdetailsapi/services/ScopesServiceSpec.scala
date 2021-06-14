@@ -28,9 +28,9 @@ class ScopesServiceSpec extends TestSupport with ScopesConfig with BeforeAndAfte
 
     "map multiple items correctly" in {
       val result = scopesService.getScopeItems(mockScope1)
-      result.head shouldBe "payments"
-      result(1) shouldBe "employer/employerName"
-      result(2) shouldBe "employer/employerDistrictNumber"
+      result.head shouldBe "field1"
+      result(1) shouldBe "field2/subfield1"
+      result(2) shouldBe "field3"
     }
 
     "return empty list if no items found" in {
@@ -40,7 +40,7 @@ class ScopesServiceSpec extends TestSupport with ScopesConfig with BeforeAndAfte
 
     "get data items for endpoint" in {
       val result = scopesService.getEndpointFieldKeys(mockEndpoint1)
-      result shouldBe List("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")
+      result shouldBe List("A", "B", "C", "D")
     }
 
     "return empty list if endpoint not found" in {
@@ -51,41 +51,41 @@ class ScopesServiceSpec extends TestSupport with ScopesConfig with BeforeAndAfte
     "get valid data items for scope and endpoint" in {
       val result =
         scopesService.getValidItemsFor(List(mockScope1), mockEndpoint1)
-      result shouldBe List("payments", "employer/employerName", "employer/employerDistrictNumber")
+      result shouldBe List("field1", "field2/subfield1", "field3")
     }
 
     "get valid data items for scope and multiple endpoints" in {
       val result =
-        scopesService.getValidItemsFor(List(mockScope3), List(mockEndpoint1, mockEndpoint3))
+        scopesService.getValidItemsFor(List(mockScope1), List(mockEndpoint1, mockEndpoint2))
       result shouldBe Set(
-        "payments",
-        "field4"
+        "field1",
+        "field2/subfield1",
+        "field3"
       )
     }
 
     "get valid data items keys for single scope" in {
       val result =
         scopesService.getValidFieldsForCacheKey(List(mockScope1))
-      result shouldBe "ABF"
+      result shouldBe "ABD"
     }
 
     "get valid data items keys for multiple scopes" in {
       val result =
         scopesService.getValidFieldsForCacheKey(List(mockScope1, mockScope2))
-      result shouldBe "ABFCDEG"
+      result shouldBe "ABDC"
     }
 
     "get valid data items keys for multiple scopes including no match" in {
       val result =
         scopesService.getValidFieldsForCacheKey(List(mockScope1, mockScope2, "not-exists"))
-      result shouldBe "ABFCDEG"
+      result shouldBe "ABDC"
     }
 
     "identity accesssible endpoints" in {
-      val result = scopesService.getAccessibleEndpoints(List(mockScope3)).toList
+      val result = scopesService.getAccessibleEndpoints(List(mockScope1)).toList
       result.contains(mockEndpoint1) shouldBe true
       result.contains(mockEndpoint2) shouldBe false
-      result.contains(mockEndpoint3) shouldBe true
     }
 
     "get links for valid endpoints" in {
@@ -94,16 +94,11 @@ class ScopesServiceSpec extends TestSupport with ScopesConfig with BeforeAndAfte
       val config1 = result.head
       config1.name shouldBe mockEndpoint1
       config1.link shouldBe "/a/b/c?matchId=<matchId>{&fromDate,toDate}"
-
-      val result2 = scopesService.getEndpoints(List(mockScope4))
-      val config2 = result2.head
-      config2.name shouldBe mockEndpoint2
-      config2.link shouldBe "/a/b/d?matchId=<matchId>{&fromDate,toDate}"
     }
 
     "get the scopes associated to an endpoint" in {
-      val result = scopesService.getEndPointScopes(mockEndpoint2)
-      result shouldBe Iterable(mockScope4, mockScope6, mockScope7)
+      val result = scopesService.getEndPointScopes(mockEndpoint1)
+      result shouldBe Iterable(mockScope1, mockScope2)
     }
   }
 }
