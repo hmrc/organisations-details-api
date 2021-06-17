@@ -65,7 +65,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(publishingSettings: _*)
   .settings(scoverageSettings: _*)
   .settings(resolvers ++= Seq(
-    Resolver.bintrayRepo("hmrc", "releases"),
     Resolver.jcenterRepo
   ))
   .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
