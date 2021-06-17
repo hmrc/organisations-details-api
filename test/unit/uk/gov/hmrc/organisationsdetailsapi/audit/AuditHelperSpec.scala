@@ -36,8 +36,8 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
   val auditHelper = new AuditHelper(auditConnector)
   val correlationId = "test"
   val matchId = "80a6bb14-d888-436e-a541-4000674c60bb"
-  val clientId = "80a6bb14-d888-436e-a541-4000674c60bb"
-  val request = FakeRequest().withHeaders("X-Client-ID" -> clientId)
+  val applicationId = "80a6bb14-d888-436e-a541-4000674c60bb"
+  val request = FakeRequest().withHeaders("X-Application-ID" -> applicationId)
   val endpoint = "/test"
   val ifResponse = "bar"
   val crn = "12345678"
@@ -59,7 +59,7 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.apiVersion shouldEqual "1.0"
     capturedEvent.matchId shouldEqual matchId
     capturedEvent.scopes shouldBe scopes
-    capturedEvent.clientId shouldBe clientId
+    capturedEvent.applicationId shouldBe applicationId
   }
 
   "auditApiFailure" in {
@@ -80,7 +80,7 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.correlationId shouldEqual Some(correlationId)
     capturedEvent.requestUrl shouldEqual endpoint
     capturedEvent.response shouldEqual msg
-    capturedEvent.clientId shouldBe clientId
+    capturedEvent.applicationId shouldBe applicationId
   }
 
   "auditIfApiResponse" in {
@@ -99,7 +99,7 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.correlationId shouldEqual correlationId
     capturedEvent.requestUrl shouldBe ifUrl
     capturedEvent.ifResponse shouldBe ifResponse
-    capturedEvent.clientId shouldBe clientId
+    capturedEvent.applicationId shouldBe applicationId
   }
 
   "auditIfApiFailure" in {
@@ -120,7 +120,7 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.correlationId shouldEqual Some(correlationId)
     capturedEvent.requestUrl shouldEqual ifUrl
     capturedEvent.response shouldEqual msg
-    capturedEvent.clientId shouldBe clientId
+    capturedEvent.applicationId shouldBe applicationId
   }
 
   "auditApiResponse" in {
@@ -137,6 +137,6 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.matchId shouldEqual matchId
     capturedEvent.correlationId shouldEqual Some(correlationId)
     capturedEvent.returnLinks shouldEqual ifUrl
-    capturedEvent.clientId shouldBe clientId
+    capturedEvent.applicationId shouldBe applicationId
   }
 }
