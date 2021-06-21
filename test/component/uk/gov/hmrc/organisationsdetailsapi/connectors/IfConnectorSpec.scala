@@ -60,7 +60,6 @@ class IfConnectorSpec
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
   val integrationFrameworkAuthorizationToken = "IF_TOKEN"
   val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
-  val clientId = "CLIENT_ID"
 
   def externalServices: Seq[String] = Seq.empty
 
