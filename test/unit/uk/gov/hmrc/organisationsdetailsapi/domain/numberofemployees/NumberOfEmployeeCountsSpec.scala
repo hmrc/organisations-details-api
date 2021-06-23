@@ -22,6 +22,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeeCounts
 
 class NumberOfEmployeeCountsSpec extends AnyWordSpec with Matchers {
+
   "Writes to json successfully" in {
     val expectedJson =
       """
@@ -39,4 +40,5 @@ class NumberOfEmployeeCountsSpec extends AnyWordSpec with Matchers {
 
     result shouldBe expectedResponse
   }
+
 }

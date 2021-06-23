@@ -22,9 +22,9 @@ import play.api.libs.json._
 
 import scala.util.matching.Regex
 
-case class TaxYear(taxYear: String, businessSalesTurnover: Double)
+case class TaxYear(taxYear: Option[String], businessSalesTurnover: Option[Double])
 
-case class SelfAssessmentReturnDetailResponse(utr: String, startDate: String, taxPayerType: String, taxSolvencyStatus: String, taxYears: Seq[TaxYear])
+case class SelfAssessmentReturnDetailResponse(utr: Option[String], startDate: Option[String], taxPayerType: Option[String], taxSolvencyStatus: Option[String], taxYears: Option[Seq[TaxYear]])
 
 object SelfAssessmentReturnDetail {
 
@@ -37,29 +37,29 @@ object SelfAssessmentReturnDetail {
 
   implicit val taxYearFormat: Format[TaxYear] = Format(
     (
-      (JsPath \ "taxYear").read[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
-      (JsPath \ "businessSalesTurnover").read[Double]
+      (JsPath \ "taxYear").readNullable[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
+      (JsPath \ "businessSalesTurnover").readNullable[Double]
     )(TaxYear.apply _),
     (
-      (JsPath \ "taxYear").write[String] and
-      (JsPath \ "businessSalesTurnover").write[Double]
+      (JsPath \ "taxYear").writeNullable[String] and
+      (JsPath \ "businessSalesTurnover").writeNullable[Double]
     )(unlift(TaxYear.unapply))
   )
 
   implicit val selfAssessmentResponseFormat: Format[SelfAssessmentReturnDetailResponse] = Format(
     (
-      (JsPath \ "utr").read[String](pattern(utrPattern, "UTR pattern is incorrect")) and
-      (JsPath \ "startDate").read[String](pattern(datePattern, "Date pattern is incorrect")) and
-      (JsPath \ "taxpayerType").read[String](pattern(taxPayerTypePattern, "Invalid taxpayer type")) and
-      (JsPath \ "taxSolvencyStatus").read[String](verifying(taxSolvencyStatusValidator)) and
-      (JsPath \ "taxyears").read[Seq[TaxYear]]
+      (JsPath \ "utr").readNullable[String](pattern(utrPattern, "UTR pattern is incorrect")) and
+      (JsPath \ "startDate").readNullable[String](pattern(datePattern, "Date pattern is incorrect")) and
+      (JsPath \ "taxpayerType").readNullable[String](pattern(taxPayerTypePattern, "Invalid taxpayer type")) and
+      (JsPath \ "taxSolvencyStatus").readNullable[String](verifying(taxSolvencyStatusValidator)) and
+      (JsPath \ "taxyears").readNullable[Seq[TaxYear]]
     )(SelfAssessmentReturnDetailResponse.apply _),
     (
-      (JsPath \ "utr").write[String] and
-      (JsPath \ "startDate").write[String] and
-      (JsPath \ "taxpayerType").write[String] and
-      (JsPath \ "taxSolvencyStatus").write[String] and
-      (JsPath \ "taxyears").write[Seq[TaxYear]]
+      (JsPath \ "utr").writeNullable[String] and
+      (JsPath \ "startDate").writeNullable[String] and
+      (JsPath \ "taxpayerType").writeNullable[String] and
+      (JsPath \ "taxSolvencyStatus").writeNullable[String] and
+      (JsPath \ "taxyears").writeNullable[Seq[TaxYear]]
     )(unlift(SelfAssessmentReturnDetailResponse.unapply))
   )
 }

@@ -107,10 +107,10 @@ class IfConnectorSpec
   val employeeCountRequest = createValidEmployeeCountRequest()
   val employeeCountResponse = createValidEmployeeCountResponse()
 
-  val invalidTaxReturn  = createValidCorporationTaxReturnDetails().copy(utr = "")
-  val invalidSaReturn = createValidSelfAssessmentReturnDetails().copy(utr = "")
+  val invalidTaxReturn  = createValidCorporationTaxReturnDetails().copy(utr = Some(""))
+  val invalidSaReturn = createValidSelfAssessmentReturnDetails().copy(utr = Some(""))
   val invalidEmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
-  val invalidEmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = "")
+  val invalidEmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
 
   "IF Connector" should {
 
