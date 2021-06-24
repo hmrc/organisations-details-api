@@ -4,7 +4,7 @@ This API allows government departments to get information from HMRC about an org
 - the number of employees in an organisation
 
 The responses exclude fields when they do not have a value.
-###HAL HATEOS RESTful APIs
+### HAL HATEOS RESTful APIs
 This API is a HAL HATEOAS RESTful API. It has been designed to promote discoverability and to be self documenting.
 
 A HATEOAS API makes it clear to client software what further actions are available when an action is completed. Responses from an endpoint include URLs to further endpoints you can call. New functionality can be added without breaking your client software.
