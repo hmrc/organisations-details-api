@@ -22,20 +22,20 @@ trait IfHelpers {
 
   def createValidCorporationTaxReturnDetails(): CorporationTaxReturnDetailsResponse = {
     CorporationTaxReturnDetailsResponse(
-      utr = "1234567890",
-      taxpayerStartDate =  "2015-04-21",
-      taxSolvencyStatus =  "V",
-      accountingPeriods =  Seq(
+      utr = Some("1234567890"),
+      taxpayerStartDate =  Some("2015-04-21"),
+      taxSolvencyStatus =  Some("V"),
+      accountingPeriods =  Some(Seq(
       AccountingPeriod(
-        apStartDate = "2018-04-06",
-        apEndDate = "2018-10-05",
-        turnover = 38390
+        apStartDate = Some("2018-04-06"),
+        apEndDate = Some("2018-10-05"),
+        turnover = Some(38390)
       ),
       AccountingPeriod(
-        apStartDate = "2018-10-06",
-        apEndDate = "2019-04-05",
-        turnover = 2340
-      ))
+        apStartDate = Some("2018-10-06"),
+        apEndDate = Some("2019-04-05"),
+        turnover =Some(2340)
+      )))
     )
   }
 
@@ -58,108 +58,107 @@ trait IfHelpers {
 
   def createValidEmployeeCountResponse(): EmployeeCountResponse = {
     EmployeeCountResponse(
-      startDate =  "2019-10-01",
-      endDate =  "2020-04-05",
-      references =  Seq(
+      startDate =  Some("2019-10-01"),
+      endDate =  Some("2020-04-05"),
+      references =  Some(Seq(
         PayeReferenceAndCount(
-          districtNumber =  "456",
-          payeReference =  "RT882d",
-          counts = Seq(
+          districtNumber =  Some("456"),
+          payeReference =  Some("RT882d"),
+          counts = Some(Seq(
           Count(
-            dateTaken = "2019-10",
-            employeeCount = 1234
+            dateTaken = Some("2019-10"),
+            employeeCount = Some(1234)
           ),
           Count(
-            dateTaken = "2019-11",
-            employeeCount = 1466
+            dateTaken = Some("2019-11"),
+            employeeCount = Some(1466)
           ),
           Count(
-            dateTaken = "2019-12",
-            employeeCount = 1765
+            dateTaken = Some("2019-12"),
+            employeeCount = Some(1765)
           ),
           Count(
-            dateTaken = "2020-01",
-            employeeCount = 1666
+            dateTaken = Some("2020-01"),
+            employeeCount = Some(1666)
           ),
           Count(
-            dateTaken = "2020-02",
-            employeeCount = 1589
+            dateTaken = Some("2020-02"),
+            employeeCount = Some(1589)
           ),
           Count(
-            dateTaken = "2020-03",
-            employeeCount = 1555
+            dateTaken = Some("2020-03"),
+            employeeCount = Some(1555)
           ),
-        )),
+        ))),
         PayeReferenceAndCount(
-          districtNumber =  "123",
-          payeReference =  "AB888666",
-          counts = Seq(
+          districtNumber =  Some("123"),
+          payeReference =  Some("AB888666"),
+          counts = Some(Seq(
           Count(
-            dateTaken = "2019-10",
-            employeeCount = 554
+            dateTaken = Some("2019-10"),
+            employeeCount = Some(554)
           ),
           Count(
-            dateTaken = "2019-11",
-            employeeCount = 567
+            dateTaken = Some("2019-11"),
+            employeeCount = Some(567)
           ),
           Count(
-            dateTaken = "2019-12",
-            employeeCount = 599
+            dateTaken = Some("2019-12"),
+            employeeCount = Some(599)
           ),
           Count(
-            dateTaken = "2020-01",
-            employeeCount = 571
+            dateTaken = Some("2020-01"),
+            employeeCount = Some(571)
           ),
           Count(
-            dateTaken = "2020-02",
-            employeeCount = 566
+            dateTaken = Some("2020-02"),
+            employeeCount = Some(566)
           ),
           Count(
-            dateTaken = "2020-03",
-            employeeCount = 555
+            dateTaken = Some("2020-03"),
+            employeeCount = Some(555)
           )
         )
       )
-      )
-    )
+    ))))
   }
 
   def createValidSelfAssessmentReturnDetails(): SelfAssessmentReturnDetailResponse = {
     SelfAssessmentReturnDetailResponse(
-      utr = "1234567890",
-      taxPayerType = "Individual",
-      startDate = "2015-04-21",
-      taxSolvencyStatus = "S",
-      taxYears = Seq(
-      TaxYear(
-        taxYear = "2020",
-        businessSalesTurnover = 38390.76
-      ),
-      TaxYear(
-        taxYear = "2019",
-        businessSalesTurnover = 12343.12
-      ),
-      TaxYear(
-        taxYear = "2018",
-        businessSalesTurnover = 20182.22
-      ),
-      TaxYear(
-        taxYear = "2017",
-        businessSalesTurnover = 20177.77
-      ),
-      TaxYear(
-        taxYear = "2016",
-        businessSalesTurnover = 20166.66
-      ),
-      TaxYear(
-        taxYear = "2015",
-        businessSalesTurnover = 20155.55
-      ),
-      TaxYear(
-        taxYear = "2014",
-        businessSalesTurnover = 20144.5
-      )
-      )
+      utr = Some("1234567890"),
+      taxPayerType = Some("Individual"),
+      startDate = Some("2015-04-21"),
+      taxSolvencyStatus = Some("S"),
+      taxYears = Some(Seq(
+        TaxYear(
+          taxYear = Some("2020"),
+          businessSalesTurnover = Some(38390.76)
+        ),
+        TaxYear(
+          taxYear = Some("2019"),
+          businessSalesTurnover = Some(12343.12)
+        ),
+        TaxYear(
+          taxYear = Some("2018"),
+          businessSalesTurnover = Some(20182.22)
+        ),
+        TaxYear(
+          taxYear = Some("2017"),
+          businessSalesTurnover = Some(20177.77)
+        ),
+        TaxYear(
+          taxYear = Some("2016"),
+          businessSalesTurnover = Some(20166.66)
+        ),
+        TaxYear(
+          taxYear = Some("2015"),
+          businessSalesTurnover = Some(20155.55)
+        ),
+        TaxYear(
+          taxYear = Some("2014"),
+          businessSalesTurnover = Some(20144.5)
+        )
+      ))
     )
   }
 }
