@@ -25,7 +25,7 @@ uses:
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 
 /organisations/details:
-  /paye:
+  /corporation-tax:
     get:
       displayName: "Get an organisation's PAYE (Pay As You Earn) details"
       description: "Use a matchId to get an organisation's PAYE details. This includes registration date, tax solvency status and accounting periods."
@@ -49,8 +49,8 @@ uses:
           description: "The organisation's Pay As You Earn income for the given period."
           body:
             application/json:
-              example: !include examples/paye-response.json
-              type: !include schemas/paye-response.json
+              example: !include examples/corporation-tax-response.json
+              type: !include schemas/corporation-tax-response.json
         400:
           body:
             application/json:
