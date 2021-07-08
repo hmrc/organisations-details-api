@@ -11,7 +11,7 @@
     </thead>
     <tbody>
     <tr>
-        <td><p>A valid, successful request for PAYE data</p></td>
+        <td><p>A valid, successful request for Corporation Tax data</p></td>
         <td><p>The matchId is obtained from the Organisations Matching API. For example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>

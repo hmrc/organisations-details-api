@@ -1,5 +1,5 @@
 This API allows government departments to get information from HMRC about an organisation. Depending on your matchId, this includes:
-- PAYE data
+- Corporation Tax data
 - Self Assessment data
 - the number of employees in an organisation
 
