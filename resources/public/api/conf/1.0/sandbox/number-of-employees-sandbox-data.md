@@ -39,7 +39,7 @@
     </thead>
     <tbody>
     <tr>
-        <td><p>A valid successful request for number of employees data</p>
+        <td><p>A valid, successful request for number of employees data</p>
         <td><p>A valid, successful request for the number of employees as described in the valid payload section.</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
