@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package component.uk.gov.hmrc.organisationsdetailsapi.v2
+package component.uk.gov.hmrc.organisationsdetailsapi.v1
 
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.BaseSpec
 import org.scalatest.matchers.should.Matchers
