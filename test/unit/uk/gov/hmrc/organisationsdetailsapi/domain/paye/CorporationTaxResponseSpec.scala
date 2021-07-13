@@ -19,11 +19,11 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.domain.paye
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.paye.PayeResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.CorporationTaxResponse
 
 import java.time.LocalDate
 
-class PayeResponseSpec extends AnyWordSpec with Matchers {
+class CorporationTaxResponseSpec extends AnyWordSpec with Matchers {
   "Writes to json successfully" in {
     val json =
       """
@@ -34,7 +34,7 @@ class PayeResponseSpec extends AnyWordSpec with Matchers {
         |}
         |""".stripMargin
 
-    val payeResponse = PayeResponse(LocalDate.parse("2015-04-21"), "V", Seq.empty)
+    val payeResponse = CorporationTaxResponse(LocalDate.parse("2015-04-21"), "V", Seq.empty)
 
     val expectedResult = Json.parse(json)
     val result = Json.toJson(payeResponse)

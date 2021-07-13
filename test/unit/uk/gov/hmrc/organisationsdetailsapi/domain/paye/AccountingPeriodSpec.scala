@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.domain.paye
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.paye.AccountingPeriod
+import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
 
 import java.time.LocalDate
 

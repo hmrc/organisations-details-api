@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain.paye
+package uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax
 
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+
+import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Writes}
 
 import java.time.LocalDate
 
-case class PayeResponse(dateOfRegistration: LocalDate, taxSolvencyStatus: String, periods: Seq[AccountingPeriod])
+case class AccountingPeriod(accountingPeriodStartDate: LocalDate, accountingPeriodEndDate: LocalDate, turnover: Int)
 
-object PayeResponse {
-  implicit val payeResponseWrites : Writes[PayeResponse] = (
-    (JsPath \ "dateOfRegistration").write[LocalDate] and
-      (JsPath \ "taxSolvencyStatus").write[String] and
-      (JsPath \ "periods").write[Seq[AccountingPeriod]]
-  )(unlift(PayeResponse.unapply))
+object AccountingPeriod {
+  implicit val accountingPeriodWrites: Writes[AccountingPeriod] = (
+    (JsPath \ "accountingPeriodStartDate").write[LocalDate] and
+      (JsPath \ "accountingPeriodEndDate").write[LocalDate] and
+      (JsPath \ "turnover").write[Int]
+  )(unlift(AccountingPeriod.unapply))
 }
