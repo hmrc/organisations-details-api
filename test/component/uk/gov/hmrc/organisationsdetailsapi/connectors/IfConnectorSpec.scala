@@ -119,12 +119,12 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
           .willReturn(aResponse().withStatus(500)))
 
       intercept[InternalServerException] {
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -142,12 +142,12 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
           .willReturn(aResponse().withStatus(400).withBody("BAD_REQUEST")))
 
       intercept[InternalServerException] {
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -164,12 +164,12 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
           .willReturn(aResponse().withStatus(404)))
 
       intercept[InternalServerException]{
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -185,7 +185,7 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
           .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
             """{
               |  "failures": [
@@ -198,7 +198,7 @@ class IfConnectorSpec
 
       intercept[NotFoundException] {
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -218,11 +218,11 @@ class IfConnectorSpec
         val jsonResponse = Json.prettyPrint(Json.toJson(taxReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
             .willReturn(okJson(jsonResponse)))
 
         val result: CorporationTaxReturnDetailsResponse = await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -243,13 +243,13 @@ class IfConnectorSpec
         val jsonResponse = Json.prettyPrint(Json.toJson(invalidTaxReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
             .willReturn(okJson(jsonResponse)))
 
 
         intercept[InternalServerException] {
           await(
-            underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+            underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec

@@ -57,12 +57,14 @@ class IfConnector @Inject()(
     request: RequestHeader,
     ec: ExecutionContext): Future[CorporationTaxReturnDetailsResponse] = {
 
-    val detailsUrl =
+    val corporationTaxUrl =
       s"$baseUrl/organisations/corporation-tax/$utr/return/details${
-        filter.map(f => s"&fields=$f").getOrElse("")
-  }"
+        filter.map(f => s"?fields=$f").getOrElse("")
+      }"
 
-    call[CorporationTaxReturnDetailsResponse](detailsUrl, matchId)
+    println(corporationTaxUrl)
+
+    call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
   }
 
   def getSaReturnDetails(matchId: String, utr: String)(
@@ -103,15 +105,15 @@ class IfConnector @Inject()(
         Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
   private def call[T](url: String, matchId: String)
-                  (implicit rds: HttpReads[T], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+                     (implicit rds: HttpReads[T], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
     recover(http.GET[T](url)(implicitly, header(), ec) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)
 
-  private def post[I,O](url: String, matchId: String, body: I)
-                     (implicit wts: Writes[I], reads: HttpReads[O], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.POST[I,O](url, body)(implicitly[Writes[I]], implicitly[HttpReads[O]], header(), ec) map { response =>
+  private def post[I, O](url: String, matchId: String, body: I)
+                        (implicit wts: Writes[I], reads: HttpReads[O], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+    recover(http.POST[I, O](url, body)(implicitly[Writes[I]], implicitly[HttpReads[O]], header(), ec) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)

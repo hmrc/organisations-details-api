@@ -36,12 +36,14 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with GuiceO
   private val configuration = Configuration.load(env)
 
   private val mockAuthConnector = mock[AuthConnector]
-  private val mockDetailsService = mock[CorporationTaxService]
+  private val mockCorporationTaxService = mock[CorporationTaxService]
 
   private val serviceConfig = new ServicesConfig(configuration)
   private val appConfig     = new AppConfig(configuration, serviceConfig)
 
-  private val controller = new CorporationTaxController()(mockAuthConnector, Helpers.stubControllerComponents(), mockDetailsService)
+  private val controller = new CorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(), mockCorporationTaxService)
 
+
+  //TODO : ADD Tests when implementing
 
 }

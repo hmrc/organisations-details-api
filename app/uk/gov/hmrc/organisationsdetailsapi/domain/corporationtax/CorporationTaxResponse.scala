@@ -18,15 +18,24 @@ package uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax
 
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import play.api.libs.json.{JsPath, Writes}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetailsResponse
 
 import java.time.LocalDate
 
-case class CorporationTaxResponse(dateOfRegistration: LocalDate, taxSolvencyStatus: String, periods: Seq[AccountingPeriod])
+case class CorporationTaxResponse(dateOfRegistration: Option[LocalDate], taxSolvencyStatus: Option[String], periods: Option[Seq[AccountingPeriod]])
 
 object CorporationTaxResponse {
+
+  def create(corporationTaxReturnDetailsResponse: CorporationTaxReturnDetailsResponse): CorporationTaxResponse =
+    CorporationTaxResponse(
+      corporationTaxReturnDetailsResponse.taxpayerStartDate.map(LocalDate.parse) ,
+      corporationTaxReturnDetailsResponse.taxSolvencyStatus,
+      corporationTaxReturnDetailsResponse.accountingPeriods.map(x => x.map(AccountingPeriod.create))
+    )
+
   implicit val corporationTaxResponseWrites : Writes[CorporationTaxResponse] = (
-    (JsPath \ "dateOfRegistration").write[LocalDate] and
-      (JsPath \ "taxSolvencyStatus").write[String] and
-      (JsPath \ "periods").write[Seq[AccountingPeriod]]
+    (JsPath \ "dateOfRegistration").writeNullable[LocalDate] and
+      (JsPath \ "taxSolvencyStatus").writeNullable[String] and
+      (JsPath \ "periods").writeNullable[Seq[AccountingPeriod]]
   )(unlift(CorporationTaxResponse.unapply))
 }

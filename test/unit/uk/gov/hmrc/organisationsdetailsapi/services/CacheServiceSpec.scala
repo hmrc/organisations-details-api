@@ -80,14 +80,14 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
     }
   }
 
-  "PayeCacheId" should {
+  "CorporationTaxCacheId" should {
 
     "produce a cache id based on matchId" in {
 
       val matchId = UUID.randomUUID()
 
-      CorporationTaxCacheId(matchId).id shouldBe
-        s"$matchId-paye"
+      CorporationTaxCacheId(matchId, "ABC").id shouldBe
+        s"$matchId-ABC-corporation-tax"
 
     }
 
@@ -100,7 +100,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
       val matchId = UUID.randomUUID()
 
       SaCacheId(matchId).id shouldBe
-        s"$matchId-sa"
+        s"$matchId-self-assessment"
 
     }
 
