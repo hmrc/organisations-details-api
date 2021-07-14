@@ -23,7 +23,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
-import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService, PayeCacheId, SaCacheId}
+import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService, CorporationTaxCacheId, SaCacheId}
 import utils.TestSupport
 
 import java.util.UUID
@@ -86,7 +86,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
 
       val matchId = UUID.randomUUID()
 
-      PayeCacheId(matchId).id shouldBe
+      CorporationTaxCacheId(matchId).id shouldBe
         s"$matchId-paye"
 
     }

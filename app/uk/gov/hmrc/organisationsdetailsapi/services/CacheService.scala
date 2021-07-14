@@ -58,7 +58,7 @@ class SaCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: C
 }
 
 @Singleton
-class PayeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+class CorporationTaxCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
   extends CacheService {
 
   val key: String = conf.payeKey
@@ -68,18 +68,13 @@ class PayeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf:
 
 trait CacheIdBase {
   val id: String
-
   override def toString: String = id
 }
 
-case class PayeCacheId(matchId: UUID) extends CacheIdBase {
-
-  lazy val id: String = s"$matchId-paye"
-
+case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
+  lazy val id: String = s"$matchId-$cacheKey-corporation-tax"
 }
 
 case class SaCacheId(matchId: UUID) extends CacheIdBase {
-
-  lazy val id: String = s"$matchId-sa"
-
+  lazy val id: String = s"$matchId-self-assessment"
 }
