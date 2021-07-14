@@ -1,25 +1,27 @@
 package uk.gov.hmrc.organisationsdetailsapi.services
 
 import java.util.UUID
+
 import javax.inject.Inject
 import org.joda.time.Interval
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.organisationsdetailsapi.domain.NinoMatch
+import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
+import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.CorporationTaxResponse
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait CorporationTaxService {
 
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[NinoMatch]
+  def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[OrganisationMatch]
 
   def get(matchId: UUID, endpoint: String, scopes: Iterable[String])
           (implicit hc: HeaderCarrier, request: RequestHeader): Future[CorporationTaxResponse]
 }
 
 class SandboxCorporationTaxService extends CorporationTaxService {
-  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[NinoMatch] = {
+  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[OrganisationMatch] = {
 
   }
 
@@ -31,32 +33,30 @@ class SandboxCorporationTaxService extends CorporationTaxService {
 class LiveCorporationTaxService @Inject()(
                                          scopesHelper: ScopesHelper,
                                          scopesService: ScopesService,
-                                         cacheService: CacheService
+                                         cacheService: CacheService,
+                                         ifConnector: IfConnector
                                          )extends CorporationTaxService {
 
-  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[NinoMatch] = {
+  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[OrganisationMatch] = {
 
   }
 
-  override def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader): Future[CorporationTaxResponse] = {
+  override def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] = {
     resolve(matchId).flatMap {
-      ninoMatch =>
+      organisationMatch =>
         val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, endpoint)
         val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList)
         cacheService
           .get(
             cacheId = CorporationTaxCacheId(matchId, cacheKey),
             fallbackFunction = withRetry {
-              ifConnector.fetchEmployments(
-                ninoMatch.nino,
-                Option(fieldsQuery).filter(_.nonEmpty),
-                matchId.toString
+              ifConnector.getCtReturnDetails(
+                matchId.toString,
+                organisationMatch.utr,
+                Some(fieldsQuery)
               )
             }
           )
-          .map {
-            _.map(Employment.create).filter(_.isDefined).map(_.get)
-          }
     }
   }
 

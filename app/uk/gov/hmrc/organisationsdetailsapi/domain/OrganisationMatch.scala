@@ -17,7 +17,5 @@
 package uk.gov.hmrc.organisationsdetailsapi.domain
 
 import java.util.UUID
-import uk.gov.hmrc.domain.Nino
 
-
-class NinoMatch {}
+case class OrganisationMatch(matchId: UUID, utr: String)

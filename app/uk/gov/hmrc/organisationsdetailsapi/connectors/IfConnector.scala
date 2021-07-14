@@ -52,13 +52,15 @@ class IfConnector @Inject()(
     "microservice.services.integration-framework.environment"
   )
 
-  def getCtReturnDetails(matchId: String, utr: String)(
+  def getCtReturnDetails(matchId: String, utr: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[CorporationTaxReturnDetailsResponse] = {
 
     val detailsUrl =
-      s"$baseUrl/organisations/corporation-tax/$utr/return/details"
+      s"$baseUrl/organisations/corporation-tax/$utr/return/details${
+        filter.map(f => s"&fields=$f").getOrElse("")
+  }"
 
     call[CorporationTaxReturnDetailsResponse](detailsUrl, matchId)
   }
