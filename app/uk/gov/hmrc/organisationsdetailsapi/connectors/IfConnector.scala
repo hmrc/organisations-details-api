@@ -62,8 +62,6 @@ class IfConnector @Inject()(
         filter.map(f => s"?fields=$f").getOrElse("")
       }"
 
-    println(corporationTaxUrl)
-
     call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
   }
 

@@ -119,7 +119,8 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(500)))
 
       intercept[InternalServerException] {
@@ -142,7 +143,8 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(400).withBody("BAD_REQUEST")))
 
       intercept[InternalServerException] {
@@ -164,7 +166,8 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(404)))
 
       intercept[InternalServerException]{
@@ -185,7 +188,8 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
+        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
             """{
               |  "failures": [
@@ -218,7 +222,8 @@ class IfConnectorSpec
         val jsonResponse = Json.prettyPrint(Json.toJson(taxReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
+          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .willReturn(okJson(jsonResponse)))
 
         val result: CorporationTaxReturnDetailsResponse = await(
@@ -243,7 +248,8 @@ class IfConnectorSpec
         val jsonResponse = Json.prettyPrint(Json.toJson(invalidTaxReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details?fields=fields(A,B,C)"))
+          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .willReturn(okJson(jsonResponse)))
 
 
