@@ -17,11 +17,12 @@
 package uk.gov.hmrc.organisationsdetailsapi.services
 
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, Upstream5xxResponse}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.CorporationTaxResponse
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
+import uk.gov.hmrc.organisationsdetailsapi.sandbox.CorporationTaxSandboxData.{sandboxMatchIdUUID, sandboxReturnData}
 
 import java.util.UUID
 import javax.inject.{Inject, Named}
@@ -36,9 +37,17 @@ trait CorporationTaxService {
 }
 
 class SandboxCorporationTaxService extends CorporationTaxService {
-  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] = ???
+  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] =
+    if (matchId == sandboxMatchIdUUID) {
+      Future.successful(OrganisationMatch(matchId, "1234567890"))
+    } else {
+      Future.failed(new NotFoundException("NOT_FOUND"))
+    }
 
-  override def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] = ???
+  override def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] =
+    resolve(matchId).map( _ =>
+      sandboxReturnData
+    )
 }
 
 class LiveCorporationTaxService @Inject()(
