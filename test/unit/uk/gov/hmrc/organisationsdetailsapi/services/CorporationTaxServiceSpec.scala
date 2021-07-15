@@ -16,7 +16,8 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -34,6 +35,7 @@ import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.Failure
 
 class CorporationTaxServiceSpec extends AsyncWordSpec with Matchers {
 
@@ -136,11 +138,53 @@ class CorporationTaxServiceSpec extends AsyncWordSpec with Matchers {
       val scopes = Seq("SomeScope")
 
       when(mockOrganisationsMatchingConnector.resolve(matchIdUUID))
-        .thenThrow(new NotFoundException("NOT FOUND"))
+        .thenReturn(Future.failed(new NotFoundException("NOT_FOUND")))
 
       assertThrows[NotFoundException] {
         Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
       }
+    }
+
+    "retries once if IF returns error" in {
+      val endpoint = "corporation-tax"
+      val scopes = Seq("SomeScope")
+
+      when(mockOrganisationsMatchingConnector.resolve(matchIdUUID))
+        .thenReturn(Future.successful(OrganisationMatch(matchIdUUID, utr)))
+
+      when(mockScopesHelper.getQueryStringFor(scopes, endpoint))
+        .thenReturn("ABC")
+
+      when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
+        .thenReturn("DEF")
+
+      when(mockIfConnector.getCtReturnDetails(matchId, utr, Some("ABC")))
+        .thenReturn(Future.failed(new Exception()))
+        .thenReturn(Future.successful(CorporationTaxReturnDetailsResponse(
+          Some(utr),
+          Some("2015-04-21"),
+          Some("V"),
+          Some(Seq(
+            AccountingPeriod(Some("2018-04-06"), Some("2018-10-05"), Some(2340)),
+            AccountingPeriod(Some("2018-10-06"), Some("2019-04-05"), Some(2340))
+          ))
+        )))
+
+        val result = liveCorporationTaxService.get(matchIdUUID, endpoint, scopes)
+
+      //TODO: Figure out way to verify
+
+      result.map(response => {
+        response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
+        response.taxSolvencyStatus.get shouldBe "V"
+        response.periods.get.length shouldBe 2
+
+        verify(mockIfConnector, times(2))
+          .getCtReturnDetails(any(), any(), any())(any(),any(),any())
+      })
+
+
+
     }
 
   }
