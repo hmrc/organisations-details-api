@@ -22,7 +22,6 @@ import uk.gov.hmrc.organisationsdetailsapi.services.ScopesHelper
 
 class IfQueriesSpec extends BaseSpec with Matchers {
 
-
   val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
 
   Feature("Query strings for 'corporation-tax' endpoint") {
@@ -42,7 +41,6 @@ class IfQueriesSpec extends BaseSpec with Matchers {
   Feature("Query strings for 'number-of-employees' endpoint") {
     Scenario("For read:organisations-details-ho-ssp") {
       val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "number-of-employees")
-      println(queryString)
       queryString shouldBe "references(counts(dateTaken,employeeCount),districtNumber,payeReference)"
     }
   }

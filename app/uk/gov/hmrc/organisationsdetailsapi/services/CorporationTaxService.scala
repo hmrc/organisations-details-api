@@ -18,7 +18,7 @@ package uk.gov.hmrc.organisationsdetailsapi.services
 
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
+import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.CorporationTaxResponse
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
@@ -29,14 +29,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait CorporationTaxService {
 
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[OrganisationMatch]
+  def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch]
 
   def get(matchId: UUID, endpoint: String, scopes: Iterable[String])
           (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse]
 }
 
 class SandboxCorporationTaxService extends CorporationTaxService {
-  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[OrganisationMatch] = ???
+  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] = ???
 
   override def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] = ???
 }
@@ -46,13 +46,13 @@ class LiveCorporationTaxService @Inject()(
                                          scopesService: ScopesService,
                                          cacheService: CacheService,
                                          ifConnector: IfConnector,
+                                         organisationsMatchingConnector: OrganisationsMatchingConnector,
                                          @Named("retryDelay") retryDelay: Int
                                          )extends CorporationTaxService {
 
-  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[OrganisationMatch] = {
-    // TODO IMPLEMENT PROPERLY
-    Future.successful(OrganisationMatch(UUID.randomUUID(), "NOT A UTR"))
-  }
+  override def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] =
+    organisationsMatchingConnector.resolve(matchId)
+
 
   override def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] = {
     resolve(matchId).flatMap {
