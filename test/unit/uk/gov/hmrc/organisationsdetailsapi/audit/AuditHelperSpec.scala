@@ -139,4 +139,7 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.returnLinks shouldEqual ifUrl
     capturedEvent.applicationId shouldBe applicationId
   }
+
+  //TODO: Add test for auditing Corporation tax response
+
 }

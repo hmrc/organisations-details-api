@@ -17,19 +17,73 @@
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import play.api.Logger
+import play.api.hal.Hal.state
+import play.api.hal.HalLink
+import play.api.libs.json.Json
+import play.api.libs.json.Json.{obj, toJson}
 
 import javax.inject.Inject
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.organisationsdetailsapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorHandling
-import uk.gov.hmrc.organisationsdetailsapi.services.CorporationTaxService
+import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, LiveCorporationTaxService, SandboxCorporationTaxService, ScopesService}
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
 
-class CorporationTaxController @Inject()(val authConnector: AuthConnector,
+import java.util.UUID
+import scala.concurrent.ExecutionContext
+
+abstract class CorporationTaxController @Inject()(val authConnector: AuthConnector,
                                          cc: ControllerComponents,
-                                         corporationTaxService: CorporationTaxService) extends BaseApiController(cc) with ErrorHandling {
+                                         corporationTaxService: CorporationTaxService,
+                                                  implicit val auditHelper: AuditHelper,
+                                                  scopesService: ScopesService)
+                                                 (implicit ec: ExecutionContext) extends BaseApiController(cc) with ErrorHandling with PrivilegedAuthentication {
 
   override val logger: Logger = Logger(classOf[CorporationTaxController].getName)
 
+  def corporationTax(matchId: UUID): Action[AnyContent] = Action.async {
+    implicit request =>
+      authenticate(scopesService.getEndPointScopes("corporation-tax"), matchId.toString) { authScopes =>
+
+        val correlationId = validateCorrelationId(request)
+
+        corporationTaxService.get(matchId, "corporation-tax", authScopes).map { corporationTax =>
+          val selfLink =
+            HalLink("self", s"/organisations/details/corporation-tax?matchId=$matchId")
+
+          val response = Json.toJson(state(corporationTax) ++ selfLink)
+
+          auditHelper.auditCorporationTaxApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(corporationTax)) )
+
+          Ok(response)
+        }
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
+  }
 
   // TODO : Implement me and add me to the routes files
+}
+
+class SandboxCorporationTaxController(
+                                       authConnector: AuthConnector,
+                                       cc: ControllerComponents,
+                                       corporationTaxService: SandboxCorporationTaxService,
+                                       auditHelper: AuditHelper,
+                                       scopesService: ScopesService)
+                                     (implicit ec: ExecutionContext)
+  extends CorporationTaxController(authConnector, cc, corporationTaxService, auditHelper, scopesService) {
+  override val environment: String = SANDBOX
+}
+
+class LiveCorporationTaxController(
+                                       authConnector: AuthConnector,
+                                       cc: ControllerComponents,
+                                       corporationTaxService: LiveCorporationTaxService,
+                                         auditHelper: AuditHelper,
+  scopesService: ScopesService)
+                                  (implicit ec: ExecutionContext)
+  extends CorporationTaxController(authConnector, cc, corporationTaxService, auditHelper, scopesService) {
+  override val environment: String = PRODUCTION
 }
