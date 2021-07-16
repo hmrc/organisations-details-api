@@ -46,8 +46,6 @@ class OrganisationsMatchingConnectorSpec
   private val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   private val stubHost = "localhost"
   private val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
-  private val integrationFrameworkAuthorizationToken = "IF_TOKEN"
-  private val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
 
   def externalServices: Seq[String] = Seq.empty
 

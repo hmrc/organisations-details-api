@@ -17,10 +17,11 @@
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.organisationsdetailsapi.services.ScopesService
-import utils.TestSupport
 
-class ScopesServiceSpec extends TestSupport with ScopesConfig with BeforeAndAfterEach {
+class ScopesServiceSpec extends AnyWordSpec with Matchers with ScopesConfig with BeforeAndAfterEach {
 
   "Scopes service" should {
 

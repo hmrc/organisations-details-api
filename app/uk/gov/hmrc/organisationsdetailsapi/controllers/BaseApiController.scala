@@ -19,17 +19,20 @@ package uk.gov.hmrc.organisationsdetailsapi.controllers
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.Environment.SANDBOX
+import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.NestedError
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Success, Try}
 
 abstract class BaseApiController (cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions {
 
@@ -59,45 +62,53 @@ abstract class BaseApiController (cc: ControllerComponents) extends BackendContr
   def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
                        (implicit request: RequestHeader,
                         auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
-    case _: MatchingFailed   => {
-      Logger.warn("Controllers MatchNotFoundException encountered")
+    case _: MatchNotFoundException   =>
+      logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
-    }
-    case e: InsufficientEnrolments => {
+
+    case e: InsufficientEnrolments =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
-    }
-    case e: AuthorisationException   => {
+
+    case e: AuthorisationException   =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized(e.getMessage).toHttpResponse
-    }
-    case tmr: TooManyRequestException  => {
-      Logger.warn("Controllers TooManyRequestException encountered")
+
+    case tmr: TooManyRequestException  =>
+      logger.warn("Controllers TooManyRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, tmr.getMessage)
       ErrorTooManyRequests.toHttpResponse
-    }
+
     case br: BadRequestException  => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, br.getMessage)
       ErrorInvalidRequest(br.getMessage).toHttpResponse
     }
     case e: IllegalArgumentException => {
-      Logger.warn("Controllers IllegalArgumentException encountered")
+      logger.warn("Controllers IllegalArgumentException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
     }
     case e: InternalServerException => {
-      Logger.warn("Controllers InternalServerException encountered")
+      logger.warn("Controllers InternalServerException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
     case e: Exception => {
-      Logger.warn("Controllers Exception encountered")
+      logger.warn("Controllers Exception encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
   }
 
+}
+
+case class SchemaValidationError(keyword: String,
+                                 msgs: Seq[String],
+                                 instancePath: String)
+
+object SchemaValidationError {
+  implicit val format: OFormat[SchemaValidationError] = Json.format
 }
 
 trait PrivilegedAuthentication extends AuthorisedFunctions {

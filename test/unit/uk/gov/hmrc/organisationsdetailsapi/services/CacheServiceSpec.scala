@@ -19,6 +19,8 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.services
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{verify, verifyNoInteractions}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,7 +31,7 @@ import utils.TestSupport
 import java.util.UUID
 import scala.concurrent.Future
 
-class CacheServiceSpec extends TestSupport with MockitoSugar {
+class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with TestSupport {
 
   val cacheId = TestCacheId("foo")
   val cachedValue = TestClass("cached value")

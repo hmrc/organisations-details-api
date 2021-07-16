@@ -19,6 +19,7 @@ package it.uk.gov.hmrc.organisationsdetailsapi.cache
 import java.util.UUID
 import org.scalatest.{BeforeAndAfterEach, TestSuite}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
@@ -29,12 +30,13 @@ import utils.TestSupport
 import scala.concurrent.ExecutionContext
 
 class ShortLivedCacheSpec
-  extends TestSupport
+  extends AnyWordSpec
     with Matchers
     with GuiceOneAppPerTest
     with BeforeAndAfterEach
     with TestSuite
-    with MongoSupport {
+    with MongoSupport
+    with TestSupport {
   
   private val cacheTtl = 60
   private val id = UUID.randomUUID().toString
