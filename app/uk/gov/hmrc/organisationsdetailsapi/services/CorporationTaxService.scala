@@ -22,6 +22,7 @@ import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, Organisation
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.CorporationTaxResponse
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
+import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
 import uk.gov.hmrc.organisationsdetailsapi.sandbox.CorporationTaxSandboxData.{sandboxMatchIdUUID, sandboxReturnData}
 
 import java.util.UUID
@@ -41,7 +42,7 @@ class SandboxCorporationTaxService extends CorporationTaxService {
     if (matchId == sandboxMatchIdUUID) {
       Future.successful(OrganisationMatch(matchId, "1234567890"))
     } else {
-      Future.failed(new NotFoundException("NOT_FOUND"))
+      Future.failed(new MatchNotFoundException())
     }
 
   override def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] =
