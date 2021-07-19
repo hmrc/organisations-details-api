@@ -20,7 +20,8 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import controllers.Assets.{BAD_REQUEST, NOT_FOUND}
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
@@ -41,16 +42,21 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with MockitoSugar with TestSupport {
+class CorporationTaxControllerSpec
+  extends AnyWordSpec
+  with Matchers
+  with MockitoSugar
+  with TestSupport
+  with BeforeAndAfterEach {
 
   implicit val sys: ActorSystem = ActorSystem("MyTest")
   implicit val mat: ActorMaterializer = ActorMaterializer()
 
-  val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-  val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+  private val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+  private val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
-  val sampleMatchId = "32696d72-6216-475f-b213-ba76921cf459"
-  val sampleMatchIdUUID = UUID.fromString(sampleMatchId)
+  private val sampleMatchId = "32696d72-6216-475f-b213-ba76921cf459"
+  private val sampleMatchIdUUID = UUID.fromString(sampleMatchId)
 
   private val fakeRequest = FakeRequest("GET", "/").withHeaders(sampleCorrelationIdHeader)
 
@@ -82,6 +88,10 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
       )
     ))
   )
+
+  override def beforeEach(): Unit = {
+    reset(mockAuditHelper)
+  }
 
   "SandboxCorporationTaxController" should {
     "not need an bearer token to operate" in {
@@ -116,6 +126,9 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
             |""".stripMargin)
 
       verify(mockAuthConnector, times(0)).authorise(any(), any())(any(), any())
+
+      verify(mockAuditHelper, times(1)).auditCorporationTaxApiResponse(
+        any(), any(), any(), any(), any(), any())(any())
     }
 
     "return not found when match Id does not match sandbox match id" in {
@@ -124,6 +137,9 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
       when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
 
       val response = await(sandboxController.corporationTax(matchId)(fakeRequest))
+
+      verify(mockAuditHelper, times(1)).auditApiFailure(
+        any(), any(), any(), any(), any())(any())
 
       status(response) shouldBe NOT_FOUND
     }
@@ -155,6 +171,8 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
 
       val result = await(liveController.corporationTax(sampleMatchIdUUID)(fakeRequest))
 
+      verify(mockAuditHelper, times(1)).auditCorporationTaxApiResponse(
+        any(), any(), any(), any(), any(), any())(any())
 
       jsonBodyOf(result) shouldBe
         Json.parse(
@@ -191,6 +209,9 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
 
       val response = await(liveController.corporationTax(sampleMatchIdUUID)(FakeRequest()))
 
+      verify(mockAuditHelper, times(1)).auditApiFailure(
+        any(), any(), any(), any(), any())(any())
+
       status(response) shouldBe BAD_REQUEST
       jsonBodyOf(response) shouldBe Json.parse(
         """
@@ -208,6 +229,9 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
       when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
 
       val response = await(liveController.corporationTax(sampleMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
+
+      verify(mockAuditHelper, times(1)).auditApiFailure(
+        any(), any(), any(), any(), any())(any())
 
       status(response) shouldBe BAD_REQUEST
       jsonBodyOf(response) shouldBe Json.parse(
