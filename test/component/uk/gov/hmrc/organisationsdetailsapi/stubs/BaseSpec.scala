@@ -17,6 +17,10 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
 import java.util.concurrent.TimeUnit
+
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import org.scalatest._
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -51,4 +55,10 @@ trait BaseSpec
                                 acceptHeader: (String, String) = acceptHeaderVP1,
                                 correlationHeader: (String, String) = validCorrelationHeader) =
     Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader, correlationHeader)
+}
+
+case class MockHost(port: Int) {
+  val server = new WireMockServer(WireMockConfiguration.wireMockConfig().port(port))
+  val mock = new WireMock("localhost", port)
+  val url = s"http://localhost:9000"
 }
