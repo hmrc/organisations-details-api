@@ -61,8 +61,10 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
   private val mockLiveCorporationTaxService = mock[LiveCorporationTaxService]
   private val sandboxCorporationTaxService = new SandboxCorporationTaxService()
 
-  private val liveController = new LiveCorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(), mockLiveCorporationTaxService, mockAuditHelper, mockScopesService)
-  private val sandboxController = new SandboxCorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(), sandboxCorporationTaxService, mockAuditHelper, mockScopesService)
+  private val liveController = new LiveCorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
+    mockLiveCorporationTaxService, mockAuditHelper, mockScopesService)
+  private val sandboxController = new SandboxCorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
+    sandboxCorporationTaxService, mockAuditHelper, mockScopesService)
 
   private val sampleResponse = CorporationTaxResponse(
     dateOfRegistration = Some(LocalDate.of(2014, 4, 21)),
@@ -148,7 +150,7 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockLiveCorporationTaxService.get(eqTo(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Seq("test-scope")))(any(), any(), any()))
+      when(mockLiveCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Future.successful(sampleResponse))
 
       val result = await(liveController.corporationTax(sampleMatchIdUUID)(fakeRequest))
@@ -156,12 +158,12 @@ class CorporationTaxControllerSpec extends AnyWordSpec with Matchers with Mockit
 
       jsonBodyOf(result) shouldBe
         Json.parse(
-          """
+          s"""
             |{
             |    "taxSolvencyStatus": "V",
             |    "_links": {
             |        "self": {
-            |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
+            |            "href": "/organisations/details/corporation-tax?matchId=$sampleMatchIdUUID"
             |        }
             |    },
             |    "dateOfRegistration": "2014-04-21",
