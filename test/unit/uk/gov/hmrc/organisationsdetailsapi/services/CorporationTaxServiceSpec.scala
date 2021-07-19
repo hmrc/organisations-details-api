@@ -29,7 +29,8 @@ import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLived
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{AccountingPeriod => IFAccountingPeriod, CorporationTaxReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, AccountingPeriod => IFAccountingPeriod}
+import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
 import uk.gov.hmrc.organisationsdetailsapi.sandbox.CorporationTaxSandboxData.sandboxMatchIdUUID
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
@@ -84,7 +85,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
     "get" should {
       "fail if matchId does not match SandboxMatchId" in {
         val sandboxCorporationTaxService: SandboxCorporationTaxService = new SandboxCorporationTaxService()
-        assertThrows[NotFoundException] {
+        assertThrows[MatchNotFoundException] {
           Await.result(
             sandboxCorporationTaxService.get(UUID.fromString("0298533d-9553-453c-9b24-5502cc5d702d"), "corporation-tax", Seq.empty)
             , 5 seconds
