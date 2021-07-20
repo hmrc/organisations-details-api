@@ -16,6 +16,8 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
+import java.time.LocalDate
+
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -24,17 +26,18 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.ogd.{CtMatchingRequest, SaMatc
 import java.util.UUID
 
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec}
+import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
 
 import scala.concurrent.Await.result
 
 class CorporationTaxControllerSpec extends BaseSpec  {
 
   val matchId   = UUID.randomUUID()
-  val scopes    = List("read:organisations-matching-ho-ssp")
-  val ctRequest = CtMatchingRequest("crn", "name", "line1", "postcode")
-  val ctMatch   = CtMatch(ctRequest, matchId)
-  val saRequest = SaMatchingRequest("utr", "Individual", "name", "line1", "postcode")
-  val saMatch   = SaMatch(saRequest, matchId)
+  val scopes    = List("read:organisations-details-paye")
+  val period1   = AccountingPeriod(Some(LocalDate.of(2018, 4, 6)), Some(LocalDate.of(2018, 10, 5)), Some(38390))
+  val period2   = AccountingPeriod(Some(LocalDate.of(2018, 10, 6)), Some(LocalDate.of(2018, 4, 5)), Some(2340))
+  val taxSolvencyStatus   = Some("V")
+  val dateOfRegistration   = Some(LocalDate.of(2014, 4, 21))
 
   Feature("cotax") {
     Scenario("a valid request is made for an existing match") {
@@ -52,27 +55,29 @@ class CorporationTaxControllerSpec extends BaseSpec  {
       response.code shouldBe OK
 
       Json.parse(response.body) shouldBe Json.parse(
-        s"""{
-           |  "address": {
-           |    "line1": "line1",
-           |    "postcode": "postcode"
-           |  },
-           |  "_links": {
-           |    "details-number-of-employees": {
-           |      "href": "/organisations/details/number-of-employees?matchId=$matchId",
-           |      "title": "Get the organisation's paye employee count data."
-           |    },
-           |    "self": {
-           |      "href": "/organisations/matching/corporation-tax/$matchId"
-           |    },
-           |    "details-corporation-tax": {
-           |      "href": "/organisations/details/corporation-tax?matchId=$matchId",
-           |      "title": "Get the organisation's Corporation Tax details data."
-           |    }
-           |  },
-           |  "employerName": "name"
-           |}""".stripMargin
-      )
+        """
+          |{
+          |    "taxSolvencyStatus": "V",
+          |    "_links": {
+          |        "self": {
+          |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
+          |        }
+          |    },
+          |    "dateOfRegistration": "2015-04-21",
+          |    "periods": [
+          |        {
+          |            "accountingPeriodStartDate": "2018-04-06",
+          |            "accountingPeriodEndDate": "2018-10-05",
+          |            "turnover": 38390
+          |        },
+          |        {
+          |            "accountingPeriodStartDate": "2018-10-06",
+          |            "accountingPeriodEndDate": "2019-04-05",
+          |            "turnover": 2340
+          |        }
+          |    ]
+          |}
+          |""".stripMargin)
     }
 
     Scenario("a valid request is made for an expired match") {
@@ -191,28 +196,29 @@ class CorporationTaxControllerSpec extends BaseSpec  {
       response.code shouldBe OK
 
       Json.parse(response.body) shouldBe Json.parse(
-        s"""{
-           |  "address": {
-           |    "line1": "line1",
-           |    "postcode": "postcode"
-           |  },
-           |  "_links": {
-           |    "details-number-of-employees": {
-           |      "href": "/organisations/details/number-of-employees?matchId=$matchId",
-           |      "title": "Get the organisation's paye employee count data."
-           |    },
-           |    "details-self-assessment": {
-           |      "href": "/organisations/details/self-assessment/?matchId=$matchId",
-           |      "title": "Get the organisation's self-assessment details data."
-           |    },
-           |    "self": {
-           |      "href": "/organisations/matching/self-assessment/$matchId"
-           |    }
-           |  },
-           |  "taxPayerType": "Individual",
-           |  "taxPayerName": "name"
-           |}""".stripMargin
-      )
+        """
+          |{
+          |    "taxSolvencyStatus": "V",
+          |    "_links": {
+          |        "self": {
+          |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
+          |        }
+          |    },
+          |    "dateOfRegistration": "2015-04-21",
+          |    "periods": [
+          |        {
+          |            "accountingPeriodStartDate": "2018-04-06",
+          |            "accountingPeriodEndDate": "2018-10-05",
+          |            "turnover": 38390
+          |        },
+          |        {
+          |            "accountingPeriodStartDate": "2018-10-06",
+          |            "accountingPeriodEndDate": "2019-04-05",
+          |            "turnover": 2340
+          |        }
+          |    ]
+          |}
+          |""".stripMargin)
     }
 
     Scenario("a valid request is made for an expired match") {
