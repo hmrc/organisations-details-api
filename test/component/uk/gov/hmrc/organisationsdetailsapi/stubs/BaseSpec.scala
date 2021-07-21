@@ -17,7 +17,6 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
 import java.util.concurrent.TimeUnit
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
@@ -40,13 +39,16 @@ trait BaseSpec
     .configure(
       "auditing.enabled"                               -> false,
       "auditing.traceRequests"                                 -> false,
+      "microservice.services.organisations-matching-api.port"    -> OrganisationsMatchingApiStub.port,
+      "microservice.services.integration-framework.port"       -> IfStub.port,
+      "microservice.services.cacheable.short-lived-cache.port" -> Save4LaterStub.port,
       "run.mode"                                               -> "It"
     )
     .build()
 
   val timeout = Duration(5, TimeUnit.SECONDS)
   val serviceUrl = s"http://localhost:$port"
-  val mocks = Seq()
+  val mocks = Seq(AuthStub, IfStub, OrganisationsMatchingApiStub, Save4LaterStub)
   val authToken = "Bearer AUTH_TOKEN"
   val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
