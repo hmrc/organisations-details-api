@@ -62,7 +62,7 @@ abstract class CorporationTaxController @Inject()(val authConnector: AuthConnect
   // TODO: add me to the routes files
 }
 
-class SandboxCorporationTaxController(
+class SandboxCorporationTaxController @Inject()(
                                        authConnector: AuthConnector,
                                        cc: ControllerComponents,
                                        corporationTaxService: SandboxCorporationTaxService,
@@ -73,7 +73,7 @@ class SandboxCorporationTaxController(
   override val environment: String = SANDBOX
 }
 
-class LiveCorporationTaxController(
+class LiveCorporationTaxController @Inject()(
                                     authConnector: AuthConnector,
                                     cc: ControllerComponents,
                                     corporationTaxService: LiveCorporationTaxService,

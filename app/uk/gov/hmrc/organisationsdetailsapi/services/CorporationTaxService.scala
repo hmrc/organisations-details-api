@@ -54,7 +54,7 @@ class SandboxCorporationTaxService extends CorporationTaxService {
 class LiveCorporationTaxService @Inject()(
                                          scopesHelper: ScopesHelper,
                                          scopesService: ScopesService,
-                                         cacheService: CacheService,
+                                         cacheService: CorporationTaxCacheService,
                                          ifConnector: IfConnector,
                                          organisationsMatchingConnector: OrganisationsMatchingConnector,
                                          @Named("retryDelay") retryDelay: Int

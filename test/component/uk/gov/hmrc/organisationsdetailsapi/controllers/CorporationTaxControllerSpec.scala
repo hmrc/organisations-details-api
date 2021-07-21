@@ -68,7 +68,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       IfStub.searchCtReturnDetails(validMatch.utr, validCtIfResponse)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
+      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 

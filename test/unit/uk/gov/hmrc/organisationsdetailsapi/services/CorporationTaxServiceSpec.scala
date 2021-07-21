@@ -21,6 +21,7 @@ import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
@@ -33,6 +34,7 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{Corporat
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
 import uk.gov.hmrc.organisationsdetailsapi.sandbox.CorporationTaxSandboxData.sandboxMatchIdUUID
 import uk.gov.hmrc.organisationsdetailsapi.services._
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
 
 import java.time.LocalDate
 import java.util.UUID
@@ -43,14 +45,10 @@ import scala.language.postfixOps
 
 class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
 
-  private val stubbedCache = new CacheService {
+  private val stubbedCache = new CorporationTaxCacheService(null, new CacheConfiguration(Configuration())) {
     override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
       fallbackFunction
     }
-
-    override val shortLivedCache: ShortLivedCache = null
-    override val conf: CacheConfiguration = null
-    override val key: String = null
   }
 
   trait Setup {
