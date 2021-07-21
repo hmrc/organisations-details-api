@@ -23,6 +23,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import org.scalatest._
 import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
@@ -32,7 +33,7 @@ import play.mvc.Http.MimeTypes.JSON
 import scala.concurrent.duration.Duration
 
 trait BaseSpec
-  extends AnyFeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with GuiceOneServerPerSuite
+  extends AnyFeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
     with GivenWhenThen {
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
@@ -49,12 +50,26 @@ trait BaseSpec
   val authToken = "Bearer AUTH_TOKEN"
   val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+  val correlationIdHeaderMalformed = "CorrelationId" -> "foo"
+
   val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
 
   protected def requestHeaders(
                                 acceptHeader: (String, String) = acceptHeaderVP1,
                                 correlationHeader: (String, String) = validCorrelationHeader) =
     Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader, correlationHeader)
+
+
+  protected def requestHeadersInvalid(acceptHeader: (String, String) = acceptHeaderVP1) =
+    Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader)
+
+  protected def requestHeadersMalformed(acceptHeader: (String, String) = acceptHeaderVP1) =
+    Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader, correlationIdHeaderMalformed)
+
+  protected def invalidRequest(message: String) =
+    s"""{"code":"INVALID_REQUEST","message":"$message"}"""
+
+
 }
 
 case class MockHost(port: Int) {

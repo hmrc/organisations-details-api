@@ -17,31 +17,30 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.v1
 
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.BaseSpec
-import org.scalatest.matchers.should.Matchers
 import uk.gov.hmrc.organisationsdetailsapi.services.ScopesHelper
 
-class IfQueriesSpec extends BaseSpec with Matchers {
+class IfQueriesSpec extends BaseSpec {
 
   val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
 
   Feature("Query strings for 'corporation-tax' endpoint") {
     Scenario("For read:organisations-details-ho-ssp") {
       val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "corporation-tax")
-      queryString shouldBe "accountingPeriods(apEndDate,apStartDate,turnover),taxSolvencyStatus,taxpayerStartDate"
+      queryString mustBe "accountingPeriods(apEndDate,apStartDate,turnover),taxSolvencyStatus,taxpayerStartDate"
     }
   }
 
   Feature("Query strings for 'self-assessment' endpoint") {
     Scenario("For read:organisations-details-ho-ssp") {
       val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "self-assessment")
-      queryString shouldBe "startDate,taxSolvencyStatus,taxYears(businessSalesTurnover,taxyear)"
+      queryString mustBe "startDate,taxSolvencyStatus,taxYears(businessSalesTurnover,taxyear)"
     }
   }
 
   Feature("Query strings for 'number-of-employees' endpoint") {
     Scenario("For read:organisations-details-ho-ssp") {
       val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "number-of-employees")
-      queryString shouldBe "references(counts(dateTaken,employeeCount),districtNumber,payeReference)"
+      queryString mustBe "references(counts(dateTaken,employeeCount),districtNumber,payeReference)"
     }
   }
 }

@@ -20,12 +20,10 @@ import java.time.LocalDate
 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import uk.gov.hmrc.organisationsdetailsapi.domain.models.{CtMatch, SaMatch}
-import uk.gov.hmrc.organisationsdetailsapi.domain.ogd.{CtMatchingRequest, SaMatchingRequest}
 import java.util.UUID
 
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec}
+import scalaj.http.Http
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
 
 import scala.concurrent.Await.result
@@ -43,18 +41,18 @@ class CorporationTaxControllerSpec extends BaseSpec  {
     Scenario("a valid request is made for an existing match") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-
-      And("A valid nino match exist")
-      result(mongoRepository.cache(matchId.toString, "organisations-matching", ctMatch), timeout)
+//
+//      And("A valid nino match exist")
+//      result(mongoRepository.cache(matchId.toString, "organisations-matching", ctMatch), timeout)
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe OK
+      response.code mustBe OK
 
-      Json.parse(response.body) shouldBe Json.parse(
+      Json.parse(response.body) mustBe Json.parse(
         """
           |{
           |    "taxSolvencyStatus": "V",
@@ -86,12 +84,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe NOT_FOUND
+      response.code mustBe NOT_FOUND
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "NOT_FOUND",
         "message" -> "The resource can not be found"
       )
@@ -105,12 +103,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
       Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
+      response.code mustBe UNAUTHORIZED
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "UNAUTHORIZED",
         "message" -> "Bearer token is missing or not authorized"
       )
@@ -122,10 +120,10 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/corporation-tax/")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe NOT_FOUND
+      response.code mustBe NOT_FOUND
     }
 
     Scenario("a request is made with a malformed match id") {
@@ -134,12 +132,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/corporation-tax/foo")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe BAD_REQUEST
+      response.code mustBe BAD_REQUEST
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "statusCode"    -> 400,
         "message" -> "bad request"
       )
@@ -151,12 +149,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-        .headers(requestHeadersInvalid(acceptHeaderP1))
+        .headers(requestHeadersInvalid(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe BAD_REQUEST
+      response.code mustBe BAD_REQUEST
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "INVALID_REQUEST",
         "message" -> "CorrelationId is required"
       )
@@ -168,12 +166,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-        .headers(requestHeadersMalformed(acceptHeaderP1))
+        .headers(requestHeadersMalformed(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe BAD_REQUEST
+      response.code mustBe BAD_REQUEST
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "INVALID_REQUEST",
         "message" -> "Malformed CorrelationId"
       )
@@ -184,18 +182,18 @@ class CorporationTaxControllerSpec extends BaseSpec  {
     Scenario("a valid request is made for an existing match") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-
-      And("A valid nino match exist")
-      result(mongoRepository.cache(matchId.toString, "organisations-matching", saMatch), timeout)
+//
+//      And("A valid nino match exist")
+//      result(mongoRepository.cache(matchId.toString, "organisations-matching", saMatch), timeout)
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe OK
+      response.code mustBe OK
 
-      Json.parse(response.body) shouldBe Json.parse(
+      Json.parse(response.body) mustBe Json.parse(
         """
           |{
           |    "taxSolvencyStatus": "V",
@@ -227,12 +225,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe NOT_FOUND
+      response.code mustBe NOT_FOUND
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "NOT_FOUND",
         "message" -> "The resource can not be found"
       )
@@ -246,12 +244,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
       Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
+      response.code mustBe UNAUTHORIZED
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "UNAUTHORIZED",
         "message" -> "Bearer token is missing or not authorized"
       )
@@ -263,10 +261,10 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/self-assessment/")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe NOT_FOUND
+      response.code mustBe NOT_FOUND
     }
 
     Scenario("a request is made with a malformed match id") {
@@ -275,12 +273,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/self-assessment/foo")
-        .headers(requestHeaders(acceptHeaderP1))
+        .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe BAD_REQUEST
+      response.code mustBe BAD_REQUEST
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "statusCode"    -> 400,
         "message" -> "bad request"
       )
@@ -292,12 +290,12 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-        .headers(requestHeadersInvalid(acceptHeaderP1))
+        .headers(requestHeadersInvalid(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe BAD_REQUEST
+      response.code mustBe BAD_REQUEST
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "INVALID_REQUEST",
         "message" -> "CorrelationId is required"
       )
@@ -309,16 +307,15 @@ class CorporationTaxControllerSpec extends BaseSpec  {
 
       When("the API is invoked")
       val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-        .headers(requestHeadersMalformed(acceptHeaderP1))
+        .headers(requestHeadersMalformed(acceptHeaderVP1))
         .asString
 
-      response.code shouldBe BAD_REQUEST
+      response.code mustBe BAD_REQUEST
 
-      Json.parse(response.body) shouldBe Json.obj(
+      Json.parse(response.body) mustBe Json.obj(
         "code"    -> "INVALID_REQUEST",
         "message" -> "Malformed CorrelationId"
       )
     }
   }
-}
 }
