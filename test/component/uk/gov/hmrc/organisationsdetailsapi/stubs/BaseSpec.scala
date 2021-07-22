@@ -17,6 +17,7 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
 import java.util.concurrent.TimeUnit
+
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
@@ -29,6 +30,7 @@ import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http.MimeTypes.JSON
 
+import scala.concurrent.Await.result
 import scala.concurrent.duration.Duration
 
 trait BaseSpec
@@ -39,6 +41,7 @@ trait BaseSpec
     .configure(
       "auditing.enabled"                               -> false,
       "auditing.traceRequests"                                 -> false,
+      "microservice.services.auth.port"                         -> AuthStub.port,
       "microservice.services.organisations-matching-api.port"    -> OrganisationsMatchingApiStub.port,
       "microservice.services.integration-framework.port"       -> IfStub.port,
       "run.mode"                                               -> "It"
@@ -71,6 +74,16 @@ trait BaseSpec
     s"""{"code":"INVALID_REQUEST","message":"$message"}"""
 
 
+  override protected def beforeEach(): Unit = {
+    mocks.foreach(m => if (!m.server.isRunning) m.server.start())
+  }
+
+  override protected def afterEach(): Unit =
+    mocks.foreach(_.mock.resetMappings())
+
+  override def afterAll(): Unit = {
+    mocks.foreach(_.server.stop())
+  }
 }
 
 case class MockHost(port: Int) {
