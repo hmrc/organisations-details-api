@@ -26,18 +26,15 @@ import play.api.libs.json.Format
 import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
-import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, AccountingPeriod => IFAccountingPeriod}
-import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
-import uk.gov.hmrc.organisationsdetailsapi.sandbox.CorporationTaxSandboxData.sandboxMatchIdUUID
-import uk.gov.hmrc.organisationsdetailsapi.services._
-import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
-
 import java.time.LocalDate
 import java.util.UUID
+
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
+import uk.gov.hmrc.organisationsdetailsapi.services._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -64,8 +61,8 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val rh: RequestHeader = FakeRequest()
 
-    val liveCorporationTaxService: LiveCorporationTaxService =
-      new LiveCorporationTaxService(
+    val liveCorporationTaxService: CorporationTaxService =
+      new CorporationTaxService(
         mockScopesHelper,
         mockScopesService,
         stubbedCache,
@@ -73,43 +70,6 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
         mockOrganisationsMatchingConnector,
         42
       )
-  }
-
-  "Sandbox Corporation Tax Service" should {
-
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val rh: RequestHeader = FakeRequest()
-
-    "get" should {
-      "fail if matchId does not match SandboxMatchId" in {
-        val sandboxCorporationTaxService: SandboxCorporationTaxService = new SandboxCorporationTaxService()
-        assertThrows[MatchNotFoundException] {
-          Await.result(
-            sandboxCorporationTaxService.get(UUID.fromString("0298533d-9553-453c-9b24-5502cc5d702d"), "corporation-tax", Seq.empty)
-            , 5 seconds
-          )
-        }
-      }
-
-      "should return correct information when matchId is valid" in {
-        val sandboxCorporationTaxService: SandboxCorporationTaxService = new SandboxCorporationTaxService()
-
-        val response = Await.result(sandboxCorporationTaxService.get(sandboxMatchIdUUID, "corporation-tax", Seq.empty), 5 seconds)
-
-        response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
-        response.taxSolvencyStatus.get shouldBe "V"
-        response.periods.get.head shouldBe AccountingPeriod(
-          accountingPeriodStartDate = Some(LocalDate.of(2018, 4, 6)),
-          accountingPeriodEndDate = Some(LocalDate.of(2018, 10, 5)),
-          turnover = Some(38390)
-        )
-        response.periods.get(1) shouldBe AccountingPeriod(
-          accountingPeriodStartDate = Some(LocalDate.of(2018, 10, 6)),
-          accountingPeriodEndDate = Some(LocalDate.of(2019, 4, 5)),
-          turnover = Some(2340)
-        )
-      }
-    }
   }
 
   "Live Corporation Tax Service" should {

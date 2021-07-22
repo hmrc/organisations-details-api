@@ -31,14 +31,13 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.{LiveCorporationTaxController, SandboxCorporationTaxController}
+import uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.{AccountingPeriod, CorporationTaxResponse}
-import uk.gov.hmrc.organisationsdetailsapi.sandbox.CorporationTaxSandboxData
-import uk.gov.hmrc.organisationsdetailsapi.services.{LiveCorporationTaxService, SandboxCorporationTaxService, ScopesService}
+import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService}
 import utils.TestSupport
-
 import java.time.LocalDate
 import java.util.UUID
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -64,13 +63,10 @@ class CorporationTaxControllerSpec
   private val mockAuditHelper = mock[AuditHelper]
   private val mockScopesService = mock[ScopesService]
 
-  private val mockLiveCorporationTaxService = mock[LiveCorporationTaxService]
-  private val sandboxCorporationTaxService = new SandboxCorporationTaxService()
+  private val mockCorporationTaxService = mock[CorporationTaxService]
 
-  private val liveController = new LiveCorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
-    mockLiveCorporationTaxService, mockAuditHelper, mockScopesService)
-  private val sandboxController = new SandboxCorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
-    sandboxCorporationTaxService, mockAuditHelper, mockScopesService)
+  private val liveController = new CorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
+    mockCorporationTaxService, mockAuditHelper, mockScopesService)
 
   private val sampleResponse = CorporationTaxResponse(
     dateOfRegistration = Some(LocalDate.of(2014, 4, 21)),
@@ -93,71 +89,6 @@ class CorporationTaxControllerSpec
     reset(mockAuditHelper)
   }
 
-  "SandboxCorporationTaxController" should {
-    "not need an bearer token to operate" in {
-
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
-
-      val result = await(sandboxController.corporationTax(CorporationTaxSandboxData.sandboxMatchIdUUID)(fakeRequest))
-      jsonBodyOf(result) shouldBe
-        Json.parse(
-          """
-            |{
-            |    "taxSolvencyStatus": "V",
-            |    "_links": {
-            |        "self": {
-            |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
-            |        }
-            |    },
-            |    "dateOfRegistration": "2015-04-21",
-            |    "periods": [
-            |        {
-            |            "accountingPeriodStartDate": "2018-04-06",
-            |            "accountingPeriodEndDate": "2018-10-05",
-            |            "turnover": 38390
-            |        },
-            |        {
-            |            "accountingPeriodStartDate": "2018-10-06",
-            |            "accountingPeriodEndDate": "2019-04-05",
-            |            "turnover": 2340
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-
-      verify(mockAuthConnector, times(0)).authorise(any(), any())(any(), any())
-
-      verify(mockAuditHelper, times(1)).auditCorporationTaxApiResponse(
-        any(), any(), any(), any(), any(), any())(any())
-    }
-
-    "return not found when match Id does not match sandbox match id" in {
-
-      val matchId = UUID.fromString("7179e4d5-625d-4483-9ec6-63940ff61e63")
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
-
-      val response = await(sandboxController.corporationTax(matchId)(fakeRequest))
-
-      verify(mockAuditHelper, times(1)).auditApiFailure(
-        any(), any(), any(), any(), any())(any())
-
-      status(response) shouldBe NOT_FOUND
-    }
-
-    "fail when correlationId is not provided" in {
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
-      val exception = intercept[BadRequestException](await(sandboxController.corporationTax(CorporationTaxSandboxData.sandboxMatchIdUUID)(FakeRequest())))
-      exception.message shouldBe "CorrelationId is required"
-    }
-
-    "fail when correlationId is not malformed" in {
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
-      val exception = intercept[BadRequestException](await(sandboxController.corporationTax(CorporationTaxSandboxData.sandboxMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId"))))
-      exception.message shouldBe "Malformed CorrelationId"
-    }
-
-  }
-
   "LiveCorporationTaxController" should {
 
     "return data when called successfully with a valid request" in {
@@ -166,7 +97,7 @@ class CorporationTaxControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockLiveCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Future.successful(sampleResponse))
 
       val result = await(liveController.corporationTax(sampleMatchIdUUID)(fakeRequest))
