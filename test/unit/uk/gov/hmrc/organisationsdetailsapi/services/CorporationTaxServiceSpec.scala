@@ -61,7 +61,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val rh: RequestHeader = FakeRequest()
 
-    val liveCorporationTaxService: CorporationTaxService =
+    val corporationTaxService: CorporationTaxService =
       new CorporationTaxService(
         mockScopesHelper,
         mockScopesService,
@@ -72,7 +72,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
       )
   }
 
-  "Live Corporation Tax Service" should {
+  "Corporation Tax Service" should {
     "get" should {
 
       "returns a valid payload when given a valid matchId" in new Setup {
@@ -100,7 +100,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "V"
@@ -125,7 +125,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
           .thenReturn(Future.failed(new Exception()))
 
         assertThrows[Exception] {
-          Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
+          Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
         }
       }
 
@@ -137,7 +137,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
           .thenReturn(Future.failed(new NotFoundException("NOT_FOUND")))
 
         assertThrows[NotFoundException] {
-          Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
+          Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
         }
       }
 
@@ -166,7 +166,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         verify(mockIfConnector, times(2))
           .getCtReturnDetails(any(), any(), any())(any(), any(), any())

@@ -65,7 +65,7 @@ class CorporationTaxControllerSpec
 
   private val mockCorporationTaxService = mock[CorporationTaxService]
 
-  private val liveController = new CorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
+  private val controller = new CorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
     mockCorporationTaxService, mockAuditHelper, mockScopesService)
 
   private val sampleResponse = CorporationTaxResponse(
@@ -89,7 +89,7 @@ class CorporationTaxControllerSpec
     reset(mockAuditHelper)
   }
 
-  "LiveCorporationTaxController" should {
+  "CorporationTaxController" should {
 
     "return data when called successfully with a valid request" in {
       when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
@@ -100,7 +100,7 @@ class CorporationTaxControllerSpec
       when(mockCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Future.successful(sampleResponse))
 
-      val result = await(liveController.corporationTax(sampleMatchIdUUID)(fakeRequest))
+      val result = await(controller.corporationTax(sampleMatchIdUUID)(fakeRequest))
 
       verify(mockAuditHelper, times(1)).auditCorporationTaxApiResponse(
         any(), any(), any(), any(), any(), any())(any())
@@ -138,7 +138,7 @@ class CorporationTaxControllerSpec
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
       when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
 
-      val response = await(liveController.corporationTax(sampleMatchIdUUID)(FakeRequest()))
+      val response = await(controller.corporationTax(sampleMatchIdUUID)(FakeRequest()))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
         any(), any(), any(), any(), any())(any())
@@ -159,7 +159,7 @@ class CorporationTaxControllerSpec
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
       when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
 
-      val response = await(liveController.corporationTax(sampleMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
+      val response = await(controller.corporationTax(sampleMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
         any(), any(), any(), any(), any())(any())
