@@ -17,11 +17,14 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import java.time.LocalDate
+
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-
 import java.util.UUID
+
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import scalaj.http.Http
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
@@ -32,7 +35,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
 
   val matchId = UUID.randomUUID()
   val utr = "1234567890"
-  val scopes = List("read:organisations-details-paye")
+  val scopes = List("read:organisations-details-ho-ssp")
   val period1 = AccountingPeriod(Some(LocalDate.of(2018, 4, 6)), Some(LocalDate.of(2018, 10, 5)), Some(38390))
   val period2 = AccountingPeriod(Some(LocalDate.of(2018, 10, 6)), Some(LocalDate.of(2018, 4, 5)), Some(2340))
   val taxSolvencyStatus = Some("V")

@@ -39,6 +39,8 @@ trait BaseSpec
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
+      "mongodb.uri"                             -> "mongodb://127.0.0.1:27017/organisations-details-api",
+      "microservice.services.integration-framework.host" -> "localhost",
       "auditing.enabled"                               -> false,
       "auditing.traceRequests"                                 -> false,
       "microservice.services.auth.port"                         -> AuthStub.port,
