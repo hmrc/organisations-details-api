@@ -52,7 +52,7 @@ trait BaseSpec
   val serviceUrl = s"http://localhost:$port"
   val mocks = Seq(AuthStub, IfStub, OrganisationsMatchingApiStub)
   val authToken = "Bearer AUTH_TOKEN"
-  val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
+  val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.1.0+json"
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val correlationIdHeaderMalformed = "CorrelationId" -> "foo"
 
