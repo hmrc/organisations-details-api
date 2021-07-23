@@ -37,6 +37,7 @@ import utils.TestSupport
 import java.time.LocalDate
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CorporationTaxControllerSpec
