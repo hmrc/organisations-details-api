@@ -59,5 +59,4 @@ class CorporationTaxController @Inject()(val authConnector: AuthConnector,
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
   }
   override val environment: String = PRODUCTION
-  // TODO: add me to the routes files
 }
