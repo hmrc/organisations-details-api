@@ -103,245 +103,86 @@ class CorporationTaxControllerSpec extends BaseSpec {
           |""".stripMargin)
     }
 
-    //    Scenario("a valid request is made for an expired match") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe NOT_FOUND
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "NOT_FOUND",
-    //        "message" -> "The resource can not be found"
-    //      )
-    //
-    //    }
-    //
-    //    Scenario("not authorized") {
-    //
-    //      Given("an invalid privileged Auth bearer token")
-    //      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      Then("the response status should be 401 (unauthorized)")
-    //      response.code mustBe UNAUTHORIZED
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "UNAUTHORIZED",
-    //        "message" -> "Bearer token is missing or not authorized"
-    //      )
-    //    }
-    //
-    //    Scenario("a request is made with a missing match id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/corporation-tax/")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe NOT_FOUND
-    //    }
-    //
-    //    Scenario("a request is made with a malformed match id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/corporation-tax/foo")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe BAD_REQUEST
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "statusCode"    -> 400,
-    //        "message" -> "bad request"
-    //      )
-    //    }
-    //
-    //    Scenario("a request is made with a missing correlation id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-    //        .headers(requestHeadersInvalid(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe BAD_REQUEST
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "INVALID_REQUEST",
-    //        "message" -> "CorrelationId is required"
-    //      )
-    //    }
-    //
-    //    Scenario("a request is made with a malformed correlation id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/corporation-tax/$matchId")
-    //        .headers(requestHeadersMalformed(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe BAD_REQUEST
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "INVALID_REQUEST",
-    //        "message" -> "Malformed CorrelationId"
-    //      )
-    //    }
-    //  }
-    //
-    //  Feature("self-assessment") {
-    //    Scenario("a valid request is made for an existing match") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    ////
-    ////      And("A valid nino match exist")
-    ////      result(mongoRepository.cache(matchId.toString, "organisations-matching", saMatch), timeout)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe OK
-    //
-    //      Json.parse(response.body) mustBe Json.parse(
-    //        """
-    //          |{
-    //          |    "taxSolvencyStatus": "V",
-    //          |    "_links": {
-    //          |        "self": {
-    //          |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
-    //          |        }
-    //          |    },
-    //          |    "dateOfRegistration": "2015-04-21",
-    //          |    "periods": [
-    //          |        {
-    //          |            "accountingPeriodStartDate": "2018-04-06",
-    //          |            "accountingPeriodEndDate": "2018-10-05",
-    //          |            "turnover": 38390
-    //          |        },
-    //          |        {
-    //          |            "accountingPeriodStartDate": "2018-10-06",
-    //          |            "accountingPeriodEndDate": "2019-04-05",
-    //          |            "turnover": 2340
-    //          |        }
-    //          |    ]
-    //          |}
-    //          |""".stripMargin)
-    //    }
-    //
-    //    Scenario("a valid request is made for an expired match") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe NOT_FOUND
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "NOT_FOUND",
-    //        "message" -> "The resource can not be found"
-    //      )
-    //
-    //    }
-    //
-    //    Scenario("not authorized") {
-    //
-    //      Given("an invalid privileged Auth bearer token")
-    //      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      Then("the response status should be 401 (unauthorized)")
-    //      response.code mustBe UNAUTHORIZED
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "UNAUTHORIZED",
-    //        "message" -> "Bearer token is missing or not authorized"
-    //      )
-    //    }
-    //
-    //    Scenario("a request is made with a missing match id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/self-assessment/")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe NOT_FOUND
-    //    }
-    //
-    //    Scenario("a request is made with a malformed match id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/self-assessment/foo")
-    //        .headers(requestHeaders(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe BAD_REQUEST
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "statusCode"    -> 400,
-    //        "message" -> "bad request"
-    //      )
-    //    }
-    //
-    //    Scenario("a request is made with a missing correlation id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-    //        .headers(requestHeadersInvalid(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe BAD_REQUEST
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "INVALID_REQUEST",
-    //        "message" -> "CorrelationId is required"
-    //      )
-    //    }
-    //
-    //    Scenario("a request is made with a malformed correlation id") {
-    //      Given("A valid privileged Auth bearer token")
-    //      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
-    //
-    //      When("the API is invoked")
-    //      val response = Http(s"$serviceUrl/matching/self-assessment/$matchId")
-    //        .headers(requestHeadersMalformed(acceptHeaderVP1))
-    //        .asString
-    //
-    //      response.code mustBe BAD_REQUEST
-    //
-    //      Json.parse(response.body) mustBe Json.obj(
-    //        "code"    -> "INVALID_REQUEST",
-    //        "message" -> "Malformed CorrelationId"
-    //      )
-    //    }
+    Scenario("not authorized") {
+
+      Given("an invalid privileged Auth bearer token")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .asString
+
+      Then("the response status should be 401 (unauthorized)")
+      response.code mustBe UNAUTHORIZED
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "UNAUTHORIZED",
+        "message" -> "Bearer token is missing or not authorized"
+      )
+    }
+
+    Scenario("a request is made with a missing match id") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/corporation-tax/")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .asString
+
+      response.code mustBe NOT_FOUND
+    }
+
+    Scenario("a request is made with a malformed match id") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/corporation-tax/foo")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .asString
+
+      response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe Json.obj(
+        "statusCode" -> 400,
+        "message" -> "bad request"
+      )
+    }
+
+    Scenario("a request is made with a missing correlation id") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
+        .headers(requestHeadersInvalid(acceptHeaderVP1))
+        .asString
+
+      response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "INVALID_REQUEST",
+        "message" -> "CorrelationId is required"
+      )
+    }
+
+    Scenario("a request is made with a malformed correlation id") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
+        .headers(requestHeadersMalformed(acceptHeaderVP1))
+        .asString
+
+      response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "INVALID_REQUEST",
+        "message" -> "Malformed CorrelationId"
+      )
+    }
   }
 
 }
