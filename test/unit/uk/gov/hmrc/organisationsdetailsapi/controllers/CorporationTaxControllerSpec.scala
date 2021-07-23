@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import controllers.Assets.{BAD_REQUEST, NOT_FOUND}
+import controllers.Assets.BAD_REQUEST
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -29,7 +29,6 @@ import play.api.libs.json.Json
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
-import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.{AccountingPeriod, CorporationTaxResponse}
@@ -38,7 +37,6 @@ import utils.TestSupport
 import java.time.LocalDate
 import java.util.UUID
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CorporationTaxControllerSpec

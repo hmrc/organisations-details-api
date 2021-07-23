@@ -30,7 +30,6 @@ import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http.MimeTypes.JSON
 
-import scala.concurrent.Await.result
 import scala.concurrent.duration.Duration
 
 trait BaseSpec
