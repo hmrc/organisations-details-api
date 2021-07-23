@@ -75,6 +75,6 @@ case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheI
   lazy val id: String = s"$matchId-$cacheKey-corporation-tax"
 }
 
-case class SaCacheId(matchId: UUID) extends CacheIdBase {
-  lazy val id: String = s"$matchId-self-assessment"
+case class SaCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
+  lazy val id: String = s"$matchId-$cacheKey-self-assessment"
 }
