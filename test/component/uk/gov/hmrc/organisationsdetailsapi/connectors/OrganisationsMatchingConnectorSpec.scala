@@ -53,6 +53,7 @@ class OrganisationsMatchingConnectorSpec
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled"  -> false,
+      "auditing.enabled" -> false,
       "microservice.services.organisations-matching-api.host" -> "localhost",
       "microservice.services.organisations-matching-api.port" -> "11122"
     )
