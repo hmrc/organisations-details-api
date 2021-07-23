@@ -24,7 +24,6 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.Environment.SANDBOX
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.NestedError
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -127,8 +126,6 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
 
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 
-    if (environment == Environment.SANDBOX)
-      f(endpointScopes.toList)
     else {
       authorised(authPredicate(endpointScopes)).retrieve(Retrievals.allEnrolments) {
         scopes => {
@@ -143,11 +140,9 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
 
   def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(
     implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] =
-    if (environment == SANDBOX) body
-    else authorised(Enrolment(scope))(body)
+    authorised(Enrolment(scope))(body)
 }
 
 object Environment {
-  val SANDBOX = "SANDBOX"
   val PRODUCTION = "PRODUCTION"
 }

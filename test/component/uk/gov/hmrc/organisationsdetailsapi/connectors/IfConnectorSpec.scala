@@ -67,6 +67,8 @@ class IfConnectorSpec
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled"  -> false,
+      "auditing.enabled"                                       -> false,
+      "auditing.traceRequests"                                 -> false,
       "microservice.services.integration-framework.host" -> "localhost",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,

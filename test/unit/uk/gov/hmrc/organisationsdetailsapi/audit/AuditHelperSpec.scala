@@ -140,6 +140,21 @@ class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
     capturedEvent.applicationId shouldBe applicationId
   }
 
-  //TODO: Add test for auditing Corporation tax response
+  "auditCTTaxResponseEventModel" in {
+    Mockito.reset(auditConnector)
+
+    val captor = ArgumentCaptor.forClass(classOf[CorporationTaxApiResponseEventModel])
+
+    auditHelper.auditApiResponse(correlationId, matchId, scopes, request, ifUrl)
+
+    verify(auditConnector, times(1)).sendExplicitAudit(eqTo("ApiResponseEvent"),
+      captor.capture())(any(), any(), any())
+
+    val capturedEvent = captor.getValue.asInstanceOf[ApiResponseEventModel]
+    capturedEvent.matchId shouldEqual matchId
+    capturedEvent.correlationId shouldEqual Some(correlationId)
+    capturedEvent.returnLinks shouldEqual ifUrl
+    capturedEvent.applicationId shouldBe applicationId
+  }
 
 }

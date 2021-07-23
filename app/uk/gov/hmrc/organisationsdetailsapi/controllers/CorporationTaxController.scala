@@ -23,15 +23,15 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.Environment.{PRODUCTION, SANDBOX}
+import uk.gov.hmrc.organisationsdetailsapi.controllers.Environment.{PRODUCTION}
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
-import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, LiveCorporationTaxService, SandboxCorporationTaxService, ScopesService}
+import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService}
 
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-abstract class CorporationTaxController @Inject()(val authConnector: AuthConnector,
+class CorporationTaxController @Inject()(val authConnector: AuthConnector,
                                                   cc: ControllerComponents,
                                                   corporationTaxService: CorporationTaxService,
                                                   implicit val auditHelper: AuditHelper,
@@ -58,28 +58,5 @@ abstract class CorporationTaxController @Inject()(val authConnector: AuthConnect
         }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
   }
-
-  // TODO: add me to the routes files
-}
-
-class SandboxCorporationTaxController(
-                                       authConnector: AuthConnector,
-                                       cc: ControllerComponents,
-                                       corporationTaxService: SandboxCorporationTaxService,
-                                       auditHelper: AuditHelper,
-                                       scopesService: ScopesService)
-                                     (implicit ec: ExecutionContext)
-  extends CorporationTaxController(authConnector, cc, corporationTaxService, auditHelper, scopesService) {
-  override val environment: String = SANDBOX
-}
-
-class LiveCorporationTaxController(
-                                    authConnector: AuthConnector,
-                                    cc: ControllerComponents,
-                                    corporationTaxService: LiveCorporationTaxService,
-                                    auditHelper: AuditHelper,
-                                    scopesService: ScopesService)
-                                  (implicit ec: ExecutionContext)
-  extends CorporationTaxController(authConnector, cc, corporationTaxService, auditHelper, scopesService) {
   override val environment: String = PRODUCTION
 }

@@ -21,21 +21,20 @@ import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
-import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, AccountingPeriod => IFAccountingPeriod}
-import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
-import uk.gov.hmrc.organisationsdetailsapi.sandbox.CorporationTaxSandboxData.sandboxMatchIdUUID
-import uk.gov.hmrc.organisationsdetailsapi.services._
-
 import java.time.LocalDate
 import java.util.UUID
+
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
+import uk.gov.hmrc.organisationsdetailsapi.services._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -43,14 +42,10 @@ import scala.language.postfixOps
 
 class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
 
-  private val stubbedCache = new CacheService {
+  private val stubbedCache = new CorporationTaxCacheService(null, new CacheConfiguration(Configuration())) {
     override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
       fallbackFunction
     }
-
-    override val shortLivedCache: ShortLivedCache = null
-    override val conf: CacheConfiguration = null
-    override val key: String = null
   }
 
   trait Setup {
@@ -66,8 +61,8 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val rh: RequestHeader = FakeRequest()
 
-    val liveCorporationTaxService: LiveCorporationTaxService =
-      new LiveCorporationTaxService(
+    val corporationTaxService: CorporationTaxService =
+      new CorporationTaxService(
         mockScopesHelper,
         mockScopesService,
         stubbedCache,
@@ -77,44 +72,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
       )
   }
 
-  "Sandbox Corporation Tax Service" should {
-
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val rh: RequestHeader = FakeRequest()
-
-    "get" should {
-      "fail if matchId does not match SandboxMatchId" in {
-        val sandboxCorporationTaxService: SandboxCorporationTaxService = new SandboxCorporationTaxService()
-        assertThrows[MatchNotFoundException] {
-          Await.result(
-            sandboxCorporationTaxService.get(UUID.fromString("0298533d-9553-453c-9b24-5502cc5d702d"), "corporation-tax", Seq.empty)
-            , 5 seconds
-          )
-        }
-      }
-
-      "should return correct information when matchId is valid" in {
-        val sandboxCorporationTaxService: SandboxCorporationTaxService = new SandboxCorporationTaxService()
-
-        val response = Await.result(sandboxCorporationTaxService.get(sandboxMatchIdUUID, "corporation-tax", Seq.empty), 5 seconds)
-
-        response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
-        response.taxSolvencyStatus.get shouldBe "V"
-        response.periods.get.head shouldBe AccountingPeriod(
-          accountingPeriodStartDate = Some(LocalDate.of(2018, 4, 6)),
-          accountingPeriodEndDate = Some(LocalDate.of(2018, 10, 5)),
-          turnover = Some(38390)
-        )
-        response.periods.get(1) shouldBe AccountingPeriod(
-          accountingPeriodStartDate = Some(LocalDate.of(2018, 10, 6)),
-          accountingPeriodEndDate = Some(LocalDate.of(2019, 4, 5)),
-          turnover = Some(2340)
-        )
-      }
-    }
-  }
-
-  "Live Corporation Tax Service" should {
+  "Corporation Tax Service" should {
     "get" should {
 
       "returns a valid payload when given a valid matchId" in new Setup {
@@ -142,7 +100,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "V"
@@ -167,7 +125,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
           .thenReturn(Future.failed(new Exception()))
 
         assertThrows[Exception] {
-          Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
+          Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
         }
       }
 
@@ -179,7 +137,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
           .thenReturn(Future.failed(new NotFoundException("NOT_FOUND")))
 
         assertThrows[NotFoundException] {
-          Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
+          Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 10 seconds)
         }
       }
 
@@ -208,7 +166,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(liveCorporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         verify(mockIfConnector, times(2))
           .getCtReturnDetails(any(), any(), any())(any(), any(), any())

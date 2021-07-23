@@ -17,6 +17,7 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
 import java.util.concurrent.TimeUnit
+
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
@@ -37,20 +38,22 @@ trait BaseSpec
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
+      "mongodb.uri"                             -> "mongodb://127.0.0.1:27017/organisations-details-api",
+      "microservice.services.integration-framework.host" -> "localhost",
       "auditing.enabled"                               -> false,
       "auditing.traceRequests"                                 -> false,
+      "microservice.services.auth.port"                         -> AuthStub.port,
       "microservice.services.organisations-matching-api.port"    -> OrganisationsMatchingApiStub.port,
       "microservice.services.integration-framework.port"       -> IfStub.port,
-      "microservice.services.cacheable.short-lived-cache.port" -> Save4LaterStub.port,
       "run.mode"                                               -> "It"
     )
     .build()
 
   val timeout = Duration(5, TimeUnit.SECONDS)
   val serviceUrl = s"http://localhost:$port"
-  val mocks = Seq(AuthStub, IfStub, OrganisationsMatchingApiStub, Save4LaterStub)
+  val mocks = Seq(AuthStub, IfStub, OrganisationsMatchingApiStub)
   val authToken = "Bearer AUTH_TOKEN"
-  val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
+  val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.1.0+json"
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val correlationIdHeaderMalformed = "CorrelationId" -> "foo"
 
@@ -72,6 +75,16 @@ trait BaseSpec
     s"""{"code":"INVALID_REQUEST","message":"$message"}"""
 
 
+  override protected def beforeEach(): Unit = {
+    mocks.foreach(m => if (!m.server.isRunning) m.server.start())
+  }
+
+  override protected def afterEach(): Unit =
+    mocks.foreach(_.mock.resetMappings())
+
+  override def afterAll(): Unit = {
+    mocks.foreach(_.server.stop())
+  }
 }
 
 case class MockHost(port: Int) {
