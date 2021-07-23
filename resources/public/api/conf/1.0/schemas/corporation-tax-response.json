@@ -39,7 +39,7 @@
           },
           "turnover": {
             "type": "number",
-            "description": "The amount of money taken by an organisation in the accounting period, in the range of -1 to 99999999999.",
+            "description": "The amount of money taken by an organisation in the accounting period. Turnover is recorded in thousands of pounds (rounded to the nearest £1,000). Turnover is in the range of -1 to 99999999999.",
             "example": "2340"
           }
         },
