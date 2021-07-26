@@ -101,8 +101,8 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
 
       val matchId = UUID.randomUUID()
 
-      SaCacheId(matchId).id shouldBe
-        s"$matchId-self-assessment"
+      SaCacheId(matchId, "ABC").id shouldBe
+        s"$matchId-ABC-self-assessment"
 
     }
 
