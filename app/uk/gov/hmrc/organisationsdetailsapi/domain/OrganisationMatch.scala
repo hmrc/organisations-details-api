@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain.paye
+package uk.gov.hmrc.organisationsdetailsapi.domain
 
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
-import play.api.libs.json.{JsPath, Writes}
+import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
+import java.util.UUID
 
-case class PayeResponse(dateOfRegistration: LocalDate, taxSolvencyStatus: String, periods: Seq[AccountingPeriod])
+case class OrganisationMatch(matchId: UUID, utr: String)
 
-object PayeResponse {
-  implicit val payeResponseWrites : Writes[PayeResponse] = (
-    (JsPath \ "dateOfRegistration").write[LocalDate] and
-      (JsPath \ "taxSolvencyStatus").write[String] and
-      (JsPath \ "periods").write[Seq[AccountingPeriod]]
-  )(unlift(PayeResponse.unapply))
+object OrganisationMatch {
+  implicit val organisationMatchFormat: Format[OrganisationMatch] = Json.format[OrganisationMatch]
 }

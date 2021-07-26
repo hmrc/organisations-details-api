@@ -13,7 +13,8 @@ object AppDependencies {
     hmrcMongo           %% "hmrc-mongo-play-27"         % "0.49.0",
     hmrc                %% "mongo-caching"              % "7.0.0-play-27",
     hmrc                %% "json-encryption"            % "4.10.0-play-27",
-    hmrc                %% "play-hal"                   % "2.1.0-play-27"
+    hmrc                %% "play-hal"                   % "2.1.0-play-27",
+    hmrc                %% "domain"                     % "6.1.0-play-27"
   )
 
   def test(scope: String = "test, it") = Seq(
@@ -26,6 +27,7 @@ object AppDependencies {
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"             % scope,
     hmrcMongo                 %% "hmrc-mongo-test-play-27"  % "0.49.0"            % scope,
     hmrc                      %% "service-integration-test" % "1.1.0-play-27"     % scope,
-    "com.github.tomakehurst"  % "wiremock-jre8"             % "2.27.2"            % scope
+    "com.github.tomakehurst"  % "wiremock-jre8"             % "2.27.2"            % scope,
+    "org.scalaj"              %% "scalaj-http"              % "2.4.2"             % scope
   )
 }
