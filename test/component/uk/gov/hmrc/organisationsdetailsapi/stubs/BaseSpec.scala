@@ -39,7 +39,7 @@ trait BaseSpec
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
       "mongodb.uri"                             -> "mongodb://127.0.0.1:27017/organisations-details-api",
-      "microservice.services.integration-framework.host" -> "localhost",
+      "microservice.services.integration-framework.host" -> "127.0.0.1",
       "auditing.enabled"                               -> false,
       "auditing.traceRequests"                                 -> false,
       "microservice.services.auth.port"                         -> AuthStub.port,
@@ -50,7 +50,7 @@ trait BaseSpec
     .build()
 
   val timeout = Duration(5, TimeUnit.SECONDS)
-  val serviceUrl = s"http://localhost:$port"
+  val serviceUrl = s"http://127.0.0.1:$port"
   val mocks = Seq(AuthStub, IfStub, OrganisationsMatchingApiStub)
   val authToken = "Bearer AUTH_TOKEN"
   val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.1.0+json"
@@ -90,5 +90,5 @@ trait BaseSpec
 case class MockHost(port: Int) {
   val server = new WireMockServer(WireMockConfiguration.wireMockConfig().port(port))
   val mock = new WireMock("localhost", port)
-  val url = s"http://localhost:9000"
+  val url = s"http://127;0.0.1:9000"
 }

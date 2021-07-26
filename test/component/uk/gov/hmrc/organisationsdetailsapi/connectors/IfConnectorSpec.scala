@@ -69,7 +69,7 @@ class IfConnectorSpec
       "cache.enabled"  -> false,
       "auditing.enabled"                                       -> false,
       "auditing.traceRequests"                                 -> false,
-      "microservice.services.integration-framework.host" -> "localhost",
+      "microservice.services.integration-framework.host" -> "127.0.0.1",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
       "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment

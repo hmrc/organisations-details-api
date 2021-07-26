@@ -111,7 +111,7 @@ class CorporationTaxControllerSpec
             |    "taxSolvencyStatus": "V",
             |    "_links": {
             |        "self": {
-            |            "href": "/organisations/details/corporation-tax?matchId=$sampleMatchIdUUID"
+            |            "href": "/organisations/details/corporation-tax/$sampleMatchIdUUID"
             |        }
             |    },
             |    "dateOfRegistration": "2014-04-21",
