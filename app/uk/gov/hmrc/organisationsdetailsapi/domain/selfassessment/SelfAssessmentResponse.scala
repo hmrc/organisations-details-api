@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Writes}
 import java.time.LocalDate
 
-import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.{AccountingPeriod, CorporationTaxResponse}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, SelfAssessmentReturnDetailResponse}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsPath, Writes}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetailResponse
 
 case class SelfAssessmentResponse(selfAssessmentStartDate: Option[LocalDate], taxSolvencyStatus: Option[String], returns: Option[Seq[SelfAssessmentReturn]])
 

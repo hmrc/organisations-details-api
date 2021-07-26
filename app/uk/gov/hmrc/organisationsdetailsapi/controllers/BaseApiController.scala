@@ -19,9 +19,9 @@ package uk.gov.hmrc.organisationsdetailsapi.controllers
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
@@ -29,9 +29,7 @@ import uk.gov.hmrc.organisationsdetailsapi.errorhandler.NestedError
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Success, Try}
 
 abstract class BaseApiController (cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions {
 

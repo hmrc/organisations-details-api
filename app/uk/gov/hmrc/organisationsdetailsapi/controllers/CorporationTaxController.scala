@@ -50,7 +50,7 @@ class CorporationTaxController @Inject()(val authConnector: AuthConnector,
 
           val response = Json.toJson(state(corporationTax) ++ selfLink)
 
-          auditHelper.auditCorporationTaxApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(corporationTax)))
 
           Ok(response)

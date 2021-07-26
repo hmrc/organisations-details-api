@@ -1,2 +1,2 @@
 GET        /corporation-tax                        @uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController.corporationTax(matchId: java.util.UUID)
-GET        /self-assessment                                 @uk.gov.hmrc.organisationsdetailsapi.controllers.SelfAssessmentController.corporationTax(matchId: java.util.UUID)
+GET        /self-assessment                        @uk.gov.hmrc.organisationsdetailsapi.controllers.SelfAssessmentController.selfAssessment(matchId: java.util.UUID)

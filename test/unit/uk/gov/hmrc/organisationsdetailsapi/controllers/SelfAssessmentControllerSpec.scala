@@ -16,6 +16,9 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
+import java.time.LocalDate
+import java.util.UUID
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import controllers.Assets.BAD_REQUEST
@@ -30,17 +33,17 @@ import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController
+import uk.gov.hmrc.organisationsdetailsapi.controllers.{CorporationTaxController, SelfAssessmentController}
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.{AccountingPeriod, CorporationTaxResponse}
-import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService}
+import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.{SelfAssessmentResponse, SelfAssessmentReturn}
+import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService, SelfAssessmentService}
 import utils.TestSupport
-import java.time.LocalDate
-import java.util.UUID
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CorporationTaxControllerSpec
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class SelfAssessmentControllerSpec
   extends AnyWordSpec
   with Matchers
   with MockitoSugar
@@ -62,26 +65,18 @@ class CorporationTaxControllerSpec
   private val mockAuditHelper = mock[AuditHelper]
   private val mockScopesService = mock[ScopesService]
 
-  private val mockCorporationTaxService = mock[CorporationTaxService]
+  private val mockSelfAssessmentService = mock[SelfAssessmentService]
 
-  private val controller = new CorporationTaxController(mockAuthConnector, Helpers.stubControllerComponents(),
-    mockCorporationTaxService, mockAuditHelper, mockScopesService)
+  private val controller = new SelfAssessmentController(mockAuthConnector, Helpers.stubControllerComponents(),
+    mockSelfAssessmentService, mockAuditHelper, mockScopesService)
 
-  private val sampleResponse = CorporationTaxResponse(
-    dateOfRegistration = Some(LocalDate.of(2014, 4, 21)),
-    taxSolvencyStatus = Some("V"),
-    periods = Some(Seq(
-      AccountingPeriod(
-        accountingPeriodStartDate = Some(LocalDate.of(2017, 4, 6)),
-        accountingPeriodEndDate = Some(LocalDate.of(2017, 10, 5)),
-        turnover = Some(38390)
-      ),
-      AccountingPeriod(
-        accountingPeriodStartDate = Some(LocalDate.of(2017, 10, 6)),
-        accountingPeriodEndDate = Some(LocalDate.of(2018, 4, 5)),
-        turnover = Some(2340)
-      )
-    ))
+  private val sampleResponse = SelfAssessmentResponse(
+    selfAssessmentStartDate = Some(LocalDate.of(2020, 1, 1)),
+    taxSolvencyStatus = Some("I"),
+    returns = Some(Seq(SelfAssessmentReturn(
+      totalBusinessSalesTurnover = Some(50000),
+      taxYear = Some("2020")
+    )))
   )
 
   override def beforeEach(): Unit = {
@@ -91,43 +86,35 @@ class CorporationTaxControllerSpec
   "CorporationTaxController" should {
 
     "return data when called successfully with a valid request" in {
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+      when(mockScopesService.getEndPointScopes("self-assessment")).thenReturn(Seq("test-scope"))
 
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockSelfAssessmentService.get(refEq(sampleMatchIdUUID), eqTo("self-assessment"), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Future.successful(sampleResponse))
 
-      val result = await(controller.corporationTax(sampleMatchIdUUID)(fakeRequest))
+      val result = await(controller.selfAssessment(sampleMatchIdUUID)(fakeRequest))
 
       verify(mockAuditHelper, times(1)).auditApiResponse(
         any(), any(), any(), any(), any(), any())(any())
 
       jsonBodyOf(result) shouldBe
         Json.parse(
-          s"""
-            |{
-            |    "taxSolvencyStatus": "V",
-            |    "_links": {
-            |        "self": {
-            |            "href": "/organisations/details/corporation-tax?matchId=$sampleMatchIdUUID"
-            |        }
-            |    },
-            |    "dateOfRegistration": "2014-04-21",
-            |    "periods": [
-            |        {
-            |            "accountingPeriodStartDate": "2017-04-06",
-            |            "accountingPeriodEndDate": "2017-10-05",
-            |            "turnover": 38390
-            |        },
-            |        {
-            |            "accountingPeriodStartDate": "2017-10-06",
-            |            "accountingPeriodEndDate": "2018-04-05",
-            |            "turnover": 2340
-            |        }
-            |    ]
-            |} """.stripMargin
+          s"""{
+             |"selfAssessmentStartDate":"2020-01-01",
+             |"taxSolvencyStatus":"I",
+             |"_links":{
+             |  "self":{
+             |    "href":"/organisations/details/self-assessment?matchId=32696d72-6216-475f-b213-ba76921cf459"
+             |  }
+             |},
+             |"returns":[
+             |  {
+             |    "totalBusinessSalesTurnover":50000,
+             |    "taxYear":"2020"
+             |  }]
+             |}""".stripMargin
         )
 
     }
@@ -135,9 +122,9 @@ class CorporationTaxControllerSpec
     "fail when correlationId is not provided" in {
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+      when(mockScopesService.getEndPointScopes("self-assessment")).thenReturn(Seq("test-scope"))
 
-      val response = await(controller.corporationTax(sampleMatchIdUUID)(FakeRequest()))
+      val response = await(controller.selfAssessment(sampleMatchIdUUID)(FakeRequest()))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
         any(), any(), any(), any(), any())(any())
@@ -156,9 +143,9 @@ class CorporationTaxControllerSpec
     "fail when correlationId is not malformed" in {
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+      when(mockScopesService.getEndPointScopes("self-assessment")).thenReturn(Seq("test-scope"))
 
-      val response = await(controller.corporationTax(sampleMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
+      val response = await(controller.selfAssessment(sampleMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
         any(), any(), any(), any(), any())(any())

@@ -26,9 +26,8 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.Environment.PRODUCTION
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
-import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService, SelfAssessmentService}
+import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, SelfAssessmentService}
 
 import scala.concurrent.ExecutionContext
 
@@ -41,23 +40,22 @@ class SelfAssessmentController @Inject()(val authConnector: AuthConnector,
 
   override val logger: Logger = Logger(classOf[SelfAssessmentController].getName)
 
-  def corporationTax(matchId: UUID): Action[AnyContent] = Action.async {
+  def selfAssessment(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopesService.getEndPointScopes("corporation-tax"), matchId.toString) { authScopes =>
+      authenticate(scopesService.getEndPointScopes("self-assessment"), matchId.toString) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        selfAssessmentService.get(matchId, "self-assessment", authScopes).map { corporationTax =>
+        selfAssessmentService.get(matchId, "self-assessment", authScopes).map { selfAssessment =>
           val selfLink = HalLink("self", s"/organisations/details/self-assessment?matchId=$matchId")
 
-          val response = Json.toJson(state(corporationTax) ++ selfLink)
+          val response = Json.toJson(state(selfAssessment) ++ selfLink)
 
-          auditHelper.auditCorporationTaxApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(corporationTax)))
+          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(selfAssessment)))
 
           Ok(response)
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/self-assessment")
   }
-  override val environment: String = PRODUCTION
 }

@@ -16,7 +16,6 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import java.time.LocalDate
 import java.util.UUID
 
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
@@ -24,9 +23,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, SelfAssessmentReturnDetail, SelfAssessmentReturnDetailResponse, TaxYear, AccountingPeriod => IfAccountingPeriod}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
 
 class SelfAssessmentControllerSpec extends BaseSpec {
 
