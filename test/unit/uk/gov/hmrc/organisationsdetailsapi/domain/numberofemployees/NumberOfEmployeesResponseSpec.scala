@@ -19,6 +19,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.PayeReferenceAndCount
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesResponse
 
 class NumberOfEmployeesResponseSpec extends AnyWordSpec with Matchers {
@@ -31,12 +32,26 @@ class NumberOfEmployeesResponseSpec extends AnyWordSpec with Matchers {
         |}
         |""".stripMargin
 
-    val selfAssessmentResponse = NumberOfEmployeesResponse("RT882d/456", Seq.empty)
+    val numberOfEmployeesResponse = NumberOfEmployeesResponse(Some("RT882d/456"), Some(Seq.empty))
 
     val expectedResponse = Json.parse(expectedJson)
 
-    val result = Json.toJson(selfAssessmentResponse)
+    val result = Json.toJson(numberOfEmployeesResponse)
 
     result shouldBe expectedResponse
+  }
+
+  "creates correctly from IF number of employee count" in {
+
+    val payeReferenceAndCount =  PayeReferenceAndCount(
+      Some("123"),
+      Some("RT882d/456"),
+      None
+    )
+
+    val result = NumberOfEmployeesResponse.create(payeReferenceAndCount)
+
+    result.payeReference.get shouldBe "RT882d/456"
+    result.counts shouldBe None
   }
 }

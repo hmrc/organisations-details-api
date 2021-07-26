@@ -338,7 +338,7 @@ class IfConnectorSpec
             .willReturn(okJson(jsonResponse)))
 
         val result: EmployeeCountResponse = await(
-          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest)(
+          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -366,7 +366,7 @@ class IfConnectorSpec
 
         intercept[InternalServerException] {
           await(
-            underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest)(
+            underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -401,7 +401,7 @@ class IfConnectorSpec
 
       intercept[InternalServerException] {
         await(
-          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest)(
+          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec

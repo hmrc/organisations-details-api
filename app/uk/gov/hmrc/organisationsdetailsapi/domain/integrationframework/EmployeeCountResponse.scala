@@ -28,13 +28,13 @@ import scala.util.matching.Regex
 
 case class EmployeeCountResponse(startDate: Option[String], endDate: Option[String], references: Option[Seq[PayeReferenceAndCount]])
 
-case class EmployeeCountRequest(startDate: String, endDate: String, references: Seq[PayeReference])
-
 case class PayeReferenceAndCount(districtNumber: Option[String], payeReference: Option[String], counts: Option[Seq[Count]])
+
+case class EmployeeCountRequest(startDate: String, endDate: String, references: Seq[PayeReference])
 
 case class PayeReference(districtNumber: String, payeReference: String)
 
-case class Count(dateTaken: Option[String], employeeCount: Option[Double])
+case class Count(dateTaken: Option[String], employeeCount: Option[Int])
 
 object Count {
 
@@ -42,23 +42,20 @@ object Count {
   val maxValue = 99999999
   val datePattern: Regex = "^[1-2]{1}[0-9]{3}-[0-9]{2}$".r
 
-  def isInRange(value: Double): Boolean =
+  def isInRange(value: Int): Boolean =
     value >= minValue && value <= maxValue
 
-  def isWholeNumber(value: Double): Boolean =
-    BigDecimal(value) % 1 == 0
-
-  def isInRangeAndWholeNumber(value: Double): Boolean =
-    isInRange(value) && isWholeNumber(value)
+  def isInRangeAndWholeNumber(value: Int): Boolean =
+    isInRange(value)
 
   implicit val countFormat: Format[Count] = Format(
     (
       (JsPath \ "dateTaken").readNullable[String](pattern(datePattern, "Date is in incorrect format")) and
-      (JsPath \ "employeeCount").readNullable[Double](verifying[Double](isInRangeAndWholeNumber))
+      (JsPath \ "employeeCount").readNullable[Int](verifying[Int](isInRangeAndWholeNumber))
     )(Count.apply _),
     (
       (JsPath \ "dateTaken").writeNullable[String] and
-      (JsPath \ "employeeCount").writeNullable[Double]
+      (JsPath \ "employeeCount").writeNullable[Int]
     )(unlift(Count.unapply))
   )
 }

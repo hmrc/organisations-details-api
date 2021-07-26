@@ -34,11 +34,8 @@ class CorporationTaxService @Inject()(
                                          ifConnector: IfConnector,
                                          organisationsMatchingConnector: OrganisationsMatchingConnector,
                                          @Named("retryDelay") retryDelay: Int
-                                         ) {
-
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] =
-    organisationsMatchingConnector.resolve(matchId)
-
+                                         )
+extends BaseService(retryDelay, organisationsMatchingConnector) {
 
   def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] = {
     resolve(matchId).flatMap {
@@ -57,9 +54,5 @@ class CorporationTaxService @Inject()(
             }
           ).map(CorporationTaxResponse.create)
     }
-  }
-
-  private def withRetry[T](body: => Future[T])(implicit ec: ExecutionContext): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 }
