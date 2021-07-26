@@ -46,7 +46,7 @@ class CorporationTaxController @Inject()(val authConnector: AuthConnector,
         val correlationId = validateCorrelationId(request)
 
         corporationTaxService.get(matchId, "corporation-tax", authScopes).map { corporationTax =>
-          val selfLink = HalLink("self", s"/organisations/details/corporation-tax/$matchId")
+          val selfLink = HalLink("self", s"/organisations/details/corporation-tax?matchId=$matchId")
 
           val response = Json.toJson(state(corporationTax) ++ selfLink)
 

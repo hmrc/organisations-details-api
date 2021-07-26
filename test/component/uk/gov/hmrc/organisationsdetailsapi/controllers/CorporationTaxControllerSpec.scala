@@ -68,7 +68,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       IfStub.searchCtReturnDetails(validMatch.utr, validCtIfResponse)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
+      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
         .option(HttpOptions.readTimeout(10000))
         .asString
@@ -81,7 +81,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
           |    "taxSolvencyStatus": "V",
           |    "_links": {
           |        "self": {
-          |            "href": "/organisations/details/corporation-tax/ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
+          |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
           |        }
           |    },
           |    "dateOfRegistration": "2015-04-21",
@@ -107,7 +107,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
+      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
@@ -128,7 +128,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
-      response.code mustBe NOT_FOUND
+      response.code mustBe BAD_REQUEST
     }
 
     Scenario("a request is made with a malformed match id") {
@@ -136,7 +136,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax/foo")
+      val response = Http(s"$serviceUrl/corporation-tax?matchId=foo")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
@@ -153,7 +153,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
+      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
         .headers(requestHeadersInvalid(acceptHeaderVP1))
         .asString
 
@@ -170,7 +170,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax/$matchId")
+      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
         .headers(requestHeadersMalformed(acceptHeaderVP1))
         .asString
 
