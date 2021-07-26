@@ -112,8 +112,6 @@ object SchemaValidationError {
 
 trait PrivilegedAuthentication extends AuthorisedFunctions {
 
-  val environment: String
-
   def authPredicate(scopes: Iterable[String]): Predicate =
     scopes.map(Enrolment(_): Predicate).reduce(_ or _)
 
@@ -137,12 +135,4 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
       }
     }
   }
-
-  def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] =
-    authorised(Enrolment(scope))(body)
-}
-
-object Environment {
-  val PRODUCTION = "PRODUCTION"
 }

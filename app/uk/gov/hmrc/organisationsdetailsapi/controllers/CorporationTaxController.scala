@@ -23,7 +23,6 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.Environment.{PRODUCTION}
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
 import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService}
 
@@ -58,5 +57,4 @@ class CorporationTaxController @Inject()(val authConnector: AuthConnector,
         }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
   }
-  override val environment: String = PRODUCTION
 }

@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.services
 
-import java.util.UUID
-import javax.inject.{Inject, Singleton}
-import org.joda.time.Interval
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
 
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

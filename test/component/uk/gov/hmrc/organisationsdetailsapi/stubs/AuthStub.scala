@@ -16,16 +16,12 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.MockHost
 import play.api.http.HeaderNames.AUTHORIZATION
 import play.api.http.{HeaderNames, Status}
-import play.api.libs.json.{JsArray, Json}
 import play.api.libs.json.Json._
+import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.auth.core.authorise.Predicate
 
