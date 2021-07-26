@@ -17,13 +17,12 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import java.time.LocalDate
-
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import java.util.UUID
 
+import java.util.UUID
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
-import scalaj.http.Http
+import scalaj.http.{Http, HttpOptions}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{AccountingPeriod => IfAccountingPeriod}
@@ -71,6 +70,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       When("the API is invoked")
       val response = Http(s"$serviceUrl/corporation-tax/$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
+        .option(HttpOptions.readTimeout(10000))
         .asString
 
       response.code mustBe OK
@@ -81,7 +81,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
           |    "taxSolvencyStatus": "V",
           |    "_links": {
           |        "self": {
-          |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
+          |            "href": "/organisations/details/corporation-tax/ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
           |        }
           |    },
           |    "dateOfRegistration": "2015-04-21",
