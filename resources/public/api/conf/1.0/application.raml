@@ -30,8 +30,8 @@ uses:
       displayName: "Get an organisation's Corporation Tax details"
       description: !include docs/organisations-details-corporation-tax-description.md
       is: [headers.acceptHeader]
-      (annotations.scope): "read:organisations-details"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/paye-sandbox-data.md
       headers:
         CorrelationId:
@@ -69,14 +69,13 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
-
   /self-assessment:
     get:
       displayName: "Get an organisation's Self Assessment details"
       description: !include docs/organisations-details-self-assessment-description.md
       is: [headers.acceptHeader]
-      (annotations.scope): "read:organisations-details"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/sa-sandbox-data.md
       headers:
         CorrelationId:
@@ -114,14 +113,13 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
-
   /number-of-employees:
     post:
       displayName: "Find the number of employees for an organisation"
       description: !include docs/organisations-details-number-of-employees-description.md
       is: [headers.acceptHeader]
-      (annotations.scope): "read:organisations-details"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "read:organisations-details" ] } ]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/number-of-employees-sandbox-data.md
       headers:
         CorrelationId:
