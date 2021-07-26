@@ -43,6 +43,7 @@ lazy val microservice = Project(appName, file("."))
     // ***************
     testOptions in Test := Seq(Tests.Filter(unitFilter))
   )
+  .settings(PlayKeys.playDefaultPort := 9656)
 
   // Integration tests
 
