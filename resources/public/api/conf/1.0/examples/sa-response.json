@@ -4,11 +4,11 @@
   "returns": [
     {
       "totalBusinessSalesTurnover": 1234.56,
-      "taxYear": "2019-20"
+      "taxYear": "2019"
     },
     {
       "totalBusinessSalesTurnover": 4567.89,
-      "taxYear": "2020-21"
+      "taxYear": "2020"
     }
   ]
 }
