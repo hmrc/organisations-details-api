@@ -64,6 +64,14 @@ class CorporationTaxCacheService @Inject()(val shortLivedCache: ShortLivedCache,
 
 }
 
+@Singleton
+class NumberOfEmployeesCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+  extends CacheService {
+
+  val key: String = conf.numberOfEmployeesKey
+
+}
+
 
 trait CacheIdBase {
   val id: String

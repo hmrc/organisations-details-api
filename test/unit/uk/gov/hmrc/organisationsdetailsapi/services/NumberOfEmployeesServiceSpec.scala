@@ -41,7 +41,7 @@ import scala.language.postfixOps
 
 class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
 
-  private val stubbedCache = new CorporationTaxCacheService(null, new CacheConfiguration(Configuration())) {
+  private val stubbedCache = new NumberOfEmployeesCacheService(null, new CacheConfiguration(Configuration())) {
     override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
       fallbackFunction
     }

@@ -98,4 +98,10 @@ class CacheConfiguration @Inject()(configuration: Configuration) {
       "cache.payeKey"
     )
     .getOrElse("paye-income")
+
+  lazy val numberOfEmployeesKey = configuration
+    .getOptional[String](
+      "cache.numberOfEmployeesKey"
+    )
+    .getOrElse("number-of-employees")
 }
