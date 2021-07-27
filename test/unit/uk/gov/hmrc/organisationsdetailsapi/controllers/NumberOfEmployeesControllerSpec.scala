@@ -29,7 +29,6 @@ import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.mvc.PlayBodyParsers
 import play.api.test.{FakeRequest, Helpers}
-import play.mvc.Http.Headers
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
@@ -73,7 +72,12 @@ class NumberOfEmployeesControllerSpec
 
   private val sampleRequestAsJson = Json.toJson(sampleRequest)
 
-  private val fakeRequest = FakeRequest("GET", "/").withHeaders(sampleCorrelationIdHeader, HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+json")
+  private val fakeRequest = FakeRequest("GET", "/")
+    .withHeaders(
+      sampleCorrelationIdHeader,
+      HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+json",
+      HeaderNames.CONTENT_TYPE -> "application/json"
+    )
 
   private val mockAuthConnector = mock[AuthConnector]
   private val mockAuditHelper = mock[AuditHelper]
@@ -86,7 +90,7 @@ class NumberOfEmployeesControllerSpec
   "Number of employees Controller" should {
     "return data when called successfully with a valid request" in {
 
-      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+      when(mockScopesService.getEndPointScopes("number-of-employees")).thenReturn(Seq("test-scope"))
 
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
@@ -102,10 +106,30 @@ class NumberOfEmployeesControllerSpec
         )))
 
 
-      val response = await(controller.numberOfEmployees(sampleMatchIdUUID)(fakeRequest.withJsonBody(sampleRequestAsJson)).run())
+      val response = await(controller.numberOfEmployees(sampleMatchIdUUID)(fakeRequest.withBody(sampleRequestAsJson)))
 
       status(response) shouldBe OK
-      print(jsonBodyOf(response))
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |    "_links": {
+          |        "self": {
+          |            "href": "/organisations/details/number-of-employees?matchId=32696d72-6216-475f-b213-ba76921cf459"
+          |        }
+          |    },
+          |    "returns": [
+          |        {
+          |            "payeReference": "RT882d",
+          |            "counts": [
+          |                {
+          |                    "numberOfEmployees": 1234,
+          |                    "dateOfCount": "2019-10"
+          |                }
+          |            ]
+          |        }
+          |    ]
+          |}
+          |""".stripMargin)
 
     }
   }
