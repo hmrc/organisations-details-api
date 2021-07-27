@@ -1,7 +1,7 @@
 {
   "selfAssessmentStartDate": "2015-04-21",
   "taxSolvencyStatus": "I",
-  "returns": [
+  "taxReturns": [
     {
       "totalBusinessSalesTurnover": 1234.56,
       "taxYear": "2019"

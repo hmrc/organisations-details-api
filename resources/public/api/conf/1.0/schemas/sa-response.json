@@ -45,6 +45,6 @@
   "required": [
     "selfAssessmentStartDate",
     "taxSolvencyStatus",
-    "returns"
+    "taxReturns"
   ]
 }

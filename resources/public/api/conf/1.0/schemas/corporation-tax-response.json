@@ -54,6 +54,6 @@
   "required": [
     "dateOfRegistration",
     "taxSolvencyStatus",
-    "periods"
+    "accountingPeriods"
   ]
 }
