@@ -18,9 +18,9 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import controllers.Assets.OK
+import controllers.Assets.{BAD_REQUEST, OK}
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -79,6 +79,12 @@ class NumberOfEmployeesControllerSpec
       HeaderNames.CONTENT_TYPE -> "application/json"
     )
 
+  private val fakeRequestNoCorrelationHeader = FakeRequest("GET", "/")
+    .withHeaders(
+      HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+json",
+      HeaderNames.CONTENT_TYPE -> "application/json"
+    )
+
   private val mockAuthConnector = mock[AuthConnector]
   private val mockAuditHelper = mock[AuditHelper]
   private val mockScopesService = mock[ScopesService]
@@ -86,6 +92,10 @@ class NumberOfEmployeesControllerSpec
 
   private val controller = new NumberOfEmployeesController(mockAuthConnector, Helpers.stubControllerComponents(),
     mockNumberOfEmployeesService, mockAuditHelper, mockScopesService, bodyParsers)
+
+  override def beforeEach(): Unit = {
+    reset(mockAuditHelper)
+  }
 
   "Number of employees Controller" should {
     "return data when called successfully with a valid request" in {
@@ -131,6 +141,54 @@ class NumberOfEmployeesControllerSpec
           |}
           |""".stripMargin)
 
+
+      verify(mockAuditHelper, times(1)).auditNumberOfEmployeesApiResponse(
+        any(), any(), any(), any(), any(), any())(any())
+
+    }
+
+    "fail when correlationId is not provided" in {
+      when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+        .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+      when(mockScopesService.getEndPointScopes("number-of-employees")).thenReturn(Seq("test-scope"))
+
+      val response = await(controller.numberOfEmployees(sampleMatchIdUUID)(fakeRequestNoCorrelationHeader.withBody(sampleRequestAsJson)))
+
+      verify(mockAuditHelper, times(1)).auditApiFailure(
+        any(), any(), any(), any(), any())(any())
+
+      status(response) shouldBe BAD_REQUEST
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+    }
+
+    "fail when correlationId is not malformed" in {
+      when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+        .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+      when(mockScopesService.getEndPointScopes("number-of-employees")).thenReturn(Seq("test-scope"))
+
+
+      val response = await(controller.numberOfEmployees(sampleMatchIdUUID)
+          (fakeRequestNoCorrelationHeader.withBody(sampleRequestAsJson).withHeaders("CorrelationId" -> "Not a valid correlationId")))
+
+      verify(mockAuditHelper, times(1)).auditApiFailure(
+        any(), any(), any(), any(), any())(any())
+
+      status(response) shouldBe BAD_REQUEST
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
     }
   }
 }
