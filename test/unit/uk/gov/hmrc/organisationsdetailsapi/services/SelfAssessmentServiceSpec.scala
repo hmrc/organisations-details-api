@@ -110,7 +110,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
       }
 
       "Return a failed future if IF or cache throws exception" in new Setup {
-        val endpoint = "corporation-tax"
+        val endpoint = "self-assessment"
         val scopes = Seq("SomeScope")
 
         when(mockOrganisationsMatchingConnector.resolve(matchIdUUID))
@@ -131,7 +131,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
       }
 
       "propagates not found when match id can not be found" in new Setup {
-        val endpoint = "corporation-tax"
+        val endpoint = "self-assessment"
         val scopes = Seq("SomeScope")
 
         when(mockOrganisationsMatchingConnector.resolve(matchIdUUID))
@@ -143,7 +143,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
       }
 
       "retries once if IF returns error" in new Setup {
-        val endpoint = "corporation-tax"
+        val endpoint = "self-assessment"
         val scopes = Seq("SomeScope")
 
         when(mockOrganisationsMatchingConnector.resolve(matchIdUUID))

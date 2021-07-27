@@ -33,15 +33,14 @@ import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.{CorporationTaxController, SelfAssessmentController}
-import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.{AccountingPeriod, CorporationTaxResponse}
+import uk.gov.hmrc.organisationsdetailsapi.controllers.SelfAssessmentController
 import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.{SelfAssessmentResponse, SelfAssessmentReturn}
-import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService, SelfAssessmentService}
+import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, SelfAssessmentService}
 import utils.TestSupport
 
-import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.concurrent.Future
 
 class SelfAssessmentControllerSpec
   extends AnyWordSpec
@@ -83,7 +82,7 @@ class SelfAssessmentControllerSpec
     reset(mockAuditHelper)
   }
 
-  "CorporationTaxController" should {
+  "SelfAssessmentController" should {
 
     "return data when called successfully with a valid request" in {
       when(mockScopesService.getEndPointScopes("self-assessment")).thenReturn(Seq("test-scope"))
