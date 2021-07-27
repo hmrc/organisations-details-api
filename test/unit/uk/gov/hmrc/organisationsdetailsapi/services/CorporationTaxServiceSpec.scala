@@ -43,7 +43,7 @@ import scala.language.postfixOps
 class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
 
   private val stubbedCache = new CorporationTaxCacheService(null, new CacheConfiguration(Configuration())) {
-    override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
+    override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] = {
       fallbackFunction
     }
   }

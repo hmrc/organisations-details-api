@@ -33,7 +33,7 @@ trait CacheService {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
+  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
     if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
       case Some(value) =>
         Future.successful(value)

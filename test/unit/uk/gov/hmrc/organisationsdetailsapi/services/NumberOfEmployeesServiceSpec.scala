@@ -42,7 +42,8 @@ import scala.language.postfixOps
 class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
 
   private val stubbedCache = new NumberOfEmployeesCacheService(null, new CacheConfiguration(Configuration())) {
-    override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
+
+    override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] = {
       fallbackFunction
     }
   }
@@ -51,15 +52,15 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
   trait Setup {
     val utr = "1234567890"
     val matchId = "9ff2e348-ee49-4e7e-8b73-17d02ff962a2"
-    val matchIdUUID = UUID.fromString(matchId)
+    val matchIdUUID: UUID = UUID.fromString(matchId)
 
-    val mockScopesHelper = mock[ScopesHelper]
-    val mockScopesService = mock[ScopesService]
-    val mockIfConnector = mock[IfConnector]
-    val mockOrganisationsMatchingConnector = mock[OrganisationsMatchingConnector]
+    val mockScopesHelper: ScopesHelper = mock[ScopesHelper]
+    val mockScopesService: ScopesService = mock[ScopesService]
+    val mockIfConnector: IfConnector = mock[IfConnector]
+    val mockOrganisationsMatchingConnector: OrganisationsMatchingConnector = mock[OrganisationsMatchingConnector]
     val endpoint = "number-of-employees"
 
-    val request = EmployeeCountRequest(
+    val request: EmployeeCountRequest = EmployeeCountRequest(
       "2019-10-01",
       "2020-04-05",
       Seq(PayeReference(
@@ -119,7 +120,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
 
         val response: Option[Seq[NumberOfEmployeesResponse]] = Await.result(numberOfEmployeesService.get(matchIdUUID, request, scopes), 5 seconds)
 
-        val result = response.get.head
+        val result: NumberOfEmployeesResponse = response.get.head
 
         result.counts.get.length shouldBe 2
         result.payeReference.get shouldBe "RT882d"

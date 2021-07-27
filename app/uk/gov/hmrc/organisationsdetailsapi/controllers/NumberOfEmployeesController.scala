@@ -16,6 +16,52 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
-class NumberOfEmployeesController {
+import play.api.Logger
+import play.api.hal.Hal.state
+import play.api.hal.HalLink
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, ControllerComponents, PlayBodyParsers}
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
+import uk.gov.hmrc.organisationsdetailsapi.services.{NumberOfEmployeesService, ScopesService}
+
+import java.util.UUID
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+
+class NumberOfEmployeesController @Inject()(val authConnector: AuthConnector,
+                                            cc: ControllerComponents,
+                                            numberOfEmployeesService: NumberOfEmployeesService,
+                                            implicit val auditHelper: AuditHelper,
+                                            scopesService: ScopesService,
+                                            bodyParsers: PlayBodyParsers)
+                                           (implicit ec: ExecutionContext) extends BaseApiController(cc) with PrivilegedAuthentication  {
+
+  override val logger: Logger = Logger(classOf[NumberOfEmployeesController].getName)
+
+  private val self = "/organisations/details/number-of-employees"
+
+  def numberOfEmployees(matchId: UUID): Action[JsValue] = Action.async(bodyParsers.json) {
+    implicit request =>
+      authenticate(scopesService.getEndPointScopes("number-of-employees"), matchId.toString) { authScopes =>
+        withValidJson[EmployeeCountRequest] { employeeCountRequest =>
+          val correlationId = validateCorrelationId(request)
+
+          numberOfEmployeesService.get(matchId, employeeCountRequest, authScopes).map { numberOfEmployees =>
+            val selfLink = HalLink("self", s"$self?matchId=$matchId")
+
+            val response = Json.toJson(state(Json.obj("returns" -> numberOfEmployees)) ++ selfLink)
+
+            auditHelper.auditNumberOfEmployeesApiResponse(correlationId.toString, matchId.toString,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(numberOfEmployees)))
+
+            Ok(response)
+          }
+        }
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, self)
+  }
 
 }
