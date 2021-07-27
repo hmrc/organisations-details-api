@@ -17,7 +17,7 @@
         "S"
       ]
     },
-    "returns": {
+    "taxReturns": {
       "type": "array",
       "description": "Self Assessment tax returns.",
       "items": {

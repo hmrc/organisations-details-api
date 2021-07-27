@@ -19,7 +19,7 @@
         "I"
       ]
     },
-    "periods": {
+    "accountingPeriods": {
       "type": "array",
       "description": "The accounting periods.",
       "items": {
