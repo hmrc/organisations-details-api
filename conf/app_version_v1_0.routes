@@ -1,2 +1,2 @@
 GET        /corporation-tax                        @uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController.corporationTax(matchId: java.util.UUID)
-POST        /number-of-employees                    @uk.gov.hmrc.organisationsdetailsapi.controllers.NumberOfEmployeesController.numberOfEmployees(matchId: java.util.UUID)
+POST       /number-of-employees                    @uk.gov.hmrc.organisationsdetailsapi.controllers.NumberOfEmployeesController.numberOfEmployees(matchId: java.util.UUID)
