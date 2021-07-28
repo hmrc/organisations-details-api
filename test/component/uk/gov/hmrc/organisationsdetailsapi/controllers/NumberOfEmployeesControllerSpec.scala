@@ -100,7 +100,6 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
 
     }
 
-    /////////////////////////////////////////////
     Scenario("not authorized") {
 
       Given("an invalid privileged Auth bearer token")
