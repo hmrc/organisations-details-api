@@ -16,15 +16,21 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, urlPathEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson, get, post, urlPathEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 
 object IfStub extends MockHost(8443) {
+
+  def searchNumberOfEmployees(utr: String, result: EmployeeCountResponse, request: EmployeeCountRequest): StubMapping =
+    mock.register(
+      post(urlPathEqualTo(s"/organisations/employers/employee/counts"))
+        .withRequestBody(equalToJson(Json.toJson(request).toString()))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(result).toString())))
+
 
   def searchCtReturnDetails(utr: String, result: CorporationTaxReturnDetailsResponse): StubMapping =
     mock.register(

@@ -43,16 +43,8 @@ abstract class BaseApiController (cc: ControllerComponents) extends BackendContr
     request.body.validate[T] match {
       case JsSuccess(t, _) => f(t)
       case JsError(errors) =>
-        Future.failed(new BadRequestException(errors.toString()))
+        Future.failed(new BadRequestException("Malformed payload"))
     }
-
-  def errorResult(errors: IndexedSeq[NestedError]): Future[Result] =
-    Future.successful(
-      BadRequest(
-        Json.obj(
-          "code" -> "BAD_REQUEST",
-          "message" -> "The request body does not conform to the schema.",
-          "errors" -> Json.toJson(errors.toList))))
 
   def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
                        (implicit request: RequestHeader,
