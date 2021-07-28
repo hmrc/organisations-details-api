@@ -22,7 +22,7 @@ import play.api.libs.json._
 
 import scala.util.matching.Regex
 
-case class TaxYear(taxYear: Option[String], businessSalesTurnover: Option[Double])
+case class TaxYear(taxyear: Option[String], businessSalesTurnover: Option[Double])
 
 case class SelfAssessmentReturnDetailResponse(utr: Option[String], startDate: Option[String], taxPayerType: Option[String], taxSolvencyStatus: Option[String], taxYears: Option[Seq[TaxYear]])
 
@@ -37,11 +37,11 @@ object SelfAssessmentReturnDetail {
 
   implicit val taxYearFormat: Format[TaxYear] = Format(
     (
-      (JsPath \ "taxYear").readNullable[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
+      (JsPath \ "taxyear").readNullable[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
       (JsPath \ "businessSalesTurnover").readNullable[Double]
     )(TaxYear.apply _),
     (
-      (JsPath \ "taxYear").writeNullable[String] and
+      (JsPath \ "taxyear").writeNullable[String] and
       (JsPath \ "businessSalesTurnover").writeNullable[Double]
     )(unlift(TaxYear.unapply))
   )

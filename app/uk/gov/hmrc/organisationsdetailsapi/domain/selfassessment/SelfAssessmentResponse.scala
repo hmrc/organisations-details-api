@@ -30,7 +30,7 @@ object SelfAssessmentResponse {
     SelfAssessmentResponse(
       selfAssessmentReturnDetailsResponse.startDate.map(LocalDate.parse) ,
       selfAssessmentReturnDetailsResponse.taxSolvencyStatus,
-      selfAssessmentReturnDetailsResponse.taxYears.map(x => x.map(t => SelfAssessmentReturn(t.businessSalesTurnover, t.taxYear)))
+      selfAssessmentReturnDetailsResponse.taxYears.map(x => x.map(t => SelfAssessmentReturn(t.businessSalesTurnover, t.taxyear)))
     )
 
   implicit val selfAssessmentResponseWrites : Writes[SelfAssessmentResponse] = (

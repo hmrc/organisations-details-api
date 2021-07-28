@@ -38,7 +38,7 @@ class SelfAssessmentControllerSpec extends BaseSpec {
     taxSolvencyStatus = Some("I"),
     taxYears = Some(Seq(
       TaxYear(
-        taxYear = Some("2020"),
+        taxyear = Some("2020"),
         businessSalesTurnover = Some(50000))
     ))
   )
