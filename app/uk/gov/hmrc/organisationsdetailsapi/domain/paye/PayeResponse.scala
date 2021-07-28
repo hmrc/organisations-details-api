@@ -21,12 +21,12 @@ import play.api.libs.json.{JsPath, Writes}
 
 import java.time.LocalDate
 
-case class PayeResponse(dateOfRegistration: LocalDate, taxSolvencyStatus: String, periods: Seq[AccountingPeriod])
+case class PayeResponse(dateOfRegistration: LocalDate, taxSolvencyStatus: String, accountingPeriods: Seq[AccountingPeriod])
 
 object PayeResponse {
   implicit val payeResponseWrites : Writes[PayeResponse] = (
     (JsPath \ "dateOfRegistration").write[LocalDate] and
       (JsPath \ "taxSolvencyStatus").write[String] and
-      (JsPath \ "periods").write[Seq[AccountingPeriod]]
+      (JsPath \ "accountingPeriods").write[Seq[AccountingPeriod]]
   )(unlift(PayeResponse.unapply))
 }

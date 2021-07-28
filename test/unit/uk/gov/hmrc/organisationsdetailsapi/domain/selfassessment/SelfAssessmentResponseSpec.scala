@@ -30,7 +30,7 @@ class SelfAssessmentResponseSpec extends AnyWordSpec with Matchers {
         |{
         |   "selfAssessmentStartDate": "2015-04-21",
         |   "taxSolvencyStatus": "I",
-        |   "returns": []
+        |   "taxReturns": []
         |}
         |""".stripMargin
 
