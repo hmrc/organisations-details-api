@@ -168,7 +168,7 @@ class NumberOfEmployeesControllerSpec
       )
     }
 
-    "fail when correlationId is not malformed" in {
+    "fail when correlationId is malformed" in {
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
       when(mockScopesService.getEndPointScopes("number-of-employees")).thenReturn(Seq("test-scope"))
