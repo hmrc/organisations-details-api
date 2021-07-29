@@ -56,7 +56,7 @@ class IfConnectorSpec
     with IfHelpers {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
-  val stubHost = "localhost"
+  val stubHost = "127.0.0.1"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
   val integrationFrameworkAuthorizationToken = "IF_TOKEN"
   val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
@@ -67,7 +67,7 @@ class IfConnectorSpec
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled"  -> false,
-      "microservice.services.integration-framework.host" -> "localhost",
+      "microservice.services.integration-framework.host" -> "127.0.0.1",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
       "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment
@@ -219,6 +219,8 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
         val result: CorporationTaxReturnDetailsResponse = await(
@@ -244,6 +246,8 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
 
@@ -273,6 +277,8 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
         val result:SelfAssessmentReturnDetailResponse = await(
@@ -297,6 +303,8 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
         intercept[InternalServerException] {
@@ -327,6 +335,8 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
         val result: EmployeeCountResponse = await(
@@ -354,6 +364,8 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
         intercept[InternalServerException] {
@@ -389,6 +401,8 @@ class IfConnectorSpec
       stubFor(
         post(urlPathMatching(s"/organisations/employers/employee/counts"))
           .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+          .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+          .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
           .willReturn(aResponse().withStatus(400).withBody(jsonResponse)))
 
       intercept[InternalServerException] {
