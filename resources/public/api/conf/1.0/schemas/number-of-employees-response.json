@@ -3,6 +3,16 @@
   "description": "Number of employees response",
   "type": "object",
   "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI for this endpoint."
+        }
+      }
+    },
     "payeReference": {
       "description": "The organisation's PAYE reference, consisting of districtNumber and schemeReference.",
       "type": "string",
