@@ -17,7 +17,7 @@
         "S"
       ]
     },
-    "returns": {
+    "taxReturns": {
       "type": "array",
       "description": "Self Assessment tax returns.",
       "items": {
@@ -30,8 +30,9 @@
           },
           "taxYear": {
             "type": "string",
-            "id": "tax-year",
-            "example": "2020-21"
+            "description": "The tax year.",
+            "pattern": "^20[0-9]{2}$",
+            "example": "2020"
           }
         },
         "required": [
@@ -44,6 +45,6 @@
   "required": [
     "selfAssessmentStartDate",
     "taxSolvencyStatus",
-    "returns"
+    "taxReturns"
   ]
 }

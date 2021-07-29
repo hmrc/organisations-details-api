@@ -19,12 +19,12 @@ package uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Writes}
 
-case class SelfAssessmentReturn(totalBusinessSalesTurnover: Double, taxYear: String)
+case class SelfAssessmentReturn(totalBusinessSalesTurnover: Option[Double], taxYear: Option[String])
 
 object SelfAssessmentReturn {
   implicit val selfAssessmentReturnWrites : Writes[SelfAssessmentReturn] = (
-    (JsPath \ "totalBusinessSalesTurnover").write[Double] and
-      (JsPath \ "taxYear").write[String]
+    (JsPath \ "totalBusinessSalesTurnover").writeNullable[Double] and
+      (JsPath \ "taxYear").writeNullable[String]
   )(unlift(SelfAssessmentReturn.unapply))
 }
 

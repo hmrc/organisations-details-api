@@ -65,13 +65,15 @@ class IfConnector @Inject()(
     call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
   }
 
-  def getSaReturnDetails(matchId: String, utr: String)(
+  def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[SelfAssessmentReturnDetailResponse] = {
 
     val detailsUrl =
-      s"$baseUrl/organisations/self-assessment/$utr/return/details"
+      s"$baseUrl/organisations/self-assessment/$utr/return/details${
+        filter.map(f => s"?fields=$f").getOrElse("")
+      }"
 
     call[SelfAssessmentReturnDetailResponse](detailsUrl, matchId)(
       implicitly,

@@ -284,7 +284,7 @@ class IfConnectorSpec
             .willReturn(okJson(jsonResponse)))
 
         val result:SelfAssessmentReturnDetailResponse = await(
-          underTest.getSaReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -309,7 +309,7 @@ class IfConnectorSpec
 
         intercept[InternalServerException] {
           await(
-            underTest.getSaReturnDetails(UUID.randomUUID().toString, utr)(
+            underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec

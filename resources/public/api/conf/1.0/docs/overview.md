@@ -4,6 +4,11 @@ This API allows government departments to get information from HMRC about an org
 - the number of employees in an organisation
 
 The responses exclude fields when they do not have a value.
+
+Data will be filtered using scopes so that only relevant data is shared. We'll assign scopes based on your data requirements.
+
+The responses exclude fields when they do not have a value.
+
 ### HAL HATEOS RESTful APIs
 This API is a HAL HATEOAS RESTful API. It has been designed to promote discoverability and to be self documenting.
 

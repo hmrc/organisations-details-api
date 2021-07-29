@@ -28,11 +28,11 @@ class SelfAssessmentReturnSpec extends AnyWordSpec with Matchers {
       """
         |{
         |   "totalBusinessSalesTurnover": 1234.56,
-        |   "taxYear": "2019-20"
+        |   "taxYear": "2019"
         |}
         |""".stripMargin
 
-    val saReturn = SelfAssessmentReturn(1234.56, "2019-20")
+    val saReturn = SelfAssessmentReturn(Some(1234.56), Some("2019"))
 
     val expectedResponse = Json.parse(expectedJson)
 

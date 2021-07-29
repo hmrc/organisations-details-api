@@ -28,16 +28,16 @@ import scala.concurrent.ExecutionContext
 class AuditHelper @Inject()(auditConnector: AuditConnector)
                            (implicit ec: ExecutionContext) {
 
-  def auditCorporationTaxApiResponse(correlationId: String,
-                                     matchId: String,
-                                     scopes: String,
-                                     request: RequestHeader,
-                                     selfLink: String,
-                                     response: Option[JsValue])
-                                    (implicit hc: HeaderCarrier) =
+  def auditApiResponse(correlationId: String,
+                       matchId: String,
+                       scopes: String,
+                       request: RequestHeader,
+                       selfLink: String,
+                       response: Option[JsValue])
+                      (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "CorporationTaxApiResponse",
-      CorporationTaxApiResponseEventModel(
+      "ApiResponseEvent",
+      ApiResponseEventModelWithResponse(
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,

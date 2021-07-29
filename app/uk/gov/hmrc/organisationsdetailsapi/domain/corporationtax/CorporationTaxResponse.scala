@@ -22,7 +22,7 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.Corporati
 
 import java.time.LocalDate
 
-case class CorporationTaxResponse(dateOfRegistration: Option[LocalDate], taxSolvencyStatus: Option[String], periods: Option[Seq[AccountingPeriod]])
+case class CorporationTaxResponse(dateOfRegistration: Option[LocalDate], taxSolvencyStatus: Option[String], accountingPeriods: Option[Seq[AccountingPeriod]])
 
 object CorporationTaxResponse {
 
@@ -36,6 +36,6 @@ object CorporationTaxResponse {
   implicit val corporationTaxResponseWrites : Writes[CorporationTaxResponse] = (
     (JsPath \ "dateOfRegistration").writeNullable[LocalDate] and
       (JsPath \ "taxSolvencyStatus").writeNullable[String] and
-      (JsPath \ "periods").writeNullable[Seq[AccountingPeriod]]
+      (JsPath \ "accountingPeriods").writeNullable[Seq[AccountingPeriod]]
   )(unlift(CorporationTaxResponse.unapply))
 }

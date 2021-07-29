@@ -21,8 +21,10 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, urlPathEqualT
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, SelfAssessmentReturnDetailResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
+
 
 object IfStub extends MockHost(8443) {
 
@@ -40,5 +42,21 @@ object IfStub extends MockHost(8443) {
     mock.register(
       get(urlPathEqualTo(s"/organisations/corporation-tax/$utr/return/details"))
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+
+  def searchSaDetails(utr: String, result: SelfAssessmentReturnDetailResponse): StubMapping =
+    mock.register(
+      get(urlPathEqualTo(s"/organisations/self-assessment/$utr/return/details"))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(result).toString())))
+
+  def searchSaDetailsNotFound(utr: String): StubMapping =
+    mock.register(
+      get(urlPathEqualTo(s"/organisations/self-assessment/$utr/return/details"))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND")))
+
+  def searchSaDetailsNotFoundRateLimited(utr: String) =
+    mock.register(
+      get(urlPathEqualTo(s"/organisations/self-assessment/$utr/return/details"))
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+
 
 }

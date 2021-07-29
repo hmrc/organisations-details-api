@@ -31,7 +31,7 @@ class CorporationTaxResponseSpec extends AnyWordSpec with Matchers {
         |{
         |   "dateOfRegistration": "2015-04-21",
         |   "taxSolvencyStatus" : "V",
-        |   "periods" : []
+        |   "accountingPeriods" : []
         |}
         |""".stripMargin
 
