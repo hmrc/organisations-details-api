@@ -71,9 +71,7 @@ class IfConnector @Inject()(
     val detailsUrl =
       s"$baseUrl/organisations/self-assessment/$utr/return/details"
 
-    call[SelfAssessmentReturnDetailResponse](detailsUrl, matchId)(
-      implicitly,
-      header(), request, ec)
+    call[SelfAssessmentReturnDetailResponse](detailsUrl, matchId)
   }
 
   def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest)(
@@ -84,32 +82,26 @@ class IfConnector @Inject()(
     val detailsUrl =
       s"$baseUrl/organisations/employers/employee/counts"
 
-    post[EmployeeCountRequest, EmployeeCountResponse](detailsUrl, matchId, body)(
-      implicitly[Writes[EmployeeCountRequest]],
-      implicitly,
-      header(), request, ec)
+    post[EmployeeCountRequest, EmployeeCountResponse](detailsUrl, matchId, body)
   }
 
   private def extractCorrelationId(requestHeader: RequestHeader) = validateCorrelationId(requestHeader).toString
 
-  private def header(extraHeaders: (String, String)*)(
-    implicit hc: HeaderCarrier) =
-    hc.copy(
-      authorization =
-        Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
-      .withExtraHeaders(
-        Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
+  def setHeaders = Seq(
+    HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
+    "Environment"             -> integrationFrameworkEnvironment
+  )
 
   private def call[T](url: String, matchId: String)
                   (implicit rds: HttpReads[T], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.GET[T](url)(implicitly, header(), ec) map { response =>
+    recover(http.GET[T](url, headers = setHeaders) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)
 
   private def post[I,O](url: String, matchId: String, body: I)
                      (implicit wts: Writes[I], reads: HttpReads[O], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.POST[I,O](url, body)(implicitly[Writes[I]], implicitly[HttpReads[O]], header(), ec) map { response =>
+    recover(http.POST[I,O](url, body, headers = setHeaders) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)

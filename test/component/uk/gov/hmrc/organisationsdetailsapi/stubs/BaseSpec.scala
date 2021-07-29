@@ -40,7 +40,7 @@ trait BaseSpec
     .build()
 
   val timeout = Duration(5, TimeUnit.SECONDS)
-  val serviceUrl = s"http://localhost:$port"
+  val serviceUrl = s"http://127.0.0.1:$port"
   val mocks = Seq()
   val authToken = "Bearer AUTH_TOKEN"
   val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
