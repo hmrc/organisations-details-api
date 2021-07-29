@@ -104,7 +104,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
 
         response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "V"
-        response.periods.get.length shouldBe 2
+        response.accountingPeriods.get.length shouldBe 2
 
       }
 
@@ -173,7 +173,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
 
         response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "V"
-        response.periods.get.length shouldBe 2
+        response.accountingPeriods.get.length shouldBe 2
 
       }
     }

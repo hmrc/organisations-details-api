@@ -73,7 +73,7 @@ class SelfAssessmentControllerSpec extends BaseSpec {
           |     "href":"/organisations/details/self-assessment?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
           |     }
           |   },
-          | "returns": [{
+          | "taxReturns": [{
           |   "totalBusinessSalesTurnover":50000,
           |   "taxYear":"2020"
           | }]

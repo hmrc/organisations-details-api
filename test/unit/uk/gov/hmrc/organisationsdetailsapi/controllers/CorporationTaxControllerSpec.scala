@@ -70,7 +70,7 @@ class CorporationTaxControllerSpec
   private val sampleResponse = CorporationTaxResponse(
     dateOfRegistration = Some(LocalDate.of(2014, 4, 21)),
     taxSolvencyStatus = Some("V"),
-    periods = Some(Seq(
+    accountingPeriods = Some(Seq(
       AccountingPeriod(
         accountingPeriodStartDate = Some(LocalDate.of(2017, 4, 6)),
         accountingPeriodEndDate = Some(LocalDate.of(2017, 10, 5)),
@@ -115,7 +115,7 @@ class CorporationTaxControllerSpec
             |        }
             |    },
             |    "dateOfRegistration": "2014-04-21",
-            |    "periods": [
+            |    "accountingPeriods": [
             |        {
             |            "accountingPeriodStartDate": "2017-04-06",
             |            "accountingPeriodEndDate": "2017-10-05",

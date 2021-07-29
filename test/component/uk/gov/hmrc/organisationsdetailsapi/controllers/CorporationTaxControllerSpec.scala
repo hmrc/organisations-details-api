@@ -85,7 +85,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
           |        }
           |    },
           |    "dateOfRegistration": "2015-04-21",
-          |    "periods": [
+          |    "accountingPeriods": [
           |        {
           |            "accountingPeriodStartDate": "2018-04-06",
           |            "accountingPeriodEndDate": "2018-10-05",

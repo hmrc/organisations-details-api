@@ -105,7 +105,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
 
         response.selfAssessmentStartDate.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "I"
-        response.returns.get.length shouldBe 2
+        response.taxReturns.get.length shouldBe 2
 
       }
 
@@ -176,7 +176,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
 
         response.selfAssessmentStartDate.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "I"
-        response.returns.get.length shouldBe 2
+        response.taxReturns.get.length shouldBe 2
       }
     }
   }

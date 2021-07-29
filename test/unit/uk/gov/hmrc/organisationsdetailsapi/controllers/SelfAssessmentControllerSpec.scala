@@ -72,7 +72,7 @@ class SelfAssessmentControllerSpec
   private val sampleResponse = SelfAssessmentResponse(
     selfAssessmentStartDate = Some(LocalDate.of(2020, 1, 1)),
     taxSolvencyStatus = Some("I"),
-    returns = Some(Seq(SelfAssessmentReturn(
+    taxReturns = Some(Seq(SelfAssessmentReturn(
       totalBusinessSalesTurnover = Some(50000),
       taxYear = Some("2020")
     )))
@@ -108,7 +108,7 @@ class SelfAssessmentControllerSpec
              |    "href":"/organisations/details/self-assessment?matchId=32696d72-6216-475f-b213-ba76921cf459"
              |  }
              |},
-             |"returns":[
+             |"taxReturns":[
              |  {
              |    "totalBusinessSalesTurnover":50000,
              |    "taxYear":"2020"
