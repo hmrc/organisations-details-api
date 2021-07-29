@@ -17,12 +17,11 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.connectors
 
 import java.util.UUID
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.matching.EqualToJsonPattern
-import org.mockito.ArgumentMatchers.{any, matches, contains}
+import org.mockito.ArgumentMatchers.{any, contains, matches}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
 import org.scalatest.BeforeAndAfterEach
@@ -33,7 +32,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
@@ -219,7 +218,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
@@ -246,7 +245,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
@@ -277,7 +276,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
@@ -303,7 +302,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
@@ -335,7 +334,7 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
@@ -364,7 +363,7 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(okJson(jsonResponse)))
 
@@ -401,7 +400,7 @@ class IfConnectorSpec
       stubFor(
         post(urlPathMatching(s"/organisations/employers/employee/counts"))
           .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
-          .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+          .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
           .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
           .willReturn(aResponse().withStatus(400).withBody(jsonResponse)))
 
