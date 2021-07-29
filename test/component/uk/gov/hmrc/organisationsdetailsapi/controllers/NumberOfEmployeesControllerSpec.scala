@@ -84,9 +84,9 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
           |            "href": "/organisations/details/number-of-employees?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
           |        }
           |    },
-          |    "returns": [
+          |    "employeeCounts": [
           |        {
-          |            "payeReference": "RT882d",
+          |            "payeReference": "RT882d/456",
           |            "counts": [
           |                {
           |                    "numberOfEmployees": 1234,

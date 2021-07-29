@@ -123,7 +123,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
         val result: NumberOfEmployeesResponse = response.get.head
 
         result.counts.get.length shouldBe 2
-        result.payeReference.get shouldBe "RT882d"
+        result.payeReference.get shouldBe "RT882d/456"
 
       }
 
@@ -193,7 +193,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
           .getEmployeeCount(any(), any(), any(), any())(any(), any(), any())
 
         result.counts.get.length shouldBe 2
-        result.payeReference.get shouldBe "RT882d"
+        result.payeReference.get shouldBe "RT882d/456"
 
       }
     }

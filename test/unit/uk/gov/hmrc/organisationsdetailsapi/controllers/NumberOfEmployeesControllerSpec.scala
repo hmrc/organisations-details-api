@@ -108,7 +108,7 @@ class NumberOfEmployeesControllerSpec
       when(mockNumberOfEmployeesService.get(refEq(sampleMatchIdUUID), eqTo(sampleRequest),  eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Some(Seq(
           NumberOfEmployeesResponse(
-            Some("RT882d"),
+            Some("RT882d/123"),
             Some(Seq(
               NumberOfEmployeeCounts(Some(1234), Some("2019-10"))
             ))
@@ -127,9 +127,9 @@ class NumberOfEmployeesControllerSpec
           |            "href": "/organisations/details/number-of-employees?matchId=32696d72-6216-475f-b213-ba76921cf459"
           |        }
           |    },
-          |    "returns": [
+          |    "employeeCounts": [
           |        {
-          |            "payeReference": "RT882d",
+          |            "payeReference": "RT882d/123",
           |            "counts": [
           |                {
           |                    "numberOfEmployees": 1234,

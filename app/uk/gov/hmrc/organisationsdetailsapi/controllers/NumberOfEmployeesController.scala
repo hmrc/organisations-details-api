@@ -53,7 +53,9 @@ class NumberOfEmployeesController @Inject()(val authConnector: AuthConnector,
           numberOfEmployeesService.get(matchId, employeeCountRequest, authScopes).map { numberOfEmployees =>
             val selfLink = HalLink("self", s"$self?matchId=$matchId")
 
-            val response = Json.toJson(state(Json.obj("returns" -> numberOfEmployees)) ++ selfLink)
+            val arrayToReturn = numberOfEmployees.getOrElse(Seq.empty)
+
+            val response = Json.toJson(state(Json.obj("employeeCounts" -> arrayToReturn)) ++ selfLink)
 
             auditHelper.auditNumberOfEmployeesApiResponse(correlationId.toString, matchId.toString,
               authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(numberOfEmployees)))

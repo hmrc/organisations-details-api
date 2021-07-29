@@ -45,13 +45,13 @@ class NumberOfEmployeesResponseSpec extends AnyWordSpec with Matchers {
 
     val payeReferenceAndCount =  PayeReferenceAndCount(
       Some("123"),
-      Some("RT882d/456"),
+      Some("RT882d"),
       None
     )
 
     val result = NumberOfEmployeesResponse.create(payeReferenceAndCount)
 
-    result.payeReference.get shouldBe "RT882d/456"
+    result.payeReference.get shouldBe "RT882d/123"
     result.counts shouldBe None
   }
 }

@@ -20,6 +20,7 @@ import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
 
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -80,6 +81,10 @@ trait CacheIdBase {
 
 case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
   lazy val id: String = s"$matchId-$cacheKey-corporation-tax"
+}
+
+case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, startDate: String, endDate: String) extends CacheIdBase {
+  lazy val id: String = s"$matchId-$startDate-$endDate-$cacheKey-number-of-employees"
 }
 
 case class SaCacheId(matchId: UUID) extends CacheIdBase {
