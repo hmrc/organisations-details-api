@@ -87,6 +87,6 @@ case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, startDate: 
   lazy val id: String = s"$matchId-$startDate-$endDate-$cacheKey-number-of-employees"
 }
 
-case class SaCacheId(matchId: UUID) extends CacheIdBase {
-  lazy val id: String = s"$matchId-self-assessment"
+case class SaCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
+  lazy val id: String = s"$matchId-$cacheKey-self-assessment"
 }

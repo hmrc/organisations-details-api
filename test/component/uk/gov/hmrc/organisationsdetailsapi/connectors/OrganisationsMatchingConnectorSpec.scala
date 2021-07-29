@@ -26,12 +26,14 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.TestSupport
-
 import java.util.UUID
+
+import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
+
 import scala.concurrent._
 import scala.concurrent.duration._
 
@@ -115,7 +117,7 @@ class OrganisationsMatchingConnectorSpec
       val jsonResponse = ""
 
       stubWithResponseStatus(NOT_FOUND, jsonResponse, matchId);
-      assertThrows[NotFoundException] {
+      assertThrows[MatchNotFoundException] {
         Await.result(organisationsMatchingConnector.resolve(matchIdUUID), 2 seconds)
       }
     }

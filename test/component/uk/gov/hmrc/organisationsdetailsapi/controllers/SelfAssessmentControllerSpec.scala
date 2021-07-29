@@ -16,48 +16,38 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import java.time.LocalDate
+import java.util.UUID
+
+import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-
-import java.util.UUID
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
-import scalaj.http.{Http, HttpOptions}
+import scalaj.http.Http
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{AccountingPeriod => IfAccountingPeriod}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
 
-class CorporationTaxControllerSpec extends BaseSpec {
+class SelfAssessmentControllerSpec extends BaseSpec {
 
   val matchId = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
   val utr = "1234567890"
   val scopes = List("read:organisations-details-ho-ssp")
-  val period1 = AccountingPeriod(Some(LocalDate.of(2018, 4, 6)), Some(LocalDate.of(2018, 10, 5)), Some(38390))
-  val period2 = AccountingPeriod(Some(LocalDate.of(2018, 10, 6)), Some(LocalDate.of(2018, 4, 5)), Some(2340))
-  val taxSolvencyStatus = Some("V")
-  val dateOfRegistration = Some(LocalDate.of(2014, 4, 21))
   val validMatch = OrganisationMatch(matchId, "1234567890")
-  val validCtIfResponse = CorporationTaxReturnDetailsResponse(
-    Some(validMatch.utr),
-    Some("2015-04-21"),
-    Some("V"),
-    Some(Seq(
-      IfAccountingPeriod(
-        Some("2018-04-06"),
-        Some("2018-10-05"),
-        Some(38390)
-      ),
-      IfAccountingPeriod(
-        Some("2018-10-06"),
-        Some("2019-04-05"),
-        Some(2340)
-      ),
+  val ifData = SelfAssessmentReturnDetailResponse(
+    utr = Some(utr),
+    startDate = Some("2020-01-01"),
+    taxPayerType = Some("INDIVIDUAL"),
+    taxSolvencyStatus = Some("I"),
+    taxYears = Some(Seq(
+      TaxYear(
+        taxyear = Some("2020"),
+        businessSalesTurnover = Some(50000))
     ))
   )
 
-  Feature("cotax") {
+
+  Feature("sa") {
+
     Scenario("a valid request is made for an existing match") {
+
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
@@ -65,40 +55,29 @@ class CorporationTaxControllerSpec extends BaseSpec {
       OrganisationsMatchingApiStub.hasMatchingRecord(matchId.toString, validMatch.utr)
 
       Given("Data found in IF")
-      IfStub.searchCtReturnDetails(validMatch.utr, validCtIfResponse)
+      IfStub.searchSaDetails(validMatch.utr, ifData)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
+      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
-        .option(HttpOptions.readTimeout(10000))
         .asString
 
       response.code mustBe OK
 
       Json.parse(response.body) mustBe Json.parse(
-        """
-          |{
-          |    "taxSolvencyStatus": "V",
-          |    "_links": {
-          |        "self": {
-          |            "href": "/organisations/details/corporation-tax?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
-          |        }
-          |    },
-          |    "dateOfRegistration": "2015-04-21",
-          |    "accountingPeriods": [
-          |        {
-          |            "accountingPeriodStartDate": "2018-04-06",
-          |            "accountingPeriodEndDate": "2018-10-05",
-          |            "turnover": 38390
-          |        },
-          |        {
-          |            "accountingPeriodStartDate": "2018-10-06",
-          |            "accountingPeriodEndDate": "2019-04-05",
-          |            "turnover": 2340
-          |        }
-          |    ]
-          |}
-          |""".stripMargin)
+        """{
+          | "selfAssessmentStartDate":"2020-01-01",
+          | "taxSolvencyStatus":"I",
+          | "_links":
+          |   {"self": {
+          |     "href":"/organisations/details/self-assessment?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
+          |     }
+          |   },
+          | "taxReturns": [{
+          |   "totalBusinessSalesTurnover":50000,
+          |   "taxYear":"2020"
+          | }]
+          | }""".stripMargin)
     }
 
     Scenario("not authorized") {
@@ -107,7 +86,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
+      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
@@ -124,7 +103,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax/")
+      val response = Http(s"$serviceUrl/self-assessment")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
@@ -136,7 +115,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax?matchId=foo")
+      val response = Http(s"$serviceUrl/self-assessment?matchId=foo")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
@@ -153,7 +132,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
+      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
         .headers(requestHeadersInvalid(acceptHeaderVP1))
         .asString
 
@@ -170,7 +149,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
+      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
         .headers(requestHeadersMalformed(acceptHeaderVP1))
         .asString
 
@@ -182,5 +161,4 @@ class CorporationTaxControllerSpec extends BaseSpec {
       )
     }
   }
-
 }
