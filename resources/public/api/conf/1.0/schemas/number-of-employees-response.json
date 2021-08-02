@@ -11,7 +11,7 @@
           "payeReference": {
             "description": "The organisation's PAYE reference, consisting of districtNumber and schemeReference.",
             "type": "string",
-            "pattern": "^[a-zA-Z0-9]{1,10}[\\/][0-9]{3}$",
+            "pattern": "^[0-9]{3}[/][a-zA-Z0-9]{1,10}$",
             "example": "456/RT882d"
           },
           "counts": {
