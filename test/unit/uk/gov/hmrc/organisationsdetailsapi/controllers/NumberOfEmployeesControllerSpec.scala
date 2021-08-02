@@ -33,8 +33,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.NumberOfEmployeesController
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{EmployeeCountRequest, PayeReference}
-import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeeCounts, NumberOfEmployeesResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeeCounts, NumberOfEmployeesRequest, NumberOfEmployeesResponse, PayeReference => RequestPayeReference}
 import uk.gov.hmrc.organisationsdetailsapi.services.{NumberOfEmployeesService, ScopesService}
 import utils.TestSupport
 
@@ -61,12 +60,12 @@ class NumberOfEmployeesControllerSpec
   private val sampleMatchId = "32696d72-6216-475f-b213-ba76921cf459"
   private val sampleMatchIdUUID = UUID.fromString(sampleMatchId)
 
-  private val sampleRequest  = EmployeeCountRequest(
+  private val sampleRequest  = NumberOfEmployeesRequest(
     "2019-10-01",
     "2020-04-05",
     Seq(
-      PayeReference("456", "RT882d"),
-      PayeReference("123", "AB888666")
+      RequestPayeReference("456", "RT882d"),
+      RequestPayeReference("123", "AB888666")
     )
   )
 

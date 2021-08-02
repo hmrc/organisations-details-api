@@ -19,9 +19,9 @@ package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
 import play.api.libs.functional.syntax.unlift
 import play.api.libs.json.{Format, JsPath}
 import play.api.libs.json.Reads.pattern
-
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesRequest
 
 import scala.util.matching.Regex
 
@@ -122,4 +122,11 @@ object EmployeeCountRequest {
       (JsPath \ "references").write[Seq[PayeReference]]
     )(unlift(EmployeeCountRequest.unapply))
   )
+
+  def createFromRequest(request: NumberOfEmployeesRequest): EmployeeCountRequest =
+    EmployeeCountRequest(
+      request.fromDate,
+      request.toDate,
+      request.payeReference.map(x => PayeReference(x.districtNumber, x.schemeReference))
+    )
 }

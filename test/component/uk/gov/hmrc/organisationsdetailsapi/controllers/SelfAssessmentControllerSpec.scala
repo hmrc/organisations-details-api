@@ -17,11 +17,10 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import java.util.UUID
-
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import scalaj.http.Http
+import scalaj.http.{Http, HttpOptions}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
 
@@ -60,6 +59,7 @@ class SelfAssessmentControllerSpec extends BaseSpec {
       When("the API is invoked")
       val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
+        .option(HttpOptions.readTimeout(10000))
         .asString
 
       response.code mustBe OK

@@ -17,10 +17,8 @@
 package uk.gov.hmrc.organisationsdetailsapi.services
 
 import play.api.libs.json.Format
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
 
-import java.time.LocalDate
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global

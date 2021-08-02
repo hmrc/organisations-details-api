@@ -21,7 +21,8 @@ import controllers.Assets.{BAD_REQUEST, OK, UNAUTHORIZED}
 import play.api.libs.json.Json
 import scalaj.http.{Http, HttpOptions}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{Count, EmployeeCountRequest, EmployeeCountResponse, PayeReference, PayeReferenceAndCount}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{Count, EmployeeCountRequest, EmployeeCountResponse, PayeReferenceAndCount}
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, PayeReference => RequestPayeReference}
 
 import java.util.UUID
 
@@ -48,13 +49,15 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
     ))
   )
 
-  private val sampleValidRequest = EmployeeCountRequest(
+  private val sampleValidRequest = NumberOfEmployeesRequest(
     "2019-10-01",
     "2020-04-05",
     Seq(
-      PayeReference("456", "RT882d")
+      RequestPayeReference("456", "RT882d")
     )
   )
+
+  private val ifRequest = EmployeeCountRequest.createFromRequest(sampleValidRequest)
 
   Feature("Number of Employees") {
     Scenario("a valid request is made for an existing match") {
@@ -65,7 +68,7 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
       OrganisationsMatchingApiStub.hasMatchingRecord(matchId.toString, validMatch.utr)
 
       Given("Data found in IF")
-      IfStub.searchNumberOfEmployees(validMatch.utr, validNumberOfEmployeesIfResponse, sampleValidRequest)
+      IfStub.searchNumberOfEmployees(validMatch.utr, validNumberOfEmployeesIfResponse, ifRequest)
 
       When("The API is invoked")
       val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
@@ -86,7 +89,7 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
           |    },
           |    "employeeCounts": [
           |        {
-          |            "payeReference": "RT882d/456",
+          |            "payeReference": "456/RT882d",
           |            "counts": [
           |                {
           |                    "numberOfEmployees": 1234,

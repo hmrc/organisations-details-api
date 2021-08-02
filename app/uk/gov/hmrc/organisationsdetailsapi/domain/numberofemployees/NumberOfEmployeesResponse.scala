@@ -26,7 +26,7 @@ object NumberOfEmployeesResponse {
   def create(payeReferenceAndCount: PayeReferenceAndCount) : NumberOfEmployeesResponse = {
 
     val payeRef = (payeReferenceAndCount.payeReference, payeReferenceAndCount.districtNumber) match {
-      case (Some(payeRef), Some(districtNum)) => Some(s"${payeRef}/${districtNum}")
+      case (Some(payeRef), Some(districtNum)) => Some(s"${districtNum}/${payeRef}")
       case (_, _) => None
     }
 

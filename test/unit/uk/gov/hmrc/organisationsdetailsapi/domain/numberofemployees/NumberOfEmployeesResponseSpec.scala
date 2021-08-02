@@ -27,12 +27,12 @@ class NumberOfEmployeesResponseSpec extends AnyWordSpec with Matchers {
     val expectedJson =
       """
         |{
-        |  "payeReference": "RT882d/456",
+        |  "payeReference": "456/RT882d",
         |  "counts": []
         |}
         |""".stripMargin
 
-    val numberOfEmployeesResponse = NumberOfEmployeesResponse(Some("RT882d/456"), Some(Seq.empty))
+    val numberOfEmployeesResponse = NumberOfEmployeesResponse(Some("456/RT882d"), Some(Seq.empty))
 
     val expectedResponse = Json.parse(expectedJson)
 
@@ -51,7 +51,7 @@ class NumberOfEmployeesResponseSpec extends AnyWordSpec with Matchers {
 
     val result = NumberOfEmployeesResponse.create(payeReferenceAndCount)
 
-    result.payeReference.get shouldBe "RT882d/123"
+    result.payeReference.get shouldBe "123/RT882d"
     result.counts shouldBe None
   }
 }

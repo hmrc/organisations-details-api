@@ -30,8 +30,9 @@ import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework._
-import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, NumberOfEmployeesResponse}
 import uk.gov.hmrc.organisationsdetailsapi.services._
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{PayeReference => RequestPayeReference}
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -60,7 +61,20 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
     val mockOrganisationsMatchingConnector: OrganisationsMatchingConnector = mock[OrganisationsMatchingConnector]
     val endpoint = "number-of-employees"
 
-    val request: EmployeeCountRequest = EmployeeCountRequest(
+    val request: NumberOfEmployeesRequest = NumberOfEmployeesRequest(
+      "2019-10-01",
+      "2020-04-05",
+      Seq(RequestPayeReference(
+        "456",
+        "RT882d"
+      ),
+        RequestPayeReference(
+          "123",
+          "AB888666"
+        ))
+    )
+
+    val ifRequest: EmployeeCountRequest = EmployeeCountRequest(
       "2019-10-01",
       "2020-04-05",
       Seq(PayeReference(
@@ -103,7 +117,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getEmployeeCount(matchId, utr, request, Some("ABC")))
+        when(mockIfConnector.getEmployeeCount(matchId, utr, ifRequest, Some("ABC")))
           .thenReturn(Future.successful(EmployeeCountResponse(
             Some("2019-10-01"),
             Some("2020-04-05"),
@@ -123,7 +137,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
         val result: NumberOfEmployeesResponse = response.get.head
 
         result.counts.get.length shouldBe 2
-        result.payeReference.get shouldBe "RT882d/456"
+        result.payeReference.get shouldBe "456/RT882d"
 
       }
 
@@ -170,7 +184,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getEmployeeCount(refEq(matchId), eqTo(utr), eqTo(request), eqTo(Some("ABC")))(any(), any(), any()))
+        when(mockIfConnector.getEmployeeCount(refEq(matchId), eqTo(utr), eqTo(ifRequest), eqTo(Some("ABC")))(any(), any(), any()))
           .thenReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
           .thenReturn(Future.successful(EmployeeCountResponse(
             Some("2019-10-01"),
@@ -193,7 +207,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
           .getEmployeeCount(any(), any(), any(), any())(any(), any(), any())
 
         result.counts.get.length shouldBe 2
-        result.payeReference.get shouldBe "RT882d/456"
+        result.payeReference.get shouldBe "456/RT882d"
 
       }
     }

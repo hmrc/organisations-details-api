@@ -23,8 +23,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents, PlayBodyParsers}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesRequest
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.organisationsdetailsapi.services.{NumberOfEmployeesService, ScopesService}
 
@@ -47,7 +46,7 @@ class NumberOfEmployeesController @Inject()(val authConnector: AuthConnector,
   def numberOfEmployees(matchId: UUID): Action[JsValue] = Action.async(bodyParsers.json) {
     implicit request =>
       authenticate(scopesService.getEndPointScopes("number-of-employees"), matchId.toString) { authScopes =>
-        withValidJson[EmployeeCountRequest] { employeeCountRequest =>
+        withValidJson[NumberOfEmployeesRequest] { employeeCountRequest =>
           val correlationId = validateCorrelationId(request)
 
           numberOfEmployeesService.get(matchId, employeeCountRequest, authScopes).map { numberOfEmployees =>

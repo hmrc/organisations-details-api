@@ -20,7 +20,7 @@ import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest
-import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, NumberOfEmployeesResponse}
 
 import java.util.UUID
 import javax.inject.{Inject, Named}
@@ -36,7 +36,7 @@ class NumberOfEmployeesService @Inject()(
                               )
   extends BaseService(retryDelay, organisationsMatchingConnector) {
 
-  def get(matchId: UUID, employeeCountRequest: EmployeeCountRequest, scopes: Iterable[String])
+  def get(matchId: UUID, employeeCountRequest: NumberOfEmployeesRequest, scopes: Iterable[String])
          (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Option[Seq[NumberOfEmployeesResponse]]] = {
     resolve(matchId).flatMap {
       organisationMatch =>
@@ -44,12 +44,12 @@ class NumberOfEmployeesService @Inject()(
         val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList)
         cacheService
           .get(
-            cacheId = NumberOfEmployeesCacheId(matchId, cacheKey, employeeCountRequest.startDate, employeeCountRequest.endDate),
+            cacheId = NumberOfEmployeesCacheId(matchId, cacheKey, employeeCountRequest.fromDate, employeeCountRequest.toDate),
             fallbackFunction = withRetry {
               ifConnector.getEmployeeCount(
                 matchId.toString,
                 organisationMatch.utr,
-                employeeCountRequest,
+                EmployeeCountRequest.createFromRequest(employeeCountRequest),
                 Some(fieldsQuery)
               )
             }
