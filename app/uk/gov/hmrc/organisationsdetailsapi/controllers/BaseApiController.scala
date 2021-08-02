@@ -25,7 +25,6 @@ import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrol
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
-import uk.gov.hmrc.organisationsdetailsapi.errorhandler.NestedError
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
@@ -38,23 +37,13 @@ abstract class BaseApiController (cc: ControllerComponents) extends BackendContr
   protected override implicit def hc(implicit rh: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequest(rh)
 
-  def withValidJson[T](f: T => Future[Result])(implicit ec: ExecutionContext,
-                                               hc: HeaderCarrier,
-                                               request: Request[JsValue],
+  def withValidJson[T](f: T => Future[Result])(implicit request: Request[JsValue],
                                                r: Reads[T]): Future[Result] =
     request.body.validate[T] match {
       case JsSuccess(t, _) => f(t)
       case JsError(errors) =>
-        Future.failed(new BadRequestException(errors.toString()))
+        Future.failed(new BadRequestException("Malformed payload"))
     }
-
-  def errorResult(errors: IndexedSeq[NestedError]): Future[Result] =
-    Future.successful(
-      BadRequest(
-        Json.obj(
-          "code" -> "BAD_REQUEST",
-          "message" -> "The request body does not conform to the schema.",
-          "errors" -> Json.toJson(errors.toList))))
 
   def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
                        (implicit request: RequestHeader,

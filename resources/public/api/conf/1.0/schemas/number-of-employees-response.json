@@ -3,32 +3,46 @@
   "description": "Number of employees response",
   "type": "object",
   "properties": {
-    "payeReference": {
-      "description": "The organisation's PAYE reference, consisting of districtNumber and schemeReference.",
-      "type": "string",
-      "pattern": "^[a-zA-Z0-9]{1,10}[\\/][0-9]{3}$",
-      "example": "RT882d/456"
-    },
-    "counts": {
+    "employeeCounts": {
       "type": "array",
-      "description": "Details about the employee count.",
       "items": {
         "type": "object",
         "properties": {
-          "numberOfEmployees": {
-            "type": "integer",
-            "example": "1234",
-            "description": "The number of employees counted on a particular date. Minimum of 1, maximum of 99999999, multiple of 1."
-          },
-          "dateOfCount": {
+          "payeReference": {
+            "description": "The organisation's PAYE reference, consisting of districtNumber and schemeReference.",
             "type": "string",
-            "description": "The date the employee count was taken.",
-            "example": "2019-03",
-            "pattern": "^[1-2][0-9]{3}-[0-9]{2}$"
+            "pattern": "^[0-9]{3}[/][a-zA-Z0-9]{1,10}$",
+            "example": "456/RT882d"
+          },
+          "counts": {
+            "type": "array",
+            "description": "Details about the employee count.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "numberOfEmployees": {
+                  "type": "integer",
+                  "example": "1234",
+                  "description": "The number of employees counted on a particular date. Minimum of 1, maximum of 99999999, multiple of 1."
+                },
+                "dateOfCount": {
+                  "type": "string",
+                  "description": "The date the employee count was taken.",
+                  "example": "2019-03",
+                  "pattern": "^[1-2][0-9]{3}-[0-9]{2}$"
+                }
+              }
+            }
           }
         }
-      }
+      },
+      "required": [
+        "payeReference",
+        "counts"
+      ]
     }
   },
-  "required": ["payeReference", "counts"]
+  "required": [
+    "employeeCounts"
+  ]
 }

@@ -16,37 +16,51 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import java.util.UUID
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
+import controllers.Assets.{BAD_REQUEST, OK, UNAUTHORIZED}
 import play.api.libs.json.Json
-import play.api.test.Helpers._
 import scalaj.http.{Http, HttpOptions}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{Count, EmployeeCountRequest, EmployeeCountResponse, PayeReferenceAndCount}
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, PayeReference => RequestPayeReference}
 
-class SelfAssessmentControllerSpec extends BaseSpec {
+import java.util.UUID
 
-  val matchId = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
-  val utr = "1234567890"
-  val scopes = List("read:organisations-details-ho-ssp")
-  val validMatch = OrganisationMatch(matchId, "1234567890")
-  val ifData = SelfAssessmentReturnDetailResponse(
-    utr = Some(utr),
-    startDate = Some("2020-01-01"),
-    taxPayerType = Some("INDIVIDUAL"),
-    taxSolvencyStatus = Some("I"),
-    taxYears = Some(Seq(
-      TaxYear(
-        taxyear = Some("2020"),
-        businessSalesTurnover = Some(50000))
+class NumberOfEmployeesControllerSpec extends BaseSpec {
+  private val matchId = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
+  private val utr = "1234567890"
+  private val scopes = List("read:organisations-details-ho-ssp")
+  private val validMatch = OrganisationMatch(matchId, utr)
+
+  private val validNumberOfEmployeesIfResponse = EmployeeCountResponse(
+    Some("2019-10-01"),
+    Some("2020-04-05"),
+    Some(Seq(
+      PayeReferenceAndCount(
+        Some("456"),
+        Some("RT882d"),
+        Some(Seq(
+          Count(
+            Some("2019-10"),
+            Some(1234)
+          )
+        ))
+      )
     ))
   )
 
+  private val sampleValidRequest = NumberOfEmployeesRequest(
+    "2019-10-01",
+    "2020-04-05",
+    Seq(
+      RequestPayeReference("456", "RT882d")
+    )
+  )
 
-  Feature("sa") {
+  private val ifRequest = EmployeeCountRequest.createFromRequest(sampleValidRequest)
 
+  Feature("Number of Employees") {
     Scenario("a valid request is made for an existing match") {
-
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
@@ -54,30 +68,39 @@ class SelfAssessmentControllerSpec extends BaseSpec {
       OrganisationsMatchingApiStub.hasMatchingRecord(matchId.toString, validMatch.utr)
 
       Given("Data found in IF")
-      IfStub.searchSaDetails(validMatch.utr, ifData)
+      IfStub.searchNumberOfEmployees(validMatch.utr, validNumberOfEmployeesIfResponse, ifRequest)
 
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
+      When("The API is invoked")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
+        .postData(Json.toJson(sampleValidRequest).toString())
         .option(HttpOptions.readTimeout(10000))
         .asString
 
       response.code mustBe OK
 
       Json.parse(response.body) mustBe Json.parse(
-        """{
-          | "selfAssessmentStartDate":"2020-01-01",
-          | "taxSolvencyStatus":"I",
-          | "_links":
-          |   {"self": {
-          |     "href":"/organisations/details/self-assessment?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
-          |     }
-          |   },
-          | "taxReturns": [{
-          |   "totalBusinessSalesTurnover":50000,
-          |   "taxYear":"2020"
-          | }]
-          | }""".stripMargin)
+        """
+          |{
+          |    "_links": {
+          |        "self": {
+          |            "href": "/organisations/details/number-of-employees?matchId=ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f"
+          |        }
+          |    },
+          |    "employeeCounts": [
+          |        {
+          |            "payeReference": "456/RT882d",
+          |            "counts": [
+          |                {
+          |                    "numberOfEmployees": 1234,
+          |                    "dateOfCount": "2019-10"
+          |                }
+          |            ]
+          |        }
+          |    ]
+          |}
+          |""".stripMargin)
+
     }
 
     Scenario("not authorized") {
@@ -86,8 +109,9 @@ class SelfAssessmentControllerSpec extends BaseSpec {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
         .headers(requestHeaders(acceptHeaderVP1))
+        .postData(Json.toJson(sampleValidRequest).toString())
         .asString
 
       Then("the response status should be 401 (unauthorized)")
@@ -103,8 +127,9 @@ class SelfAssessmentControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/self-assessment")
+      val response = Http(s"$serviceUrl/number-of-employees/")
         .headers(requestHeaders(acceptHeaderVP1))
+        .postData(Json.toJson(sampleValidRequest).toString())
         .asString
 
       response.code mustBe BAD_REQUEST
@@ -115,8 +140,9 @@ class SelfAssessmentControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/self-assessment?matchId=foo")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=foo")
         .headers(requestHeaders(acceptHeaderVP1))
+        .postData(Json.toJson(sampleValidRequest).toString())
         .asString
 
       response.code mustBe BAD_REQUEST
@@ -132,8 +158,9 @@ class SelfAssessmentControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
         .headers(requestHeadersInvalid(acceptHeaderVP1))
+        .postData(Json.toJson(sampleValidRequest).toString())
         .asString
 
       response.code mustBe BAD_REQUEST
@@ -149,8 +176,9 @@ class SelfAssessmentControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/self-assessment?matchId=$matchId")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
         .headers(requestHeadersMalformed(acceptHeaderVP1))
+        .postData(Json.toJson(sampleValidRequest).toString())
         .asString
 
       response.code mustBe BAD_REQUEST
@@ -160,5 +188,26 @@ class SelfAssessmentControllerSpec extends BaseSpec {
         "message" -> "Malformed CorrelationId"
       )
     }
+
+    Scenario("Invalid data posted with request") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("The API is invoked")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .postData(Json.obj("foo" -> "bar").toString())
+        .option(HttpOptions.readTimeout(10000))
+        .asString
+
+      response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "INVALID_REQUEST",
+        "message" -> "Malformed payload"
+      )
+
+    }
+
   }
 }

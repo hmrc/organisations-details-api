@@ -17,7 +17,6 @@
 package uk.gov.hmrc.organisationsdetailsapi.services
 
 import play.api.libs.json.Format
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
 
 import java.util.UUID
@@ -33,7 +32,7 @@ trait CacheService {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
+  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
     if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
       case Some(value) =>
         Future.successful(value)
@@ -64,6 +63,14 @@ class CorporationTaxCacheService @Inject()(val shortLivedCache: ShortLivedCache,
 
 }
 
+@Singleton
+class NumberOfEmployeesCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+  extends CacheService {
+
+  val key: String = conf.numberOfEmployeesKey
+
+}
+
 
 trait CacheIdBase {
   val id: String
@@ -72,6 +79,10 @@ trait CacheIdBase {
 
 case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
   lazy val id: String = s"$matchId-$cacheKey-corporation-tax"
+}
+
+case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, startDate: String, endDate: String) extends CacheIdBase {
+  lazy val id: String = s"$matchId-$startDate-$endDate-$cacheKey-number-of-employees"
 }
 
 case class SaCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {

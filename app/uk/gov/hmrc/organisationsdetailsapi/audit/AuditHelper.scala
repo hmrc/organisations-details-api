@@ -27,6 +27,31 @@ import scala.concurrent.ExecutionContext
 
 class AuditHelper @Inject()(auditConnector: AuditConnector)
                            (implicit ec: ExecutionContext) {
+  def auditNumberOfEmployeesApiResponse(
+                                         correlationId: String,
+                                         matchId: String,
+                                         scopes: String,
+                                         request: RequestHeader,
+                                         selfLink: String,
+                                         response: Option[JsValue]
+                                       )(implicit hc: HeaderCarrier): Unit =
+    auditConnector.sendExplicitAudit(
+      "NumberOfEmployeesApiResponse",
+      NumberOfEmployeesApiResponseEventModel(
+        deviceId = hc.deviceID.getOrElse("-"),
+        input = s"Request to ${request.path}",
+        method = request.method.toUpperCase,
+        userAgent = request.headers.get("User-Agent").getOrElse("-"),
+        apiVersion = "1.0",
+        matchId = matchId,
+        correlationId = Some(correlationId),
+        request.headers.get("X-Application-ID").getOrElse("-"),
+        scopes = scopes,
+        returnLinks = selfLink,
+        response = response
+      )
+    )
+
 
   def auditApiResponse(correlationId: String,
                        matchId: String,

@@ -80,13 +80,15 @@ class IfConnector @Inject()(
       header(), request, ec)
   }
 
-  def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest)(
+  def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[EmployeeCountResponse] = {
 
     val detailsUrl =
-      s"$baseUrl/organisations/employers/employee/counts"
+      s"$baseUrl/organisations/employers/employee/counts${
+        filter.map(f => s"?fields=$f").getOrElse("")
+      }"
 
     post[EmployeeCountRequest, EmployeeCountResponse](detailsUrl, matchId, body)(
       implicitly[Writes[EmployeeCountRequest]],
