@@ -32,7 +32,7 @@ class SelfAssessmentReturnSpec extends AnyWordSpec with Matchers {
         |}
         |""".stripMargin
 
-    val saReturn = SelfAssessmentReturn(1234.56, "2019")
+    val saReturn = SelfAssessmentReturn(Some(1234.56), Some("2019"))
 
     val expectedResponse = Json.parse(expectedJson)
 

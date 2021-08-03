@@ -34,7 +34,7 @@ class SelfAssessmentResponseSpec extends AnyWordSpec with Matchers {
         |}
         |""".stripMargin
 
-    val selfAssessmentResponse = SelfAssessmentResponse(LocalDate.parse("2015-04-21"), "I", Seq.empty)
+    val selfAssessmentResponse = SelfAssessmentResponse(Some(LocalDate.parse("2015-04-21")), Some("I"), Some(Seq.empty))
 
     val expectedResponse = Json.parse(expectedJson)
 

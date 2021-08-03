@@ -18,13 +18,27 @@ package uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Writes}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.PayeReferenceAndCount
 
-case class NumberOfEmployeesResponse(payeReference: String, counts: Seq[NumberOfEmployeeCounts])
+case class NumberOfEmployeesResponse(payeReference: Option[String], counts: Option[Seq[NumberOfEmployeeCounts]])
 
 object NumberOfEmployeesResponse {
+  def create(payeReferenceAndCount: PayeReferenceAndCount) : NumberOfEmployeesResponse = {
+
+    val payeRef = (payeReferenceAndCount.payeReference, payeReferenceAndCount.districtNumber) match {
+      case (Some(payeRef), Some(districtNum)) => Some(s"${districtNum}/${payeRef}")
+      case (_, _) => None
+    }
+
+    NumberOfEmployeesResponse(
+      payeRef,
+      payeReferenceAndCount.counts.map(x => x.map(NumberOfEmployeeCounts.create))
+    )
+  }
+
   implicit val numberOfEmployeesResponseWrites : Writes[NumberOfEmployeesResponse] =
     (
-      (JsPath \ "payeReference").write[String] and
-        (JsPath \ "counts").write[Seq[NumberOfEmployeeCounts]]
+      (JsPath \ "payeReference").writeNullable[String] and
+        (JsPath \ "counts").writeNullable[Seq[NumberOfEmployeeCounts]]
       )(unlift(NumberOfEmployeesResponse.unapply))
 }

@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain.paye
+package uk.gov.hmrc.organisationsdetailsapi.errorhandler
 
+import play.api.libs.json.{Json, OFormat}
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Writes}
+case class NestedError(code: String, message: String, path: String)
 
-import java.time.LocalDate
-
-case class AccountingPeriod(accountingPeriodStartDate: LocalDate, accountingPeriodEndDate: LocalDate, turnover: Int)
-
-object AccountingPeriod {
-  implicit val accountingPeriodWrites: Writes[AccountingPeriod] = (
-    (JsPath \ "accountingPeriodStartDate").write[LocalDate] and
-      (JsPath \ "accountingPeriodEndDate").write[LocalDate] and
-      (JsPath \ "turnover").write[Int]
-  )(unlift(AccountingPeriod.unapply))
+object NestedError {
+  implicit val format: OFormat[NestedError] = Json.format[NestedError]
 }

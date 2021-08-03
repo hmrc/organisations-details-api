@@ -3,16 +3,6 @@
   "description": "Pay As You Earn",
   "type": "object",
   "properties": {
-    "taxSolvencyStatus": {
-      "type": "string",
-      "description": "The tax solvency status for the organisation. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent.",
-      "enum": [
-        "A",
-        "V",
-        "S",
-        "I"
-      ]
-    },
     "_links": {
       "type": "object",
       "description": "A list of links for possible actions related to this endpoint.",
@@ -22,6 +12,16 @@
           "description": "The URI for this endpoint."
         }
       }
+    },
+    "taxSolvencyStatus": {
+      "type": "string",
+      "description": "The tax solvency status for the organisation. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent.",
+      "enum": [
+        "A",
+        "V",
+        "S",
+        "I"
+      ]
     },
     "dateOfRegistration": {
       "type": "string",

@@ -131,31 +131,31 @@ trait IfHelpers {
       taxSolvencyStatus = Some("S"),
       taxYears = Some(Seq(
         TaxYear(
-          taxYear = Some("2020"),
+          taxyear = Some("2020"),
           businessSalesTurnover = Some(38390.76)
         ),
         TaxYear(
-          taxYear = Some("2019"),
+          taxyear = Some("2019"),
           businessSalesTurnover = Some(12343.12)
         ),
         TaxYear(
-          taxYear = Some("2018"),
+          taxyear = Some("2018"),
           businessSalesTurnover = Some(20182.22)
         ),
         TaxYear(
-          taxYear = Some("2017"),
+          taxyear = Some("2017"),
           businessSalesTurnover = Some(20177.77)
         ),
         TaxYear(
-          taxYear = Some("2016"),
+          taxyear = Some("2016"),
           businessSalesTurnover = Some(20166.66)
         ),
         TaxYear(
-          taxYear = Some("2015"),
+          taxyear = Some("2015"),
           businessSalesTurnover = Some(20155.55)
         ),
         TaxYear(
-          taxYear = Some("2014"),
+          taxyear = Some("2014"),
           businessSalesTurnover = Some(20144.5)
         )
       ))

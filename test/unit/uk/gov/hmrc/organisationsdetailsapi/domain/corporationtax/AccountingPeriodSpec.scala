@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.organisationsdetailsapi.domain.paye
+package unit.uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.paye.AccountingPeriod
+import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{AccountingPeriod => IfAccountingPeriod}
 
 import java.time.LocalDate
 
@@ -35,12 +36,30 @@ class AccountingPeriodSpec extends AnyWordSpec with Matchers {
         |}
         |""".stripMargin
 
-    val accountingPeriod = AccountingPeriod(LocalDate.parse("2018-04-06"), LocalDate.parse("2018-10-05"), 38390 )
+    val accountingPeriod = AccountingPeriod(
+      Some(LocalDate.parse("2018-04-06")),
+      Some(LocalDate.parse("2018-10-05")),
+      Some(38390)
+    )
     val expectedResult = Json.parse(json)
 
     val result = Json.toJson(accountingPeriod)
 
     result shouldBe expectedResult
+  }
+
+  "Create from a full IF Accounting Period" in {
+    val ifAccountingPeriod = IfAccountingPeriod(
+      Some("2018-04-06"),
+      Some("2018-10-05"),
+      Some(38390)
+    )
+
+    val result = AccountingPeriod.create(ifAccountingPeriod)
+
+    result.accountingPeriodStartDate.get shouldBe LocalDate.of(2018, 4, 6)
+    result.accountingPeriodEndDate.get shouldBe LocalDate.of(2018, 10, 5)
+    result.turnover.get shouldBe 38390
   }
 
 }

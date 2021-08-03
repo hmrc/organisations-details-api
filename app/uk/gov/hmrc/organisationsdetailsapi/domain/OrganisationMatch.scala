@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.controllers
+package uk.gov.hmrc.organisationsdetailsapi.domain
 
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.organisationsdetailsapi.config.AppConfig
+import play.api.libs.json.{Format, Json}
 
-import scala.concurrent.Future
+import java.util.UUID
 
-@Singleton()
-class MicroserviceHelloWorldController @Inject()(appConfig: AppConfig, cc: ControllerComponents)
-    extends BackendController(cc) {
+case class OrganisationMatch(matchId: UUID, utr: String)
 
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
-  }
+object OrganisationMatch {
+  implicit val organisationMatchFormat: Format[OrganisationMatch] = Json.format[OrganisationMatch]
 }

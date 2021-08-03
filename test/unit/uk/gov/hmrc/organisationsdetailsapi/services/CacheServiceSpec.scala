@@ -19,17 +19,19 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.services
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{verify, verifyNoInteractions}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
-import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService, PayeCacheId, SaCacheId}
+import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService, CorporationTaxCacheId, SaCacheId}
 import utils.TestSupport
 
 import java.util.UUID
 import scala.concurrent.Future
 
-class CacheServiceSpec extends TestSupport with MockitoSugar {
+class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with TestSupport {
 
   val cacheId = TestCacheId("foo")
   val cachedValue = TestClass("cached value")
@@ -80,14 +82,14 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
     }
   }
 
-  "PayeCacheId" should {
+  "CorporationTaxCacheId" should {
 
     "produce a cache id based on matchId" in {
 
       val matchId = UUID.randomUUID()
 
-      PayeCacheId(matchId).id shouldBe
-        s"$matchId-paye"
+      CorporationTaxCacheId(matchId, "ABC").id shouldBe
+        s"$matchId-ABC-corporation-tax"
 
     }
 
@@ -99,8 +101,8 @@ class CacheServiceSpec extends TestSupport with MockitoSugar {
 
       val matchId = UUID.randomUUID()
 
-      SaCacheId(matchId).id shouldBe
-        s"$matchId-sa"
+      SaCacheId(matchId, "ABC").id shouldBe
+        s"$matchId-ABC-self-assessment"
 
     }
 

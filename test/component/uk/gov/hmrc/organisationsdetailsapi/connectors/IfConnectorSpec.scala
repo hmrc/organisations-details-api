@@ -66,6 +66,8 @@ class IfConnectorSpec
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled"  -> false,
+      "auditing.enabled"                                       -> false,
+      "auditing.traceRequests"                                 -> false,
       "microservice.services.integration-framework.host" -> "127.0.0.1",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
@@ -119,11 +121,12 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(500)))
 
       intercept[InternalServerException] {
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -142,11 +145,12 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(400).withBody("BAD_REQUEST")))
 
       intercept[InternalServerException] {
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -164,11 +168,12 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(404)))
 
       intercept[InternalServerException]{
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -185,6 +190,7 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+          .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
             """{
               |  "failures": [
@@ -197,7 +203,7 @@ class IfConnectorSpec
 
       intercept[NotFoundException] {
         await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -218,13 +224,14 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
         val result: CorporationTaxReturnDetailsResponse = await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -246,6 +253,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
@@ -254,7 +262,7 @@ class IfConnectorSpec
 
         intercept[InternalServerException] {
           await(
-            underTest.getCtReturnDetails(UUID.randomUUID().toString, utr)(
+            underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -284,7 +292,7 @@ class IfConnectorSpec
             .willReturn(okJson(jsonResponse)))
 
         val result:SelfAssessmentReturnDetailResponse = await(
-          underTest.getSaReturnDetails(UUID.randomUUID().toString, utr)(
+          underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -312,7 +320,7 @@ class IfConnectorSpec
 
         intercept[InternalServerException] {
           await(
-            underTest.getSaReturnDetails(UUID.randomUUID().toString, utr)(
+            underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -344,7 +352,7 @@ class IfConnectorSpec
             .willReturn(okJson(jsonResponse)))
 
         val result: EmployeeCountResponse = await(
-          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest)(
+          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -375,7 +383,7 @@ class IfConnectorSpec
 
         intercept[InternalServerException] {
           await(
-            underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest)(
+            underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -413,7 +421,7 @@ class IfConnectorSpec
 
       intercept[InternalServerException] {
         await(
-          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest)(
+          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec

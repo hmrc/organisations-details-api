@@ -66,3 +66,42 @@ class ShortLivedCache @Inject()(
     }
   }
 }
+
+@Singleton
+class CacheConfiguration @Inject()(configuration: Configuration) {
+  lazy val cacheEnabled = configuration
+    .getOptional[Boolean](
+      "cache.enabled"
+    )
+    .getOrElse(true)
+
+  lazy val cacheTtl = configuration
+    .getOptional[Int](
+      "cache.ttlInSeconds"
+    )
+    .getOrElse(60 * 15)
+
+  lazy val collName = configuration
+    .getOptional[String](
+      "cache.collName"
+    )
+    .getOrElse("organisations-details-cache")
+
+  lazy val saKey = configuration
+    .getOptional[String](
+      "cache.saKey"
+    )
+    .getOrElse("sa-income")
+
+  lazy val payeKey = configuration
+    .getOptional[String](
+      "cache.payeKey"
+    )
+    .getOrElse("paye-income")
+
+  lazy val numberOfEmployeesKey = configuration
+    .getOptional[String](
+      "cache.numberOfEmployeesKey"
+    )
+    .getOrElse("number-of-employees")
+}

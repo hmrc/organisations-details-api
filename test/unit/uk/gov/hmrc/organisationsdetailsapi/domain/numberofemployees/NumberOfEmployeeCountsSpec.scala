@@ -19,6 +19,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.Count
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeeCounts
 
 class NumberOfEmployeeCountsSpec extends AnyWordSpec with Matchers {
@@ -32,13 +33,22 @@ class NumberOfEmployeeCountsSpec extends AnyWordSpec with Matchers {
         |}
         |""".stripMargin
 
-    val selfAssessmentResponse = NumberOfEmployeeCounts(1234, "2019-03")
+    val selfAssessmentResponse = NumberOfEmployeeCounts(Some(1234), Some("2019-03"))
 
     val expectedResponse = Json.parse(expectedJson)
 
     val result = Json.toJson(selfAssessmentResponse)
 
     result shouldBe expectedResponse
+  }
+
+  "creates correctly from IF response" in {
+    val count = Count(Some("2019-10"), Some(1234))
+
+    val response = NumberOfEmployeeCounts.create(count)
+
+    response.numberOfEmployees.get shouldBe 1234
+    response.dateOfCount.get shouldBe "2019-10"
   }
 
 }

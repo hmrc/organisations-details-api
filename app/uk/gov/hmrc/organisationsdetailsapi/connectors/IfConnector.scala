@@ -52,35 +52,41 @@ class IfConnector @Inject()(
     "microservice.services.integration-framework.environment"
   )
 
-  def getCtReturnDetails(matchId: String, utr: String)(
+  def getCtReturnDetails(matchId: String, utr: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[CorporationTaxReturnDetailsResponse] = {
 
-    val detailsUrl =
-      s"$baseUrl/organisations/corporation-tax/$utr/return/details"
+    val corporationTaxUrl =
+      s"$baseUrl/organisations/corporation-tax/$utr/return/details${
+        filter.map(f => s"?fields=$f").getOrElse("")
+      }"
 
-    call[CorporationTaxReturnDetailsResponse](detailsUrl, matchId)
+    call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
   }
 
-  def getSaReturnDetails(matchId: String, utr: String)(
+  def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[SelfAssessmentReturnDetailResponse] = {
 
     val detailsUrl =
-      s"$baseUrl/organisations/self-assessment/$utr/return/details"
+      s"$baseUrl/organisations/self-assessment/$utr/return/details${
+        filter.map(f => s"?fields=$f").getOrElse("")
+      }"
 
     call[SelfAssessmentReturnDetailResponse](detailsUrl, matchId)
   }
 
-  def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest)(
+  def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[EmployeeCountResponse] = {
 
     val detailsUrl =
-      s"$baseUrl/organisations/employers/employee/counts"
+      s"$baseUrl/organisations/employers/employee/counts${
+        filter.map(f => s"?fields=$f").getOrElse("")
+      }"
 
     post[EmployeeCountRequest, EmployeeCountResponse](detailsUrl, matchId, body)
   }
