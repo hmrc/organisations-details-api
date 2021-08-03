@@ -14,7 +14,7 @@
       }
     },
     "employeeCounts": {
-      "description": "employee counts test",
+      "description": "Details about the employee count.",
       "type": "array",
       "items": {
         "type": "object",
