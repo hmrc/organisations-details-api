@@ -3,6 +3,16 @@
   "description": "Self Assessment",
   "type": "object",
   "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI for this endpoint."
+        }
+      }
+    },
     "selfAssessmentStartDate": {
       "type": "string",
       "description": "The start date for Self Assessment data.",

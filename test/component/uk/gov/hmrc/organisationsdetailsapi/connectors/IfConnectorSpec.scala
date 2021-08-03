@@ -17,12 +17,11 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.connectors
 
 import java.util.UUID
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.matching.EqualToJsonPattern
-import org.mockito.ArgumentMatchers.{any, matches, contains}
+import org.mockito.ArgumentMatchers.{any, contains, matches}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
 import org.scalatest.BeforeAndAfterEach
@@ -33,7 +32,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
@@ -56,7 +55,7 @@ class IfConnectorSpec
     with IfHelpers {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
-  val stubHost = "localhost"
+  val stubHost = "127.0.0.1"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
   val integrationFrameworkAuthorizationToken = "IF_TOKEN"
   val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
@@ -84,7 +83,7 @@ class IfConnectorSpec
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
     val sampleCorrelationIdHeader: (String, String) = ("CorrelationId" -> sampleCorrelationId)
 
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders(sampleCorrelationIdHeader)
 
     val config: ServicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
     val httpClient: HttpClient = fakeApplication.injector.instanceOf[HttpClient]
@@ -226,6 +225,9 @@ class IfConnectorSpec
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
         val result: CorporationTaxReturnDetailsResponse = await(
@@ -252,6 +254,9 @@ class IfConnectorSpec
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
 
@@ -281,6 +286,9 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
         val result:SelfAssessmentReturnDetailResponse = await(
@@ -305,6 +313,9 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
         intercept[InternalServerException] {
@@ -335,6 +346,9 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
         val result: EmployeeCountResponse = await(
@@ -362,6 +376,9 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
         intercept[InternalServerException] {
@@ -397,6 +414,9 @@ class IfConnectorSpec
       stubFor(
         post(urlPathMatching(s"/organisations/employers/employee/counts"))
           .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+          .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+          .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+          .withHeader("CorrelationId", equalTo(sampleCorrelationId))
           .willReturn(aResponse().withStatus(400).withBody(jsonResponse)))
 
       intercept[InternalServerException] {

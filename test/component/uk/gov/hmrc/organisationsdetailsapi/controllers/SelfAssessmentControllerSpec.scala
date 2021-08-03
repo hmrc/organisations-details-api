@@ -123,7 +123,7 @@ class SelfAssessmentControllerSpec extends BaseSpec {
 
       Json.parse(response.body) mustBe Json.obj(
         "statusCode" -> 400,
-        "message" -> "bad request"
+        "message" -> "bad request, cause: REDACTED"
       )
     }
 

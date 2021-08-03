@@ -1,4 +1,9 @@
 {
+  "_links": {
+    "self": {
+      "href": "/organisations/details/self-assessment?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+    }
+  },
   "selfAssessmentStartDate": "2015-04-21",
   "taxSolvencyStatus": "I",
   "taxReturns": [
