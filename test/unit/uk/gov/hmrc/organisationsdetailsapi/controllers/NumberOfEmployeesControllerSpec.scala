@@ -107,7 +107,7 @@ class NumberOfEmployeesControllerSpec
       when(mockNumberOfEmployeesService.get(refEq(sampleMatchIdUUID), eqTo(sampleRequest),  eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Some(Seq(
           NumberOfEmployeesResponse(
-            Some("RT882d/123"),
+            Some("123/RT882d"),
             Some(Seq(
               NumberOfEmployeeCounts(Some(1234), Some("2019-10"))
             ))
@@ -128,7 +128,7 @@ class NumberOfEmployeesControllerSpec
           |    },
           |    "employeeCounts": [
           |        {
-          |            "payeReference": "RT882d/123",
+          |            "payeReference": "123/RT882d",
           |            "counts": [
           |                {
           |                    "numberOfEmployees": 1234,
