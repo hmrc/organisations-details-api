@@ -1,11 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Pay As You Earn",
+  "required": [
+    "_links"
+  ],
   "type": "object",
   "properties": {
     "_links": {
       "type": "object",
       "description": "A list of links for possible actions related to this endpoint.",
+      "required": [
+        "self"
+      ],
       "properties": {
         "self": {
           "type": "object",
@@ -52,18 +58,8 @@
             "description": "The amount of money taken by an organisation in the accounting period. Turnover is recorded in thousands of pounds (rounded to the nearest £1,000). Turnover is in the range of -1 to 99999999999.",
             "example": "2340"
           }
-        },
-        "required": [
-          "accountingPeriodStartDate",
-          "accountingPeriodEndDate",
-          "turnover"
-        ]
+        }
       }
     }
-  },
-  "required": [
-    "dateOfRegistration",
-    "taxSolvencyStatus",
-    "accountingPeriods"
-  ]
+  }
 }
