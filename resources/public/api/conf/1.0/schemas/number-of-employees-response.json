@@ -2,10 +2,17 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Number of employees response",
   "type": "object",
+  "required": [
+    "_links",
+    "employeeCounts"
+  ],
   "properties": {
     "_links": {
       "type": "object",
       "description": "A list of links for possible actions related to this endpoint.",
+      "required": [
+        "self"
+      ],
       "properties": {
         "self": {
           "type": "object",
@@ -18,6 +25,9 @@
       "type": "array",
       "items": {
         "type": "object",
+        "required": [
+          "payeReference"
+        ],
         "properties": {
           "payeReference": {
             "description": "The organisation's PAYE reference, consisting of districtNumber and schemeReference.",
