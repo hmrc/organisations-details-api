@@ -57,6 +57,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
   )
 
   Feature("cotax") {
+
     Scenario("a valid request is made for an existing match") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
@@ -101,6 +102,23 @@ class CorporationTaxControllerSpec extends BaseSpec {
           |""".stripMargin)
     }
 
+    Scenario("a valid request is made for an expired match") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/corporation-tax?matchId=$matchId")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .option(HttpOptions.readTimeout(10000))
+        .asString
+
+      response.code mustBe NOT_FOUND
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "NOT_FOUND",
+        "message" -> "The resource can not be found"
+      )
+    }
+
     Scenario("not authorized") {
 
       Given("an invalid privileged Auth bearer token")
@@ -129,6 +147,11 @@ class CorporationTaxControllerSpec extends BaseSpec {
         .asString
 
       response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "INVALID_REQUEST",
+        "message" -> "matchId is required"
+      )
     }
 
     Scenario("a request is made with a malformed match id") {
@@ -143,8 +166,8 @@ class CorporationTaxControllerSpec extends BaseSpec {
       response.code mustBe BAD_REQUEST
 
       Json.parse(response.body) mustBe Json.obj(
-        "statusCode" -> 400,
-        "message" -> "bad request, cause: REDACTED"
+        "code" -> "INVALID_REQUEST",
+        "message" -> "matchId format is invalid"
       )
     }
 
@@ -182,5 +205,4 @@ class CorporationTaxControllerSpec extends BaseSpec {
       )
     }
   }
-
 }

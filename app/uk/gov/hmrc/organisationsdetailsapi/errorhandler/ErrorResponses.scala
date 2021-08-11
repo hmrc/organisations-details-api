@@ -38,6 +38,8 @@ object ErrorResponses {
   case class ErrorUnauthorized(errorMessage: String) extends ErrorResponse(UNAUTHORIZED, "UNAUTHORIZED", errorMessage)
   case class ErrorInvalidRequest(errorMessage: String)
     extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
+  case class ErrorPayloadRequired()
+    extends ErrorResponse(BAD_REQUEST, "PAYLOAD_REQUIRED", "Payload is required")
 
   class ValidationException(message: String) extends RuntimeException(message)
   class MatchNotFoundException extends RuntimeException

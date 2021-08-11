@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.errorhandler
+package uk.gov.hmrc.organisationsdetailsapi.utils
 
-import play.api.libs.json.{Json, OFormat}
-
-case class NestedError(code: String, message: String, path: String)
-
-object NestedError {
-  implicit val format: OFormat[NestedError] = Json.format[NestedError]
+package object Binders {
+  implicit val matchUuidQueryStringBinder = new MatchUuidQueryStringBinder
 }

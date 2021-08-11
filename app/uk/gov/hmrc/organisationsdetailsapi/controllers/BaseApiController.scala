@@ -41,7 +41,7 @@ abstract class BaseApiController (cc: ControllerComponents) extends BackendContr
                                                r: Reads[T]): Future[Result] =
     request.body.validate[T] match {
       case JsSuccess(t, _) => f(t)
-      case JsError(errors) =>
+      case JsError(_) =>
         Future.failed(new BadRequestException("Malformed payload"))
     }
 
@@ -52,41 +52,32 @@ abstract class BaseApiController (cc: ControllerComponents) extends BackendContr
       logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
-
     case e: InsufficientEnrolments =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
-
     case e: AuthorisationException   =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized(e.getMessage).toHttpResponse
-
     case tmr: TooManyRequestException  =>
       logger.warn("Controllers TooManyRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, tmr.getMessage)
       ErrorTooManyRequests.toHttpResponse
-
-    case br: BadRequestException  => {
+    case br: BadRequestException  =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, br.getMessage)
       ErrorInvalidRequest(br.getMessage).toHttpResponse
-    }
-    case e: IllegalArgumentException => {
+    case e: IllegalArgumentException =>
       logger.warn("Controllers IllegalArgumentException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
-    }
-    case e: InternalServerException => {
+    case e: InternalServerException =>
       logger.warn("Controllers InternalServerException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
-    }
-    case e: Exception => {
+    case e: Exception =>
       logger.warn("Controllers Exception encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
-    }
   }
-
 }
 
 case class SchemaValidationError(keyword: String,
