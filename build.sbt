@@ -6,6 +6,10 @@ val appName = "organisations-details-api"
 
 val silencerVersion = "1.7.1"
 
+lazy val playSettings: Seq[Setting[_]] = Seq(
+  routesImport ++= Seq(
+    "uk.gov.hmrc.organisationsdetailsapi.utils.Binders._"))
+
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
   Seq(
@@ -44,6 +48,7 @@ lazy val microservice = Project(appName, file("."))
     testOptions in Test := Seq(Tests.Filter(unitFilter))
   )
   .settings(PlayKeys.playDefaultPort := 9656)
+  .settings(playSettings)
 
   // Integration tests
 

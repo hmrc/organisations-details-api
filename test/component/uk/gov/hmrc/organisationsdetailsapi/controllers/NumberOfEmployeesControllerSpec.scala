@@ -17,8 +17,8 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
-import controllers.Assets.{BAD_REQUEST, OK, UNAUTHORIZED}
 import play.api.libs.json.Json
+import play.api.test.Helpers._
 import scalaj.http.{Http, HttpOptions}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{Count, EmployeeCountRequest, EmployeeCountResponse, PayeReferenceAndCount}
@@ -60,6 +60,7 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
   private val ifRequest = EmployeeCountRequest.createFromRequest(sampleValidRequest)
 
   Feature("Number of Employees") {
+
     Scenario("a valid request is made for an existing match") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
@@ -103,6 +104,23 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
 
     }
 
+    Scenario("a valid request is made for an expired match") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .option(HttpOptions.readTimeout(10000))
+        .asString
+
+      response.code mustBe NOT_FOUND
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "NOT_FOUND",
+        "message" -> "The resource can not be found"
+      )
+    }
+
     Scenario("not authorized") {
 
       Given("an invalid privileged Auth bearer token")
@@ -133,6 +151,11 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
         .asString
 
       response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "INVALID_REQUEST",
+        "message" -> "matchId is required"
+      )
     }
 
     Scenario("a request is made with a malformed match id") {
@@ -148,8 +171,8 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
       response.code mustBe BAD_REQUEST
 
       Json.parse(response.body) mustBe Json.obj(
-        "statusCode" -> 400,
-        "message" -> "bad request, cause: REDACTED"
+        "code" -> "INVALID_REQUEST",
+        "message" -> "matchId format is invalid"
       )
     }
 
@@ -189,6 +212,25 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
       )
     }
 
+    Scenario("Body of request is missing") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("The API is invoked")
+      val response = Http(s"$serviceUrl/number-of-employees?matchId=$matchId")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .postData("")
+        .option(HttpOptions.readTimeout(10000))
+        .asString
+
+      response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe Json.obj(
+        "code" -> "PAYLOAD_REQUIRED",
+        "message" -> "Payload is required"
+      )
+    }
+
     Scenario("Invalid data posted with request") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
@@ -206,8 +248,6 @@ class NumberOfEmployeesControllerSpec extends BaseSpec {
         "code" -> "INVALID_REQUEST",
         "message" -> "Malformed payload"
       )
-
     }
-
   }
 }
