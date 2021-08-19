@@ -63,17 +63,17 @@
     </tr>
     <tr>
         <td><p>Malformed matchId</p></td>
-        <td><p>matchId is in the incorrect format. Check the path parameters section for the correct format.</p></td>
+        <td><p>The matchId is in the incorrect format. Check the query parameters section for the correct format.</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId format is invalid&quot; }</p>
         </td>
     </tr>
     <tr>
-        <td><p>MatchId is not included</p></td>
-        <td><p>The request is missing the matchId. Check the path parameters section for what should be included.</p></td>
+        <td><p>matchId is not included</p></td>
+        <td><p>The request is missing the matchId. Check the query parameters section for what should be included.</p></td>
         <td>
-            <p>404 (Bad Request)</p>
+            <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
         </td>
     </tr>
