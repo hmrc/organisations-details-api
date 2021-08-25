@@ -93,21 +93,22 @@ class IfConnector @Inject()(
 
   private def extractCorrelationId(requestHeader: RequestHeader) = validateCorrelationId(requestHeader).toString
 
-  def setHeaders = Seq(
+  def setHeaders(requestHeader: RequestHeader) = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
-    "Environment"             -> integrationFrameworkEnvironment
+    "Environment"             -> integrationFrameworkEnvironment,
+    "CorrelationId"           -> extractCorrelationId(requestHeader)
   )
 
   private def call[T](url: String, matchId: String)
                   (implicit rds: HttpReads[T], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.GET[T](url, headers = setHeaders) map { response =>
+    recover(http.GET[T](url, headers = setHeaders(request)) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)
 
   private def post[I,O](url: String, matchId: String, body: I)
                      (implicit wts: Writes[I], reads: HttpReads[O], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.POST[I,O](url, body, headers = setHeaders) map { response =>
+    recover(http.POST[I,O](url, body, headers = setHeaders(request)) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)
