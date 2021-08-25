@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import controllers.Assets.BAD_REQUEST
+import controllers.Assets.{BAD_REQUEST, TOO_MANY_REQUESTS, UNAUTHORIZED, INTERNAL_SERVER_ERROR}
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -28,7 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.{AccountingPeriod, CorporationTaxResponse}
@@ -37,8 +37,14 @@ import utils.TestSupport
 import java.time.LocalDate
 import java.util.UUID
 
+import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{BaseSpec, IfStub}
+import org.mockito.BDDMockito.`given`
+import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
+import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.Future.failed
 
 class CorporationTaxControllerSpec
   extends AnyWordSpec
@@ -158,6 +164,7 @@ class CorporationTaxControllerSpec
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
       when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
 
+
       val response = await(controller.corporationTax(sampleMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
@@ -169,6 +176,115 @@ class CorporationTaxControllerSpec
           |{
           |  "code": "INVALID_REQUEST",
           |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+    }
+
+    "fail when insufficient enrolments" in {
+      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+      given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+        .willReturn(failed(new InsufficientEnrolments()))
+
+
+      val response = await(controller.corporationTax(sampleMatchIdUUID)(FakeRequest()))
+
+      status(response) shouldBe UNAUTHORIZED
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "UNAUTHORIZED",
+          |  "message": "Insufficient Enrolments"
+          |}
+          |""".stripMargin
+      )
+    }
+
+    "return too many requests error" in {
+      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+
+      when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+        .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+
+      when(mockCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
+        .thenReturn(failed(new TooManyRequestException("error")))
+
+      val response = await(controller.corporationTax(sampleMatchIdUUID)(fakeRequest))
+
+      status(response) shouldBe TOO_MANY_REQUESTS
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "TOO_MANY_REQUESTS",
+          |  "message": "Rate limit exceeded"
+          |}
+          |""".stripMargin
+      )
+
+    }
+
+    "return internal server exception error" in {
+      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+
+      when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+        .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+
+      when(mockCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
+        .thenReturn(failed(new InternalServerException("error")))
+
+      val response = await(controller.corporationTax(sampleMatchIdUUID)(fakeRequest))
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INTERNAL_SERVER_ERROR",
+          |  "message": "Something went wrong."
+          |}
+          |""".stripMargin
+      )
+
+    }
+
+    "return invalid request when IllegalArgumentException is invoked" in {
+      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+
+      when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+        .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+
+      when(mockCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
+        .thenReturn(failed(new IllegalArgumentException("error")))
+
+      val response = await(controller.corporationTax(sampleMatchIdUUID)(fakeRequest))
+
+      status(response) shouldBe BAD_REQUEST
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "error"
+          |}
+          |""".stripMargin
+      )
+    }
+
+    "return internal server error when fallback Exception is invoked" in {
+      when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
+
+      when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+        .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+
+      when(mockCorporationTaxService.get(refEq(sampleMatchIdUUID), eqTo("corporation-tax"), eqTo(Set("test-scope")))(any(), any(), any()))
+        .thenReturn(failed(new Exception("error")))
+
+      val response = await(controller.corporationTax(sampleMatchIdUUID)(fakeRequest))
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+      jsonBodyOf(response) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INTERNAL_SERVER_ERROR",
+          |  "message": "Something went wrong."
           |}
           |""".stripMargin
       )
