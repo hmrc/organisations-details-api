@@ -38,10 +38,13 @@ class NumberOfEmployeesService @Inject()(
 
   def get(matchId: UUID, employeeCountRequest: NumberOfEmployeesRequest, scopes: Iterable[String])
          (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Option[Seq[NumberOfEmployeesResponse]]] = {
+
+    val endpointName = "number-of-employees";
+
     resolve(matchId).flatMap {
       organisationMatch =>
-        val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, "number-of-employees")
-        val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList)
+        val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, endpointName)
+        val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpointName))
         cacheService
           .get(
             cacheId = NumberOfEmployeesCacheId(matchId, cacheKey, employeeCountRequest.fromDate, employeeCountRequest.toDate),

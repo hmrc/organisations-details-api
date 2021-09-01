@@ -86,7 +86,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesHelper.getQueryStringFor(scopes, endpoint))
           .thenReturn("ABC")
 
-        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
+        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
         when(mockIfConnector.getSaReturnDetails(matchId, utr, Some("ABC")))
@@ -119,7 +119,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesHelper.getQueryStringFor(scopes, endpoint))
           .thenReturn("ABC")
 
-        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
+        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
         when(mockIfConnector.getSaReturnDetails(matchId, utr, Some("ABC")))
@@ -152,7 +152,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesHelper.getQueryStringFor(scopes, endpoint))
           .thenReturn("ABC")
 
-        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
+        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
         when(mockIfConnector.getSaReturnDetails(matchId, utr, Some("ABC")))
