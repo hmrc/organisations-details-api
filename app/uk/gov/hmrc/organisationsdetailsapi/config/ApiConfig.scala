@@ -106,8 +106,8 @@ object ApiConfig {
     val scopeConfig = scopesOpt.map(scopes => scopes.listChildren
       .map(key => ScopeConfig(
         name = key,
-        fields = config.getStringList(s"""scopes."$key".fields""").asScala.toList,
-        endpoints = config.getStringList(s"""scopes."$key".endpoints""").asScala.toList,
+        fields = getStringList(s"""scopes."$key".fields"""),
+        endpoints = getStringList(s"""scopes."$key".endpoints"""),
         filters = getStringList(s"""scopes."$key".filters""")))
       .toList).getOrElse(List())
 

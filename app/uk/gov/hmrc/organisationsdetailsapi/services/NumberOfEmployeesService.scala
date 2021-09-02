@@ -39,7 +39,7 @@ class NumberOfEmployeesService @Inject()(
   def get(matchId: UUID, employeeCountRequest: NumberOfEmployeesRequest, scopes: Iterable[String])
          (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Option[Seq[NumberOfEmployeesResponse]]] = {
 
-    val endpointName = "number-of-employees";
+    val endpointName = "number-of-employees"
 
     resolve(matchId).flatMap {
       organisationMatch =>

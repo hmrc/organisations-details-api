@@ -16,7 +16,6 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.organisationsdetailsapi.services.ScopesService
