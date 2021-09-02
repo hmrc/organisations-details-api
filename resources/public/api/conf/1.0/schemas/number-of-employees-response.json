@@ -21,7 +21,7 @@
       }
     },
     "employeeCounts": {
-      "description": "Details about the employee count.",
+      "description": "Details about the employee count. This includes the organisation's PAYE reference, dates of counts, and the number of employees recorded in each count.",
       "type": "array",
       "items": {
         "type": "object",
@@ -37,7 +37,7 @@
           },
           "counts": {
             "type": "array",
-            "description": "Details about the employee count.",
+            "description": "Employee counts.",
             "items": {
               "type": "object",
               "properties": {
