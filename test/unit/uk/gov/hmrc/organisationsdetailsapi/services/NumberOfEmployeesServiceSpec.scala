@@ -114,7 +114,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
         when(mockScopesHelper.getQueryStringFor(scopes, "number-of-employees"))
           .thenReturn("ABC")
 
-        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
+        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
         when(mockIfConnector.getEmployeeCount(matchId, utr, ifRequest, Some("ABC")))
@@ -150,7 +150,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
         when(mockScopesHelper.getQueryStringFor(scopes, endpoint))
           .thenReturn("ABC")
 
-        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
+        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
         when(mockIfConnector.getCtReturnDetails(matchId, utr, Some("ABC")))
@@ -181,7 +181,7 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
         when(mockScopesHelper.getQueryStringFor(scopes, endpoint))
           .thenReturn("ABC")
 
-        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList))
+        when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
         when(mockIfConnector.getEmployeeCount(refEq(matchId), eqTo(utr), eqTo(ifRequest), eqTo(Some("ABC")))(any(), any(), any()))

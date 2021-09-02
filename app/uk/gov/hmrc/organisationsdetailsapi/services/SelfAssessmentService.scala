@@ -40,7 +40,7 @@ class SelfAssessmentService @Inject()(
     organisationsMatchingConnector.resolve(matchId).flatMap {
       organisationMatch =>
         val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, endpoint)
-        val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList)
+        val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint))
         cacheService
           .get(
             cacheId = SaCacheId(matchId, cacheKey),

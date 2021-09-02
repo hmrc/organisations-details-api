@@ -20,52 +20,78 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import uk.gov.hmrc.organisationsdetailsapi.config.{ApiConfig, EndpointConfig, ScopeConfig}
 
-trait ScopesConfig extends MockitoSugar {
+trait ScopesConfig {
 
-  val mockScope1 = "test1"
-  val mockScope2 = "test2"
+  val mockScopeOne: String = "scopeOne"
+  val mockScopeTwo: String = "scopeTwo"
+  val mockScopeThree: String = "scopeThree"
+  val mockScopeFour: String = "scopeFour"
 
-  val mockEndpoint1 = "endpoint1"
-  val mockEndpoint2 = "endpoint2"
+  val endpointKeyOne : String = "A"
+  val endpointKeyTwo : String = "B"
+  val endpointKeyThree : String = "C"
 
-  val mockConfig = Configuration(
-    (s"api-config.scopes.$mockScope1.fields", List("A", "B", "D")),
-    (s"api-config.scopes.$mockScope2.fields", List("A", "B", "C", "D")),
-    (s"api-config.endpoints.$mockEndpoint1.endpoint", "/a/b/c?matchId=<matchId>{&fromDate,toDate}"),
-    (s"api-config.endpoints.$mockEndpoint1.title", "title"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.A", "field1"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.B", "field2/subfield1"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.C", "field2/subfield2"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.D", "field3"),
+  val endpointOne : String = "sampleEndpointOne"
+  val endpointTwo : String = "sampleEndpointTwo"
+  val endpointThree : String = "sampleEndpointThree"
 
-  )
+  val mockConfig : Configuration = Configuration(
 
-  val mockApiConfig = ApiConfig(
-    scopes = List(
-      ScopeConfig(mockScope1, List("A", "B", "D")),
-      ScopeConfig(mockScope2, List("A", "B", "C", "D"))
-    ),
-    endpoints = List(
-      EndpointConfig(
-        name = mockEndpoint1,
-        title = "title",
-        link = "/a/b/c?matchId=<matchId>{&fromDate,toDate}",
-        fields = Map(
-          "A" -> "field1",
-          "B" -> "field2/subfield1",
-          "C" -> "field2/subfield2",
-          "D" -> "field3"
-        )
-      ),
-      EndpointConfig(
-        name = mockEndpoint2,
-        title = "title",
-        link = "/a/b/d?matchId=<matchId>{&fromDate,toDate}",
-        fields = Map(
-          "E" -> "field4",
-          "F" -> "field5"
-        ))
-      )
+    (s"api-config.scopes.$mockScopeOne.endpoints", Seq(endpointKeyOne, endpointKeyTwo)),
+    (s"api-config.scopes.$mockScopeOne.fields", Seq("A", "B", "C", "D")),
+
+    (s"api-config.scopes.$mockScopeTwo.endpoints", Seq(endpointKeyTwo, endpointKeyThree)),
+    (s"api-config.scopes.$mockScopeTwo.fields", Seq("E", "F", "G", "H", "I")),
+
+    (s"api-config.scopes.$mockScopeThree.endpoints", Seq(endpointKeyThree)),
+    (s"api-config.scopes.$mockScopeThree.fields", Seq("G", "H", "I")),
+    (s"api-config.scopes.$mockScopeThree.filters", Seq("A")),
+
+    (s"api-config.scopes.$mockScopeFour.endpoints", Seq(endpointKeyThree)),
+    (s"api-config.scopes.$mockScopeFour.fields", Seq("G", "H", "I")),
+    (s"api-config.scopes.$mockScopeFour.filters", Seq("B")),
+
+    (s"api-config.endpoints.internal.$endpointOne.key", endpointKeyOne),
+    (s"api-config.endpoints.internal.$endpointOne.endpoint", "/internal/1"),
+    (s"api-config.endpoints.internal.$endpointOne.title", "Get the first endpoint"),
+    (s"api-config.endpoints.internal.$endpointOne.fields", Seq("A", "B", "C")),
+
+    (s"api-config.endpoints.internal.$endpointTwo.key", endpointKeyTwo),
+    (s"api-config.endpoints.internal.$endpointTwo.endpoint", "/internal/2"),
+    (s"api-config.endpoints.internal.$endpointTwo.title", "Get the second endpoint"),
+    (s"api-config.endpoints.internal.$endpointTwo.fields", Seq("D", "E", "F")),
+
+    (s"api-config.endpoints.internal.$endpointThree.key", endpointKeyThree),
+    (s"api-config.endpoints.internal.$endpointThree.endpoint", "/internal/3"),
+    (s"api-config.endpoints.internal.$endpointThree.title", "Get the third endpoint"),
+    (s"api-config.endpoints.internal.$endpointThree.fields", Seq("G", "H", "I")),
+    (s"api-config.endpoints.internal.$endpointThree.filters", Seq("A", "B")),
+
+    (s"api-config.endpoints.external.$endpointOne.key", endpointKeyOne),
+    (s"api-config.endpoints.external.$endpointOne.endpoint", "/external/1"),
+    (s"api-config.endpoints.external.$endpointOne.title", "Get the first endpoint"),
+
+    (s"api-config.endpoints.external.$endpointTwo.key", endpointKeyTwo),
+    (s"api-config.endpoints.external.$endpointTwo.endpoint", "/external/2"),
+    (s"api-config.endpoints.external.$endpointTwo.title", "Get the second endpoint"),
+
+    (s"api-config.endpoints.external.$endpointThree.key", endpointKeyThree),
+    (s"api-config.endpoints.external.$endpointThree.endpoint", "/external/3"),
+    (s"api-config.endpoints.external.$endpointThree.title", "Get the third endpoint"),
+
+    (s"api-config.fields.A", "path/to/a"),
+    (s"api-config.fields.B", "path/to/b"),
+    (s"api-config.fields.C", "path/to/c"),
+
+    (s"api-config.fields.D", "path/to/d"),
+    (s"api-config.fields.E", "path/to/e"),
+    (s"api-config.fields.F", "path/to/f"),
+
+    (s"api-config.fields.G", "path/to/g"),
+    (s"api-config.fields.H", "path/to/h"),
+    (s"api-config.fields.I", "path/to/i"),
+
+    (s"api-config.filters.A", "contains(path/to/g,'FILTERED_VALUE_1')"),
+    (s"api-config.filters.B", "contains(path/to/g,'FILTERED_VALUE_2')"),
   )
 }
-
