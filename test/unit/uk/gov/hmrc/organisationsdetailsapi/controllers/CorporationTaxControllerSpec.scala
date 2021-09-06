@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import controllers.Assets.{BAD_REQUEST, TOO_MANY_REQUESTS, UNAUTHORIZED, INTERNAL_SERVER_ERROR}
+import play.api.http.Status._
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -36,10 +36,7 @@ import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, Scop
 import utils.TestSupport
 import java.time.LocalDate
 import java.util.UUID
-
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{BaseSpec, IfStub}
 import org.mockito.BDDMockito.`given`
-import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
 
 import scala.concurrent.ExecutionContext.Implicits.global
