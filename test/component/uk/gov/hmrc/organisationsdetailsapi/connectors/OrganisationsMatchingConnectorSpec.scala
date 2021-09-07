@@ -19,19 +19,19 @@ package component.uk.gov.hmrc.organisationsdetailsapi.connectors
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, configureFor, get, stubFor, urlPathMatching}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import controllers.Assets.{NOT_FOUND, OK}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.TestSupport
-import java.util.UUID
 
+import java.util.UUID
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
 
 import scala.concurrent._
