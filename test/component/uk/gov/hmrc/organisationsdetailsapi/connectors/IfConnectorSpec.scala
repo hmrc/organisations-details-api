@@ -39,6 +39,7 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.Corporati
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
+import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.DataNotFoundException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{IfHelpers, TestSupport}
 
@@ -206,15 +207,15 @@ class IfConnectorSpec
                 |  ]
                 |}""".stripMargin)))))
 
-        val result: CorporationTaxReturnDetailsResponse = await(
-          underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
-            hc,
-            FakeRequest().withHeaders(sampleCorrelationIdHeader),
-            ec
+        intercept[DataNotFoundException] {
+          await(
+            underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
           )
-        )
-
-        result shouldBe emptyCtReturn
+        }
 
         verify(underTest.auditHelper,
           times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
@@ -301,15 +302,15 @@ class IfConnectorSpec
                 |  ]
                 |}""".stripMargin)))))
 
-        val result:SelfAssessmentReturnDetailResponse = await(
-          underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
-            hc,
-            FakeRequest().withHeaders(sampleCorrelationIdHeader),
-            ec
+        intercept[DataNotFoundException] {
+          await(
+            underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
           )
-        )
-
-        result shouldBe emptySaReturn
+        }
 
         verify(underTest.auditHelper,
           times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
@@ -395,15 +396,15 @@ class IfConnectorSpec
                 |  ]
                 |}""".stripMargin)))))
 
-        val result: EmployeeCountResponse = await(
-          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
-            hc,
-            FakeRequest().withHeaders(sampleCorrelationIdHeader),
-            ec
+        intercept[DataNotFoundException] {
+          await(
+            underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
           )
-        )
-
-        result shouldBe emptyEmployeeCountResponse
+        }
       }
 
       "successfully parse valid EmployeeCountResponse from IF response" in new Setup {

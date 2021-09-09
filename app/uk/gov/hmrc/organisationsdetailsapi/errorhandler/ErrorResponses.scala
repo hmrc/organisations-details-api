@@ -32,6 +32,7 @@ sealed abstract class ErrorResponse(val httpStatusCode: Int, val errorCode: Stri
 object ErrorResponses {
 
   case object ErrorNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource can not be found")
+  case object ErrorDataNotFound extends ErrorResponse(NOT_FOUND, "DATA_NOT_FOUND", "The remote endpoint has indicated that there was no data available")
   case class ErrorInternalServer(errorMessage: String = "Failed to process request")
     extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", message=errorMessage)
   case object ErrorTooManyRequests extends ErrorResponse(TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", "Rate limit exceeded")
@@ -44,5 +45,6 @@ object ErrorResponses {
   class ValidationException(message: String) extends RuntimeException(message)
   class MatchNotFoundException extends RuntimeException
   class MissingQueryParameterException(message: String) extends RuntimeException(message)
+  class DataNotFoundException(message: String) extends RuntimeException(message)
 
 }

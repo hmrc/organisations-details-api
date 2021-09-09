@@ -52,6 +52,9 @@ abstract class BaseApiController (cc: ControllerComponents) extends BackendContr
       logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
+    case _: DataNotFoundException  =>
+      logger.info("Controllers DataNotFound")
+      ErrorDataNotFound.toHttpResponse
     case e: InsufficientEnrolments =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized("Insufficient Enrolments").toHttpResponse

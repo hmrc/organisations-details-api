@@ -22,6 +22,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Writes
@@ -30,6 +31,7 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAsses
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
+import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.DataNotFoundException
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -143,14 +145,7 @@ class IfConnector @Inject()(
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       msg.contains("NO_DATA_FOUND") match {
         case true =>
-          if (requestUrl.contains("counts"))
-            Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
-          else if (requestUrl.contains("corporation-tax"))
-            Future.successful(emptyCtReturn.asInstanceOf[A])
-          else if (requestUrl.contains("self-assessment"))
-            Future.successful(emptySaReturn.asInstanceOf[A])
-          else
-            Future.failed(new InternalServerException("Something went wrong."))
+          Future.failed(new DataNotFoundException(msg))
         case _ =>
           logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
           Future.failed(new InternalServerException("Something went wrong."))
