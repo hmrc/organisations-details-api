@@ -47,7 +47,7 @@ class NumberOfEmployeesService @Inject()(
         val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpointName))
         cacheService
           .get(
-            cacheId = NumberOfEmployeesCacheId(matchId, cacheKey, employeeCountRequest.fromDate, employeeCountRequest.toDate),
+            cacheId = NumberOfEmployeesCacheId(matchId, cacheKey, employeeCountRequest),
             fallbackFunction = withRetry {
               ifConnector.getEmployeeCount(
                 matchId.toString,
