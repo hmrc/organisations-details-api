@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.services
 
+import com.google.common.base.Charsets
+import com.google.common.io.BaseEncoding
 import play.api.libs.json.Format
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesRequest
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -75,14 +78,24 @@ class NumberOfEmployeesCacheService @Inject()(val shortLivedCache: ShortLivedCac
 trait CacheIdBase {
   val id: String
   override def toString: String = id
+
+  def encodeVal(toEncode: String): String =
+    BaseEncoding.base64().encode(toEncode.getBytes(Charsets.UTF_8))
 }
 
 case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
   lazy val id: String = s"$matchId-$cacheKey-corporation-tax"
 }
 
-case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, startDate: String, endDate: String) extends CacheIdBase {
-  lazy val id: String = s"$matchId-$startDate-$endDate-$cacheKey-number-of-employees"
+case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, employeeCountRequest: NumberOfEmployeesRequest)
+  extends CacheIdBase {
+
+  lazy val from           = employeeCountRequest.fromDate
+  lazy val to             = employeeCountRequest.toDate
+  lazy val payeReferences = employeeCountRequest.payeReference.map(entry => entry.schemeReference + entry.districtNumber).reduce(_ + _)
+  lazy val encoded        = encodeVal(payeReferences)
+
+  lazy val id: String = s"$matchId-$from-$to-$encoded-$cacheKey-number-of-employees"
 }
 
 case class SaCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
