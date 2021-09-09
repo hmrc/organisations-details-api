@@ -43,6 +43,10 @@ class IfConnector @Inject()(
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
 
+  val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, None)
+  val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, None)
+  val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, None)
+
   private val integrationFrameworkBearerToken =
     servicesConfig.getString(
       "microservice.services.integration-framework.authorization-token"
@@ -139,8 +143,14 @@ class IfConnector @Inject()(
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       msg.contains("NO_DATA_FOUND") match {
         case true =>
-          logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(new NotFoundException(msg))
+          if (requestUrl.contains("counts"))
+            Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
+          else if (requestUrl.contains("corporation-tax"))
+            Future.successful(emptyCtReturn.asInstanceOf[A])
+          else if (requestUrl.contains("self-assessment"))
+            Future.successful(emptySaReturn.asInstanceOf[A])
+          else
+            Future.failed(new InternalServerException("Something went wrong."))
         case _ =>
           logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
           Future.failed(new InternalServerException("Something went wrong."))

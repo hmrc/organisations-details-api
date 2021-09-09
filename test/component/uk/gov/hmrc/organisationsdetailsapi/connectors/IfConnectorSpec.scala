@@ -107,11 +107,14 @@ class IfConnectorSpec
   val saReturn = createValidSelfAssessmentReturnDetails()
   val employeeCountRequest = createValidEmployeeCountRequest()
   val employeeCountResponse = createValidEmployeeCountResponse()
-
   val invalidTaxReturn  = createValidCorporationTaxReturnDetails().copy(utr = Some(""))
   val invalidSaReturn = createValidSelfAssessmentReturnDetails().copy(utr = Some(""))
   val invalidEmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
+
+  val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, None)
+  val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, None)
+  val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, None)
 
   "IF Connector" should {
 
@@ -184,37 +187,38 @@ class IfConnectorSpec
         times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "Fail when IF returns a NOT_DATA_FOUND and return error in body" in new Setup {
+    "getCtReturnDetails" should {
 
-      Mockito.reset(underTest.auditHelper)
+      "Fail when IF returns a NOT_DATA_FOUND and return error in body" in new Setup {
 
-      stubFor(
-        get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
-          .withQueryParam("fields", equalTo("fields(A,B,C)"))
-          .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
-            """{
-              |  "failures": [
-              |    {
-              |      "code": "NO_DATA_FOUND",
-              |      "reason": "The remote endpoint has indicated no data was found for the provided utr."
-              |    }
-              |  ]
-              |}""".stripMargin)))))
+        Mockito.reset(underTest.auditHelper)
 
-      intercept[NotFoundException] {
-        await(
+        stubFor(
+          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
+              """{
+                |  "failures": [
+                |    {
+                |      "code": "NO_DATA_FOUND",
+                |      "reason": "The remote endpoint has indicated no data was found for the provided utr."
+                |    }
+                |  ]
+                |}""".stripMargin)))))
+
+        val result: CorporationTaxReturnDetailsResponse = await(
           underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
           )
         )
-      }
-      verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
-    }
 
-    "getCtReturnDetails" should {
+        result shouldBe emptyCtReturn
+
+        verify(underTest.auditHelper,
+          times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
+      }
 
       "successfully parse valid CorporationTaxReturnDetailsResponse from IF response" in new Setup {
 
@@ -278,6 +282,39 @@ class IfConnectorSpec
 
     "getSaReturnDetails" should {
 
+      "Fail when IF returns a NOT_DATA_FOUND and return error in body" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
+
+        stubFor(
+          get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
+            .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
+              """{
+                |  "failures": [
+                |    {
+                |      "code": "NO_DATA_FOUND",
+                |      "reason": "The remote endpoint has indicated no data was found for the provided utr."
+                |    }
+                |  ]
+                |}""".stripMargin)))))
+
+        val result:SelfAssessmentReturnDetailResponse = await(
+          underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        )
+
+        result shouldBe emptySaReturn
+
+        verify(underTest.auditHelper,
+          times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
+      }
+
       "successfully parse valid SelfAssessmentReturnDetailsResponse from IF response" in new Setup {
 
         Mockito.reset(underTest.auditHelper)
@@ -335,6 +372,39 @@ class IfConnectorSpec
     }
 
     "getEmployeeCount" should {
+
+      "Fail when IF returns a NOT_DATA_FOUND and return error in body" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
+
+        val jsonRequest = Json.prettyPrint(Json.toJson(employeeCountRequest))
+
+        stubFor(
+          post(urlPathMatching(s"/organisations/employers/employee/counts"))
+            .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
+            .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
+              """{
+                |  "failures": [
+                |    {
+                |      "code": "NO_DATA_FOUND",
+                |      "reason": "The remote endpoint has indicated that no data can be found for any employers."
+                |    }
+                |  ]
+                |}""".stripMargin)))))
+
+        val result: EmployeeCountResponse = await(
+          underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        )
+
+        result shouldBe emptyEmployeeCountResponse
+      }
 
       "successfully parse valid EmployeeCountResponse from IF response" in new Setup {
 
