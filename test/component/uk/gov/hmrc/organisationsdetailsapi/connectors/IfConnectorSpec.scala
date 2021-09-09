@@ -113,10 +113,6 @@ class IfConnectorSpec
   val invalidEmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
 
-  val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
-  val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
-  val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
-
   "IF Connector" should {
 
     "Fail when IF returns an error" in new Setup {
