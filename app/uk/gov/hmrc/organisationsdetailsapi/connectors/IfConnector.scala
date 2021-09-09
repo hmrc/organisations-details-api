@@ -43,7 +43,7 @@ class IfConnector @Inject()(
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
 
-  val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, None)
+  val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
   val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
   val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
 
