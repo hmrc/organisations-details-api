@@ -39,13 +39,8 @@ class IfConnector @Inject()(
                              val auditHelper: AuditHelper,
                            ) {
 
-  private val logger = Logger(classOf[IfConnector].getName)
-
+  private val logger  = Logger(classOf[IfConnector].getName)
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
-
-  val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
-  val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
-  val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
 
   private val integrationFrameworkBearerToken =
     servicesConfig.getString(
@@ -142,16 +137,8 @@ class IfConnector @Inject()(
     case Upstream4xxResponse(msg, 404, _, _) => {
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       msg.contains("NO_DATA_FOUND") match {
-        case true =>
-          if (requestUrl.contains("counts"))
-            Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
-          else if (requestUrl.contains("corporation-tax"))
-            Future.successful(emptyCtReturn.asInstanceOf[A])
-          else if (requestUrl.contains("self-assessment"))
-            Future.successful(emptySaReturn.asInstanceOf[A])
-          else
-            Future.failed(new InternalServerException("Something went wrong."))
-        case _ =>
+        case true => noDataFound(requestUrl)
+        case _    =>
           logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
           Future.failed(new InternalServerException("Something went wrong."))
       }
@@ -167,5 +154,20 @@ class IfConnector @Inject()(
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, e.getMessage)
       Future.failed(new InternalServerException("Something went wrong."))
     }
+  }
+
+  private def noDataFound[A](url: String): Future[A] = {
+    val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
+    val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
+    val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
+
+    if (url.contains("counts"))
+      Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
+    else if (url.contains("corporation-tax"))
+      Future.successful(emptyCtReturn.asInstanceOf[A])
+    else if (url.contains("self-assessment"))
+      Future.successful(emptySaReturn.asInstanceOf[A])
+    else
+      Future.failed(new InternalServerException("Something went wrong."))
   }
 }
