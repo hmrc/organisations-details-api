@@ -53,12 +53,12 @@ class ShortLivedCacheSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     await(shortLivedCache.drop)
   }
 
-  override def afterEach() {
+  override def afterEach(): Unit = {
     super.afterEach()
     await(shortLivedCache.drop)
   }

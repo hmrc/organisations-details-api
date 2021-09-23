@@ -200,8 +200,8 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(numberOfEmployeesService.get(matchIdUUID, request, scopes), 5 seconds)
-        val result = response.get.head
+        val response: Option[Seq[NumberOfEmployeesResponse]] = Await.result(numberOfEmployeesService.get(matchIdUUID, request, scopes), 5 seconds)
+        val result: NumberOfEmployeesResponse = response.get.head
 
         verify(mockIfConnector, times(2))
           .getEmployeeCount(any(), any(), any(), any())(any(), any(), any())

@@ -17,5 +17,5 @@
 package uk.gov.hmrc.organisationsdetailsapi.utils
 
 package object Binders {
-  implicit val matchUuidQueryStringBinder = new MatchUuidQueryStringBinder
+  implicit val matchUuidQueryStringBinder: MatchUuidQueryStringBinder = new MatchUuidQueryStringBinder
 }

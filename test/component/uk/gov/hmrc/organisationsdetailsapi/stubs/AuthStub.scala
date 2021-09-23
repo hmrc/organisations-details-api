@@ -17,7 +17,6 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.AUTHORIZATION
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.Json._
@@ -48,7 +47,7 @@ object AuthStub extends MockHost(22000) {
     )
   }
 
-  def willAuthorizePrivilegedAuthToken(authBearerToken: String, scopes: List[String]): StubMapping =
+  def willAuthorizePrivilegedAuthToken(authBearerToken: String, scopes: List[String]): Unit =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
         .withRequestBody(equalToJson(privilegedAuthority(scopes).toString()))
@@ -59,7 +58,7 @@ object AuthStub extends MockHost(22000) {
             .map(scope => s"""{ "key": "$scope", "value": ""}""")
             .reduce((a, b) => s"$a, $b")} ]}""")))
 
-  def willAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): StubMapping =
+  def willAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): Unit =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
         .withRequestBody(equalToJson(privilegedAuthority(scope).toString()))
@@ -68,7 +67,7 @@ object AuthStub extends MockHost(22000) {
           .withStatus(Status.OK)
           .withBody(s"""{"internalId": "some-id", "allEnrolments": [ { "key": "$scope", "value": "" } ]}""")))
 
-  def willNotAuthorizePrivilegedAuthToken(authBearerToken: String, scopes: List[String]): StubMapping =
+  def willNotAuthorizePrivilegedAuthToken(authBearerToken: String, scopes: List[String]): Unit =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
         .withRequestBody(equalToJson(privilegedAuthority(scopes).toString()))
@@ -77,7 +76,7 @@ object AuthStub extends MockHost(22000) {
           .withStatus(Status.UNAUTHORIZED)
           .withHeader(HeaderNames.WWW_AUTHENTICATE, """MDTP detail="Bearer token is missing or not authorized"""")))
 
-  def willNotAuthorizePrivilegedAuthTokenNoScopes(authBearerToken: String): StubMapping =
+  def willNotAuthorizePrivilegedAuthTokenNoScopes(authBearerToken: String): Unit =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
@@ -88,7 +87,7 @@ object AuthStub extends MockHost(22000) {
               HeaderNames.WWW_AUTHENTICATE,
               """MDTP detail="InsufficientEnrolments"""")))
 
-  def willNotAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): StubMapping =
+  def willNotAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): Unit =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
         .withRequestBody(equalToJson(privilegedAuthority(scope).toString()))

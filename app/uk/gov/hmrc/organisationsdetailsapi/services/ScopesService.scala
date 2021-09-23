@@ -17,7 +17,7 @@
 package uk.gov.hmrc.organisationsdetailsapi.services
 
 import play.api.Configuration
-import uk.gov.hmrc.organisationsdetailsapi.config.{ApiConfig, EndpointConfig, ExternalEndpointConfig, InternalEndpointConfig}
+import uk.gov.hmrc.organisationsdetailsapi.config.{ApiConfig, ExternalEndpointConfig, InternalEndpointConfig}
 
 import javax.inject.Inject
 

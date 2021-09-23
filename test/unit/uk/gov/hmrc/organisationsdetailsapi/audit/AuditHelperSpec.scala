@@ -22,6 +22,7 @@ import org.mockito.{ArgumentCaptor, Mockito}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
@@ -30,14 +31,14 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val auditConnector = mock[AuditConnector]
+  val auditConnector: AuditConnector = mock[AuditConnector]
   val auditHelper = new AuditHelper(auditConnector)
   val correlationId = "test"
   val matchId = "80a6bb14-d888-436e-a541-4000674c60bb"
   val applicationId = "80a6bb14-d888-436e-a541-4000674c60bb"
-  val request = FakeRequest().withHeaders("X-Application-ID" -> applicationId)
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders("X-Application-ID" -> applicationId)
   val endpoint = "/test"
   val ifResponse = "bar"
   val crn = "12345678"

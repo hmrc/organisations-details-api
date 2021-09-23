@@ -1,6 +1,7 @@
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import uk.gov.hmrc.DefaultBuildSettings
+
+TwirlKeys.templateImports := Seq.empty
 
 val appName = "organisations-details-api"
 

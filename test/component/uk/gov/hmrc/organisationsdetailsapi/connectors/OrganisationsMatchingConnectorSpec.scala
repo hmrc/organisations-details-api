@@ -72,12 +72,12 @@ class OrganisationsMatchingConnectorSpec
 
   val organisationsMatchingConnector: OrganisationsMatchingConnector = new OrganisationsMatchingConnector(httpClient, config)
 
-  override def beforeEach() {
+  override def beforeEach(): Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
 
-  override def afterEach() {
+  override def afterEach(): Unit = {
     wireMockServer.stop()
   }
 
