@@ -17,7 +17,6 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
 import java.util.concurrent.TimeUnit
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
@@ -30,7 +29,7 @@ import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http.MimeTypes.JSON
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
 trait BaseSpec
   extends AnyFeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
@@ -38,26 +37,26 @@ trait BaseSpec
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
-      "mongodb.uri"                             -> "mongodb://127.0.0.1:27017/organisations-details-api",
-      "microservice.services.integration-framework.host" -> "127.0.0.1",
-      "auditing.enabled"                               -> false,
+      "mongodb.uri"                                     -> "mongodb://127.0.0.1:27017/organisations-details-api",
+      "microservice.services.integration-framework.host"       -> "127.0.0.1",
+      "auditing.enabled"                                       -> false,
       "auditing.traceRequests"                                 -> false,
-      "microservice.services.auth.port"                         -> AuthStub.port,
-      "microservice.services.organisations-matching-api.port"    -> OrganisationsMatchingApiStub.port,
+      "microservice.services.auth.port"                        -> AuthStub.port,
+      "microservice.services.organisations-matching-api.port"  -> OrganisationsMatchingApiStub.port,
       "microservice.services.integration-framework.port"       -> IfStub.port,
       "run.mode"                                               -> "It"
     )
     .build()
 
-  val timeout = Duration(5, TimeUnit.SECONDS)
+  val timeout: FiniteDuration = Duration(5, TimeUnit.SECONDS)
   val serviceUrl = s"http://127.0.0.1:$port"
   val mocks = Seq(AuthStub, IfStub, OrganisationsMatchingApiStub)
   val authToken = "Bearer AUTH_TOKEN"
-  val acceptHeaderVP1 = ACCEPT -> "application/vnd.hmrc.1.0+json"
+  val acceptHeaderVP1: (String, String) = ACCEPT -> "application/vnd.hmrc.1.0+json"
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-  val correlationIdHeaderMalformed = "CorrelationId" -> "foo"
+  val correlationIdHeaderMalformed: (String, String) = "CorrelationId" -> "foo"
 
-  val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
+  val validCorrelationHeader: (String, String) = ("CorrelationId", sampleCorrelationId)
 
   protected def requestHeaders(
                                 acceptHeader: (String, String) = acceptHeaderVP1,

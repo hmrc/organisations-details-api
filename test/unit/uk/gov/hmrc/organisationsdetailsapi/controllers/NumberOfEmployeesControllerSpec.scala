@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import play.api.http.Status._
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -50,7 +49,6 @@ class NumberOfEmployeesControllerSpec
     with BeforeAndAfterEach {
 
   implicit val sys: ActorSystem = ActorSystem("MyTest")
-  implicit val mat: ActorMaterializer = ActorMaterializer()
 
   private val bodyParsers = PlayBodyParsers()
 

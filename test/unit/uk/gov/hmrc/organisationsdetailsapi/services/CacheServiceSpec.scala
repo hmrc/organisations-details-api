@@ -33,15 +33,15 @@ import scala.concurrent.Future
 
 class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with TestSupport {
 
-  val cacheId = TestCacheId("foo")
-  val cachedValue = TestClass("cached value")
-  val newValue = TestClass("new value")
+  val cacheId: TestCacheId = TestCacheId("foo")
+  val cachedValue: TestClass = TestClass("cached value")
+  val newValue: TestClass = TestClass("new value")
 
   trait Setup {
 
-    val mockClient = mock[ShortLivedCache]
-    val mockCacheConfig = mock[CacheConfiguration]
-    val cacheService = new CacheService {
+    val mockClient: ShortLivedCache = mock[ShortLivedCache]
+    val mockCacheConfig: CacheConfiguration = mock[CacheConfiguration]
+    val cacheService: CacheService = new CacheService {
       override val shortLivedCache: ShortLivedCache = mockClient
       override val conf: CacheConfiguration = mockCacheConfig
       override val key: String = "test"

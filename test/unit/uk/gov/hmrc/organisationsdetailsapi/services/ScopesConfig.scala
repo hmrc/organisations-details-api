@@ -16,9 +16,7 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
-import uk.gov.hmrc.organisationsdetailsapi.config.{ApiConfig, EndpointConfig, ScopeConfig}
 
 trait ScopesConfig {
 

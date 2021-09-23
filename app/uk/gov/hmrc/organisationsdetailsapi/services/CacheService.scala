@@ -54,7 +54,7 @@ trait CacheService {
 class SaCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
   extends CacheService {
 
-  val key = conf.saKey
+  val key: String = conf.saKey
 
 }
 
@@ -90,10 +90,10 @@ case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheI
 case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, employeeCountRequest: NumberOfEmployeesRequest)
   extends CacheIdBase {
 
-  lazy val from           = employeeCountRequest.fromDate
-  lazy val to             = employeeCountRequest.toDate
-  lazy val payeReferences = employeeCountRequest.payeReference.map(entry => entry.schemeReference + entry.districtNumber).reduce(_ + _)
-  lazy val encoded        = encodeVal(payeReferences)
+  lazy val from: String = employeeCountRequest.fromDate
+  lazy val to: String = employeeCountRequest.toDate
+  lazy val payeReferences: String = employeeCountRequest.payeReference.map(entry => entry.schemeReference + entry.districtNumber).reduce(_ + _)
+  lazy val encoded: String = encodeVal(payeReferences)
 
   lazy val id: String = s"$matchId-$from-$to-$encoded-$cacheKey-number-of-employees"
 }

@@ -18,7 +18,6 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
 import java.time.LocalDate
 import java.util.UUID
-
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
@@ -33,6 +32,7 @@ import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
+import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.SelfAssessmentResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -51,12 +51,12 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
   trait Setup {
     val utr = "1234567890"
     val matchId = "9ff2e348-ee49-4e7e-8b73-17d02ff962a2"
-    val matchIdUUID = UUID.fromString(matchId)
+    val matchIdUUID: UUID = UUID.fromString(matchId)
 
-    val mockScopesHelper = mock[ScopesHelper]
-    val mockScopesService = mock[ScopesService]
-    val mockIfConnector = mock[IfConnector]
-    val mockOrganisationsMatchingConnector = mock[OrganisationsMatchingConnector]
+    val mockScopesHelper: ScopesHelper = mock[ScopesHelper]
+    val mockScopesService: ScopesService = mock[ScopesService]
+    val mockIfConnector: IfConnector = mock[IfConnector]
+    val mockOrganisationsMatchingConnector: OrganisationsMatchingConnector = mock[OrganisationsMatchingConnector]
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val rh: RequestHeader = FakeRequest()
@@ -101,7 +101,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(selfAssessmentService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response: SelfAssessmentResponse = Await.result(selfAssessmentService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         response.selfAssessmentStartDate.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "I"
@@ -168,7 +168,7 @@ class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(selfAssessmentService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response: SelfAssessmentResponse = Await.result(selfAssessmentService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         verify(mockIfConnector, times(2))
           .getSaReturnDetails(any(), any(), any())(any(), any(), any())

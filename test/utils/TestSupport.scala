@@ -25,6 +25,7 @@ import play.api.mvc.Result
 import java.nio.charset.Charset
 import scala.concurrent.duration.{Duration, FiniteDuration, _}
 import scala.concurrent.{Await, Future}
+import scala.language.{implicitConversions, postfixOps}
 
 trait TestSupport {
   implicit val defaultTimeout: FiniteDuration = 5 seconds

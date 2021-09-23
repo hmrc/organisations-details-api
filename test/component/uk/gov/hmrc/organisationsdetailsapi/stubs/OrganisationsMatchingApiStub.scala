@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 
 object OrganisationsMatchingApiStub extends MockHost(9657) {
 
-  def willRespondWith(matchId: String, responseCode: Int, responseBody: String = "") =
+  def willRespondWith(matchId: String, responseCode: Int, responseBody: String = ""): Unit =
     mock.register(
       get(urlEqualTo(s"/match-record/$matchId"))
         .willReturn(aResponse().withStatus(responseCode).withBody(responseBody)))

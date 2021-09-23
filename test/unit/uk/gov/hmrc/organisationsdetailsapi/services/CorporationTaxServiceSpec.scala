@@ -29,10 +29,11 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, AccountingPeriod => IFAccountingPeriod}
+
 import java.time.LocalDate
 import java.util.UUID
-
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
+import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.CorporationTaxResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -51,12 +52,12 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
   trait Setup {
     val utr = "1234567890"
     val matchId = "9ff2e348-ee49-4e7e-8b73-17d02ff962a2"
-    val matchIdUUID = UUID.fromString(matchId)
+    val matchIdUUID: UUID = UUID.fromString(matchId)
 
-    val mockScopesHelper = mock[ScopesHelper]
-    val mockScopesService = mock[ScopesService]
-    val mockIfConnector = mock[IfConnector]
-    val mockOrganisationsMatchingConnector = mock[OrganisationsMatchingConnector]
+    val mockScopesHelper: ScopesHelper = mock[ScopesHelper]
+    val mockScopesService: ScopesService = mock[ScopesService]
+    val mockIfConnector: IfConnector = mock[IfConnector]
+    val mockOrganisationsMatchingConnector: OrganisationsMatchingConnector = mock[OrganisationsMatchingConnector]
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val rh: RequestHeader = FakeRequest()
@@ -100,7 +101,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response: CorporationTaxResponse = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         response.dateOfRegistration.get shouldBe LocalDate.of(2015, 4, 21)
         response.taxSolvencyStatus.get shouldBe "V"
@@ -166,7 +167,7 @@ class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
             ))
           )))
 
-        val response = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
+        val response: CorporationTaxResponse = Await.result(corporationTaxService.get(matchIdUUID, endpoint, scopes), 5 seconds)
 
         verify(mockIfConnector, times(2))
           .getCtReturnDetails(any(), any(), any())(any(), any(), any())

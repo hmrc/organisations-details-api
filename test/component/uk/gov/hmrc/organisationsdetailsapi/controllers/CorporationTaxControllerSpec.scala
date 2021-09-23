@@ -30,15 +30,15 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.Corporati
 
 class CorporationTaxControllerSpec extends BaseSpec {
 
-  val matchId = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
+  val matchId: UUID = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
   val utr = "1234567890"
   val scopes = List("read:organisations-details-ho-ssp")
-  val period1 = AccountingPeriod(Some(LocalDate.of(2018, 4, 6)), Some(LocalDate.of(2018, 10, 5)), Some(38390))
-  val period2 = AccountingPeriod(Some(LocalDate.of(2018, 10, 6)), Some(LocalDate.of(2018, 4, 5)), Some(2340))
-  val taxSolvencyStatus = Some("V")
-  val dateOfRegistration = Some(LocalDate.of(2014, 4, 21))
-  val validMatch = OrganisationMatch(matchId, "1234567890")
-  val validCtIfResponse = CorporationTaxReturnDetailsResponse(
+  val period1: AccountingPeriod = AccountingPeriod(Some(LocalDate.of(2018, 4, 6)), Some(LocalDate.of(2018, 10, 5)), Some(38390))
+  val period2: AccountingPeriod = AccountingPeriod(Some(LocalDate.of(2018, 10, 6)), Some(LocalDate.of(2018, 4, 5)), Some(2340))
+  val taxSolvencyStatus: Some[String] = Some("V")
+  val dateOfRegistration: Some[LocalDate] = Some(LocalDate.of(2014, 4, 21))
+  val validMatch: OrganisationMatch = OrganisationMatch(matchId, "1234567890")
+  val validCtIfResponse: CorporationTaxReturnDetailsResponse = CorporationTaxReturnDetailsResponse(
     Some(validMatch.utr),
     Some("2015-04-21"),
     Some("V"),

@@ -20,6 +20,8 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{Format, JsPath}
 
+import scala.util.matching.Regex
+
 
 case class AccountingPeriod(apStartDate: Option[String], apEndDate: Option[String], turnover: Option[Int])
 
@@ -27,12 +29,12 @@ case class CorporationTaxReturnDetailsResponse(utr: Option[String], taxpayerStar
 
 object CorporationTaxReturnDetails {
 
-  val apDatePattern = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
-  var utrPattern = "^[0-9]{10}$".r
-  val taxpayerStartDatePattern = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
-  def validTaxSolvencyStatus(value: String) = Seq("V", "S", "I", "A").contains(value)
+  val apDatePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
+  var utrPattern: Regex = "^[0-9]{10}$".r
+  val taxpayerStartDatePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
+  def validTaxSolvencyStatus(value: String): Boolean = Seq("V", "S", "I", "A").contains(value)
 
-  implicit val accountingPeriodFormat = Format[AccountingPeriod](
+  implicit val accountingPeriodFormat: Format[AccountingPeriod] = Format[AccountingPeriod](
     (
       (JsPath \ "apStartDate").readNullable[String](pattern(apDatePattern, "apStartDate not in correct format")) and
       (JsPath \ "apEndDate").readNullable[String](pattern(apDatePattern, "apEndDate not in correct format")) and
@@ -45,7 +47,7 @@ object CorporationTaxReturnDetails {
     )(unlift(AccountingPeriod.unapply))
   )
 
-  implicit val corporationTaxReturnDetailsResponseFormat = Format[CorporationTaxReturnDetailsResponse](
+  implicit val corporationTaxReturnDetailsResponseFormat: Format[CorporationTaxReturnDetailsResponse] = Format[CorporationTaxReturnDetailsResponse](
     (
       (JsPath \ "utr").readNullable[String](pattern(utrPattern, "Invalid UTR format")) and
       (JsPath \ "taxpayerStartDate").readNullable[String](pattern(taxpayerStartDatePattern, "Invalid taxpayer start date")) and

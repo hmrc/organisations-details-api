@@ -16,7 +16,6 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.connectors
 
-import java.util.UUID
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
@@ -29,19 +28,21 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{IfHelpers, TestSupport}
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 
@@ -54,7 +55,7 @@ class IfConnectorSpec
     with GuiceOneAppPerSuite
     with IfHelpers {
 
-  val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
+  val stubPort: Int = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "127.0.0.1"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
   val integrationFrameworkAuthorizationToken = "IF_TOKEN"
@@ -62,7 +63,7 @@ class IfConnectorSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
+  override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled"  -> false,
@@ -103,18 +104,18 @@ class IfConnectorSpec
 
   val utr = "1234567890"
 
-  val taxReturn  = createValidCorporationTaxReturnDetails()
-  val saReturn = createValidSelfAssessmentReturnDetails()
-  val employeeCountRequest = createValidEmployeeCountRequest()
-  val employeeCountResponse = createValidEmployeeCountResponse()
-  val invalidTaxReturn  = createValidCorporationTaxReturnDetails().copy(utr = Some(""))
-  val invalidSaReturn = createValidSelfAssessmentReturnDetails().copy(utr = Some(""))
-  val invalidEmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
-  val invalidEmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
+  val taxReturn: CorporationTaxReturnDetailsResponse = createValidCorporationTaxReturnDetails()
+  val saReturn: SelfAssessmentReturnDetailResponse = createValidSelfAssessmentReturnDetails()
+  val employeeCountRequest: EmployeeCountRequest = createValidEmployeeCountRequest()
+  val employeeCountResponse: EmployeeCountResponse = createValidEmployeeCountResponse()
+  val invalidTaxReturn: CorporationTaxReturnDetailsResponse = createValidCorporationTaxReturnDetails().copy(utr = Some(""))
+  val invalidSaReturn: SelfAssessmentReturnDetailResponse = createValidSelfAssessmentReturnDetails().copy(utr = Some(""))
+  val invalidEmployeeCountRequest: EmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
+  val invalidEmployeeCountResponse: EmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
 
-  val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
-  val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
-  val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
+  val emptyEmployeeCountResponse: EmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
+  val emptyCtReturn: CorporationTaxReturnDetailsResponse = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
+  val emptySaReturn: SelfAssessmentReturnDetailResponse = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
 
   "IF Connector" should {
 
@@ -224,7 +225,7 @@ class IfConnectorSpec
 
         Mockito.reset(underTest.auditHelper)
 
-        val jsonResponse = Json.prettyPrint(Json.toJson(taxReturn))
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(taxReturn))
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
@@ -253,7 +254,7 @@ class IfConnectorSpec
 
         Mockito.reset(underTest.auditHelper)
 
-        val jsonResponse = Json.prettyPrint(Json.toJson(invalidTaxReturn))
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(invalidTaxReturn))
 
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
@@ -319,7 +320,7 @@ class IfConnectorSpec
 
         Mockito.reset(underTest.auditHelper)
 
-        val jsonResponse = Json.prettyPrint(Json.toJson(saReturn))
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(saReturn))
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
@@ -346,7 +347,7 @@ class IfConnectorSpec
 
         Mockito.reset(underTest.auditHelper)
 
-        val jsonResponse = Json.prettyPrint(Json.toJson(invalidSaReturn))
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(invalidSaReturn))
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
@@ -377,7 +378,7 @@ class IfConnectorSpec
 
         Mockito.reset(underTest.auditHelper)
 
-        val jsonRequest = Json.prettyPrint(Json.toJson(employeeCountRequest))
+        val jsonRequest: String = Json.prettyPrint(Json.toJson(employeeCountRequest))
 
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
@@ -410,8 +411,8 @@ class IfConnectorSpec
 
         Mockito.reset(underTest.auditHelper)
 
-        val jsonRequest = Json.prettyPrint(Json.toJson(employeeCountRequest))
-        val jsonResponse = Json.prettyPrint(Json.toJson(employeeCountResponse))
+        val jsonRequest: String = Json.prettyPrint(Json.toJson(employeeCountRequest))
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(employeeCountResponse))
 
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
@@ -440,8 +441,8 @@ class IfConnectorSpec
 
         Mockito.reset(underTest.auditHelper)
 
-        val jsonRequest = Json.prettyPrint(Json.toJson(employeeCountRequest))
-        val jsonResponse = Json.prettyPrint(Json.toJson(invalidEmployeeCountResponse))
+        val jsonRequest: String = Json.prettyPrint(Json.toJson(employeeCountRequest))
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(invalidEmployeeCountResponse))
 
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
@@ -471,8 +472,8 @@ class IfConnectorSpec
 
       Mockito.reset(underTest.auditHelper)
 
-      val jsonRequest = Json.prettyPrint(Json.toJson(employeeCountRequest))
-      val jsonResponse = """{
+      val jsonRequest: String = Json.prettyPrint(Json.toJson(employeeCountRequest))
+      val jsonResponse: String = """{
                             |  "failures": [
                             |    {
                             |      "code": "INVALID_PAYLOAD",

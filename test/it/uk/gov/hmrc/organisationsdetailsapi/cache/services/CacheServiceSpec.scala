@@ -20,6 +20,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.OptionValues
+import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{Json, OFormat}
 import play.api.test.Helpers.running
@@ -32,12 +33,12 @@ import scala.concurrent.Future
 class CacheServiceSpec
   extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with MongoSupport with IntegrationPatience {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val cacheTtl = 60
 
   trait AppBuilder {
-    val app = new GuiceApplicationBuilder()
+    val app: Application = new GuiceApplicationBuilder()
       .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
       .build()
   }
@@ -48,7 +49,7 @@ class CacheServiceSpec
 
       "must fetch an entry" in new AppBuilder {
 
-        val cacheId = TestCacheId("foo")
+        val cacheId: TestCacheId = TestCacheId("foo")
 
         running(app) {
 
@@ -63,8 +64,8 @@ class CacheServiceSpec
 
       "must fetch an existing entry when not expired " in new AppBuilder {
 
-        val cacheId1 = TestCacheId("foo")
-        val cacheId2 = TestCacheId("bar")
+        val cacheId1: TestCacheId = TestCacheId("foo")
+        val cacheId2: TestCacheId = TestCacheId("bar")
 
         running(app) {
 
@@ -88,7 +89,7 @@ class CacheServiceSpec
 
       "must fetch an entry" in new AppBuilder {
 
-        val cacheId = TestCacheId("one")
+        val cacheId: TestCacheId = TestCacheId("one")
 
         running(app) {
 
@@ -103,8 +104,8 @@ class CacheServiceSpec
 
       "must fetch an existing entry when not expired " in new AppBuilder {
 
-        val cacheId1 = TestCacheId("one")
-        val cacheId2 = TestCacheId("two")
+        val cacheId1: TestCacheId = TestCacheId("one")
+        val cacheId2: TestCacheId = TestCacheId("two")
 
         running(app) {
 

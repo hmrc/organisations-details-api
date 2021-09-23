@@ -25,12 +25,9 @@ import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrol
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
-import uk.gov.hmrc.organisationsdetailsapi.utils.UuidValidator
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import java.util.UUID
-import scala.concurrent.Future.successful
 import scala.concurrent.{ExecutionContext, Future}
 
 abstract class BaseApiController (cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions {

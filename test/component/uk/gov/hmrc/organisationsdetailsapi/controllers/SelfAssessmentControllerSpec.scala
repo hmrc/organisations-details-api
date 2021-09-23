@@ -26,11 +26,11 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAsse
 
 class SelfAssessmentControllerSpec extends BaseSpec {
 
-  val matchId = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
+  val matchId: UUID = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
   val utr = "1234567890"
   val scopes = List("read:organisations-details-ho-ssp")
-  val validMatch = OrganisationMatch(matchId, "1234567890")
-  val ifData = SelfAssessmentReturnDetailResponse(
+  val validMatch: OrganisationMatch = OrganisationMatch(matchId, "1234567890")
+  val ifData: SelfAssessmentReturnDetailResponse = SelfAssessmentReturnDetailResponse(
     utr = Some(utr),
     startDate = Some("2020-01-01"),
     taxPayerType = Some("INDIVIDUAL"),
