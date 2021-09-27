@@ -16,28 +16,28 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.cache
 
+import java.time.{LocalDateTime, ZoneOffset}
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
+import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto, Protected}
+import uk.gov.hmrc.organisationsdetailsapi.cache.InsertResult.{AlreadyExists, InsertSucceeded}
+import uk.gov.hmrc.organisationsdetailsapi.cache.MongoErrors.Duplicate
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
-import uk.gov.hmrc.organisationsdetailsapi.cache.InsertResult.{AlreadyExists, InsertSucceeded}
-import uk.gov.hmrc.organisationsdetailsapi.cache.MongoErrors.Duplicate
 
-import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future, future}
 
 @Singleton
-class ShortLivedCache @Inject() (val cacheConfig: CacheRepositoryConfiguration,
-                                 configuration: Configuration,
-                                 mongo: MongoComponent)(implicit ec: ExecutionContext
-                                ) extends PlayMongoRepository[Entry](
+class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
+                                configuration: Configuration,
+                                mongo: MongoComponent)(implicit ec: ExecutionContext
+                               ) extends PlayMongoRepository[Entry](
   mongoComponent = mongo,
   collectionName = cacheConfig.collName,
   domainFormat   = Entry.format,
@@ -59,7 +59,8 @@ class ShortLivedCache @Inject() (val cacheConfig: CacheRepositoryConfiguration,
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
 
-  def cache[T](id: String, value: T)(implicit formats: Format[T]): Future[InsertResult] = {
+  def cache[T](id: String, value: T)(
+    implicit formats: Format[T]) = {
 
     val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
@@ -94,4 +95,27 @@ class ShortLivedCache @Inject() (val cacheConfig: CacheRepositoryConfiguration,
         case None => None
       }
   }
+}
+
+@Singleton
+class CacheRepositoryConfiguration @Inject()(configuration: Configuration) {
+
+  lazy val cacheEnabled = configuration
+    .getOptional[Boolean](
+      "cache.enabled"
+    )
+    .getOrElse(true)
+
+  lazy val cacheTtl = configuration
+    .getOptional[Int](
+      "cache.ttlInSeconds"
+    )
+    .getOrElse(60 * 15)
+
+  lazy val collName = configuration
+    .getOptional[String](
+      "cache.collName"
+    )
+    .getOrElse("individuals-details-cache")
+
 }

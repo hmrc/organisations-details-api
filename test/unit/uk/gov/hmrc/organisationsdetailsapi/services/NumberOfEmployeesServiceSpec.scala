@@ -26,15 +26,15 @@ import play.api.libs.json.Format
 import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
-import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework._
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, NumberOfEmployeesResponse}
 import uk.gov.hmrc.organisationsdetailsapi.services._
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{PayeReference => RequestPayeReference}
-
 import java.util.UUID
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -42,7 +42,7 @@ import scala.language.postfixOps
 
 class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
 
-  private val stubbedCache = new NumberOfEmployeesCacheService(null, new CacheConfiguration(Configuration())) {
+  private val stubbedCache = new CacheService(null, new CacheRepositoryConfiguration(Configuration())) {
 
     override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] = {
       fallbackFunction

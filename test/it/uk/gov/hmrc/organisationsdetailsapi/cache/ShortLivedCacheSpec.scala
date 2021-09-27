@@ -17,13 +17,16 @@
 package it.uk.gov.hmrc.organisationsdetailsapi.cache
 
 import java.util.UUID
+
 import org.scalatest.{BeforeAndAfterEach, TestSuite}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
+import org.mongodb.scala.model.Filters
 import uk.gov.hmrc.mongo.test.MongoSupport
+import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
 import utils.TestSupport
 
@@ -55,53 +58,57 @@ class ShortLivedCacheSpec
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    await(shortLivedCache.drop)
+    await(shortLivedCache.collection.drop().toFuture())
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
-    await(shortLivedCache.drop)
+    await(shortLivedCache.collection.drop().toFuture())
   }
 
   "cache" should {
     "store the encrypted version of a value" in {
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
+      shortLivedCache.cache(id, testValue)(TestClass.format) map { _ =>
+        retrieveRawCachedValue(id) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
       }
     }
 
     "update a cached value for a given id and key" in {
       val newValue = TestClass("three", "four")
 
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
+      shortLivedCache.cache(id, testValue)(TestClass.format) map { _ =>
+        retrieveRawCachedValue(id) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
       }
 
-      shortLivedCache.cache(id, cachekey, newValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
+      shortLivedCache.cache(id, newValue)(TestClass.format) map { _ =>
+        retrieveRawCachedValue(id) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
       }
     }
   }
 
   "fetch" should {
     "retrieve the unencrypted cached value for a given id and key" in {
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) flatMap { _ =>
-        shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
+      shortLivedCache.cache(id, testValue)(TestClass.format) flatMap { _ =>
+        shortLivedCache.fetchAndGetEntry[TestClass](id)(TestClass.format) map { value =>
           value shouldBe Some(testValue)
         }
       }
     }
 
     "return None if no cached value exists for a given id and key" in {
-      shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
+      shortLivedCache.fetchAndGetEntry[TestClass](id)(TestClass.format) map { value =>
         value shouldBe None
       }
     }
   }
 
-  private def retrieveRawCachedValue(id: String, key: String) = {
-    val storedValue = await(shortLivedCache.findById(id)).get
-    (storedValue.data.get \ cachekey).get
+  private def retrieveRawCachedValue(id: String) = {
+    await(shortLivedCache.collection.find(Filters.equal("id", toBson(id)))
+      .headOption
+      .map {
+        case Some(entry) => entry.data.organisationsData
+        case None => None
+      })
   }
 
   case class TestClass(one: String, two: String)
