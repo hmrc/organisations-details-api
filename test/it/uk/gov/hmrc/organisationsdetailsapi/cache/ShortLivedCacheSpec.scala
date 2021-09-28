@@ -16,37 +16,32 @@
 
 package it.uk.gov.hmrc.organisationsdetailsapi.cache
 
-import java.util.UUID
-
-import org.scalatest.{BeforeAndAfterEach, TestSuite}
+import org.mongodb.scala.model.Filters
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerTest
+import org.scalatest.wordspec.AsyncWordSpec
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
-import org.mongodb.scala.model.Filters
-import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
+import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
 import utils.TestSupport
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 class ShortLivedCacheSpec
-  extends AnyWordSpec
+  extends AsyncWordSpec
     with Matchers
-    with GuiceOneAppPerTest
     with BeforeAndAfterEach
-    with TestSuite
     with MongoSupport
     with TestSupport {
   
   private val cacheTtl = 60
   private val id = UUID.randomUUID().toString
-  private val cachekey = "test-class-key"
   private val testValue = TestClass("one", "two")
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
+  lazy val fakeApplication = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
     .bindings(Seq(): _*)
     .build()
