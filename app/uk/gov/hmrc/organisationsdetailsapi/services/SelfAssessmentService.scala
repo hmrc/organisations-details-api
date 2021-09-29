@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SelfAssessmentService @Inject()(
                                          scopesHelper: ScopesHelper,
                                          scopesService: ScopesService,
-                                         cacheService: SaCacheService,
+                                         cacheService: CacheService,
                                          ifConnector: IfConnector,
                                          organisationsMatchingConnector: OrganisationsMatchingConnector,
                                          @Named("retryDelay") retryDelay: Int

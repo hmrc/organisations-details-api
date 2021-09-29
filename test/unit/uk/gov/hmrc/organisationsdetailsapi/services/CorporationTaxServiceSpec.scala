@@ -29,10 +29,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, AccountingPeriod => IFAccountingPeriod}
-
 import java.time.LocalDate
 import java.util.UUID
-import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
+
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.CorporationTaxResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
@@ -43,7 +43,7 @@ import scala.language.postfixOps
 
 class CorporationTaxServiceSpec extends AnyWordSpec with Matchers {
 
-  private val stubbedCache = new CorporationTaxCacheService(null, new CacheConfiguration(Configuration())) {
+  private val stubbedCache = new CacheService(null, new CacheRepositoryConfiguration(Configuration())) {
     override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] = {
       fallbackFunction
     }

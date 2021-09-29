@@ -24,11 +24,11 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheConfiguration, ShortLivedCache}
+import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheRepository, CacheRepositoryConfiguration}
 import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService, CorporationTaxCacheId, SaCacheId}
 import utils.TestSupport
-
 import java.util.UUID
+
 import scala.concurrent.Future
 
 class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with TestSupport {
@@ -39,13 +39,11 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
 
   trait Setup {
 
-    val mockClient: ShortLivedCache = mock[ShortLivedCache]
-    val mockCacheConfig: CacheConfiguration = mock[CacheConfiguration]
-    val cacheService: CacheService = new CacheService {
-      override val shortLivedCache: ShortLivedCache = mockClient
-      override val conf: CacheConfiguration = mockCacheConfig
-      override val key: String = "test"
-    }
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    val mockClient = mock[CacheRepository]
+    val mockCacheConfig = mock[CacheRepositoryConfiguration]
+    val cacheService = new CacheService(mockClient, mockCacheConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -55,21 +53,21 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
 
   "cacheService.get" should {
 
-    "return the cached value for a given id and key" in new Setup {
+    "return the cached value for a given id" in new Setup {
 
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any()))
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(Some(cachedValue)))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
 
     }
 
-    "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
+    "cache the result of the fallback function when no cached value exists for a given id" in new Setup {
 
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any()))
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(None))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
-      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(cacheService.key), eqTo(newValue))(any())
+      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(newValue))(any())
 
     }
 

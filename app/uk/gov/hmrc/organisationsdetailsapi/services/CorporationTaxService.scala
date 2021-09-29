@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CorporationTaxService @Inject()(
                                          scopesHelper: ScopesHelper,
                                          scopesService: ScopesService,
-                                         cacheService: CorporationTaxCacheService,
+                                         cacheService: CacheService,
                                          ifConnector: IfConnector,
                                          organisationsMatchingConnector: OrganisationsMatchingConnector,
                                          @Named("retryDelay") retryDelay: Int

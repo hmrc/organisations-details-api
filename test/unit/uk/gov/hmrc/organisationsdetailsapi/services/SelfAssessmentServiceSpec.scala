@@ -18,6 +18,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
 import java.time.LocalDate
 import java.util.UUID
+
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
@@ -28,7 +29,7 @@ import play.api.libs.json.Format
 import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
-import uk.gov.hmrc.organisationsdetailsapi.cache.CacheConfiguration
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
@@ -42,7 +43,7 @@ import scala.language.postfixOps
 
 class SelfAssessmentServiceSpec extends AnyWordSpec with Matchers {
 
-  private val stubbedCache = new SaCacheService(null, new CacheConfiguration(Configuration())) {
+  private val stubbedCache = new CacheService(null, new CacheRepositoryConfiguration(Configuration())) {
     override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] = {
       fallbackFunction
     }

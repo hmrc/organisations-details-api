@@ -16,92 +16,82 @@
 
 package it.uk.gov.hmrc.organisationsdetailsapi.cache
 
-import java.util.UUID
-import org.scalatest.{BeforeAndAfterEach, TestSuite}
+import org.mongodb.scala.model.Filters
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerTest
+import org.scalatest.wordspec.AsyncWordSpec
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
+import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.test.MongoSupport
-import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepository
 import utils.TestSupport
+import java.util.UUID
 
 import scala.concurrent.ExecutionContext
 
-class ShortLivedCacheSpec
-  extends AnyWordSpec
+class CacheRepositorySpec
+  extends AsyncWordSpec
     with Matchers
-    with GuiceOneAppPerTest
     with BeforeAndAfterEach
-    with TestSuite
     with MongoSupport
     with TestSupport {
   
   private val cacheTtl = 60
   private val id = UUID.randomUUID().toString
-  private val cachekey = "test-class-key"
   private val testValue = TestClass("one", "two")
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
+  lazy val fakeApplication = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
     .bindings(Seq(): _*)
     .build()
 
-  private val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCache]
+  private val shortLivedCache = fakeApplication.injector.instanceOf[CacheRepository]
   implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
   def externalServices: Seq[String] = Seq.empty
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    await(shortLivedCache.drop)
+    await(shortLivedCache.collection.drop().toFuture())
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
-    await(shortLivedCache.drop)
+    await(shortLivedCache.collection.drop().toFuture())
   }
 
   "cache" should {
     "store the encrypted version of a value" in {
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
-      }
-    }
-
-    "update a cached value for a given id and key" in {
-      val newValue = TestClass("three", "four")
-
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
-      }
-
-      shortLivedCache.cache(id, cachekey, newValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id, cachekey) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
+      shortLivedCache.cache(id, testValue)(TestClass.format) map { _ =>
+        retrieveRawCachedValue(id) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
       }
     }
   }
 
   "fetch" should {
     "retrieve the unencrypted cached value for a given id and key" in {
-      shortLivedCache.cache(id, cachekey, testValue)(TestClass.format) flatMap { _ =>
-        shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
+      shortLivedCache.cache(id, testValue)(TestClass.format) flatMap { _ =>
+        shortLivedCache.fetchAndGetEntry[TestClass](id)(TestClass.format) map { value =>
           value shouldBe Some(testValue)
         }
       }
     }
 
     "return None if no cached value exists for a given id and key" in {
-      shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(TestClass.format) map { value =>
+      shortLivedCache.fetchAndGetEntry[TestClass](id)(TestClass.format) map { value =>
         value shouldBe None
       }
     }
   }
 
-  private def retrieveRawCachedValue(id: String, key: String) = {
-    val storedValue = await(shortLivedCache.findById(id)).get
-    (storedValue.data.get \ cachekey).get
+  private def retrieveRawCachedValue(id: String) = {
+    await(shortLivedCache.collection.find(Filters.equal("id", toBson(id)))
+      .headOption
+      .map {
+        case Some(entry) => entry.data.organisationsData
+        case None => None
+      })
   }
 
   case class TestClass(one: String, two: String)
