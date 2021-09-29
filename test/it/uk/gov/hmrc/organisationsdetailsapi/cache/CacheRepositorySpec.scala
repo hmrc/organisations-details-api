@@ -24,13 +24,13 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.test.MongoSupport
-import uk.gov.hmrc.organisationsdetailsapi.cache.ShortLivedCache
+import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepository
 import utils.TestSupport
-
 import java.util.UUID
+
 import scala.concurrent.ExecutionContext
 
-class ShortLivedCacheSpec
+class CacheRepositorySpec
   extends AsyncWordSpec
     with Matchers
     with BeforeAndAfterEach
@@ -46,7 +46,7 @@ class ShortLivedCacheSpec
     .bindings(Seq(): _*)
     .build()
 
-  private val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCache]
+  private val shortLivedCache = fakeApplication.injector.instanceOf[CacheRepository]
   implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
   def externalServices: Seq[String] = Seq.empty
