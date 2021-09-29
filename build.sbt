@@ -59,7 +59,10 @@ lazy val microservice = Project(appName, file("."))
     Keys.fork in IntegrationTest := true,
     unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
       base => Seq(base / "test")).value,
-    testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter))
+    testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter)),
+    testGrouping in IntegrationTest := oneForkedJvmPerTest(
+      (definedTests in IntegrationTest).value),
+    parallelExecution in IntegrationTest := false
   )
   .configs(ComponentTest)
   .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
