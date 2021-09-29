@@ -116,6 +116,6 @@ class CacheRepositoryConfiguration @Inject()(configuration: Configuration) {
     .getOptional[String](
       "cache.collName"
     )
-    .getOrElse("individuals-details-cache")
+    .getOrElse("organisations-details-cache")
 
 }
