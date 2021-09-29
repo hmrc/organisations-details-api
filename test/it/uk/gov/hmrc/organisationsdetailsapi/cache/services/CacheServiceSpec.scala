@@ -17,30 +17,24 @@
 package it.uk.gov.hmrc.organisationsdetailsapi.cache.services
 
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.OptionValues
-import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{Json, OFormat}
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mongo.test.MongoSupport
+import org.scalatest.freespec.AnyFreeSpec
 import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService}
 
 import scala.concurrent.Future
 
 class CacheServiceSpec
-  extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with MongoSupport with IntegrationPatience {
+  extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val cacheTtl = 60
-
   trait AppBuilder {
-    val app: Application = new GuiceApplicationBuilder()
-      .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
-      .build()
+    val app = new GuiceApplicationBuilder().build()
   }
 
   "cache service" - {
