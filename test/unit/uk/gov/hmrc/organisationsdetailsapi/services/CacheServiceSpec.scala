@@ -16,8 +16,9 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.`given`
-import org.mockito.Mockito.verifyNoInteractions
+import org.mockito.Mockito.{verify, verifyNoInteractions}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
@@ -51,6 +52,25 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
   }
 
   "cacheService.get" should {
+
+    "return the cached value for a given id and key" in new Setup {
+
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+        .willReturn(Future.successful(Some(cachedValue)))
+      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
+
+    }
+
+    "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
+
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+        .willReturn(Future.successful(None))
+
+      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
+      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(newValue))(any())
+
+    }
+
     "ignore the cache when caching is not enabled" in new Setup {
 
       given(mockCacheConfig.cacheEnabled).willReturn(false)
