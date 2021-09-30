@@ -91,7 +91,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
       .find(Filters.equal("id", toBson(id)))
       .headOption
       .map {
-        case Some(entry) => decryptor.reads(entry.data.organisationsData).asOpt map (_.decryptedValue)
+        case Some(entry) => decryptor.reads(entry.data.organisationsDetails).asOpt map (_.decryptedValue)
         case None => None
       }
   }
