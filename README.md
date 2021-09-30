@@ -1,6 +1,8 @@
 
 # organisations-details-api
 
+This API allows users to check HMRC records to find information about an organisation.
+
 ### Documentation
 The documentation on [confluence](https://confluence.tools.tax.service.gov.uk/display/MDS/Development+space) includes:
 - Configuration driven management of data and scopes
