@@ -89,7 +89,7 @@ class CacheRepositorySpec
     await(shortLivedCache.collection.find(Filters.equal("id", toBson(id)))
       .headOption
       .map {
-        case Some(entry) => entry.data.organisationsData
+        case Some(entry) => entry.data.organisationsDetails
         case None => None
       })
   }
