@@ -71,13 +71,11 @@ class CacheRepositorySpec
     "update a cached value for a given id and key" in {
       val newValue = TestClass("three", "four")
 
-      shortLivedCache.cache(id, testValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
-      }
+      await(shortLivedCache.cache(id, testValue)(TestClass.format))
+      retrieveRawCachedValue(id) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
 
-      shortLivedCache.cache(id, newValue)(TestClass.format) map { _ =>
-        retrieveRawCachedValue(id) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
-      }
+      await(shortLivedCache.cache(id, newValue)(TestClass.format))
+      retrieveRawCachedValue(id) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
     }
   }
 
