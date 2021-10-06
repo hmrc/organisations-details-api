@@ -16,6 +16,8 @@ Please ensure you reference the OGD Data Item matrix to ensure the right data it
 
 Follow the process for [matching](https://github.com/hmrc/organisations-matching-api) to generate a matchId.
 
+Ensure mongo and service manager (`sm --start OVHO -r`) are running.
+
 The service can be run on port 9656 with:
 
     sbt run
