@@ -26,14 +26,14 @@ class IfQueriesSpec extends BaseSpec {
   Feature("Query strings for 'corporation-tax' endpoint") {
     Scenario("For read:organisations-details-ho-ssp") {
       val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "corporation-tax")
-      queryString mustBe "accountingPeriods(apEndDate,apStartDate,turnover),taxSolvencyStatus,taxpayerStartDate"
+      queryString mustBe "taxSolvencyStatus"
     }
   }
 
   Feature("Query strings for 'self-assessment' endpoint") {
     Scenario("For read:organisations-details-ho-ssp") {
       val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "self-assessment")
-      queryString mustBe "startDate,taxSolvencyStatus,taxyears(businessSalesTurnover,taxyear)"
+      queryString mustBe "taxSolvencyStatus"
     }
   }
 
