@@ -25,7 +25,7 @@ import scala.util.matching.Regex
 
 case class AccountingPeriod(apStartDate: Option[String], apEndDate: Option[String], turnover: Option[Int])
 
-case class CorporationTaxReturnDetailsResponse(utr: Option[String], taxpayerStartDate: Option[String], taxSolvencyStatus: Option[String], accountingPeriods: Option[Seq[AccountingPeriod]])
+case class CorporationTaxReturnDetailsResponse(utr: Option[String], taxPayerStartDate: Option[String], taxSolvencyStatus: Option[String], accountingPeriods: Option[Seq[AccountingPeriod]])
 
 object CorporationTaxReturnDetails {
 

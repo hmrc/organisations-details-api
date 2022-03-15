@@ -28,7 +28,7 @@ object CorporationTaxResponse {
 
   def create(corporationTaxReturnDetailsResponse: CorporationTaxReturnDetailsResponse): CorporationTaxResponse =
     CorporationTaxResponse(
-      corporationTaxReturnDetailsResponse.taxpayerStartDate.map(LocalDate.parse) ,
+      corporationTaxReturnDetailsResponse.taxPayerStartDate.map(LocalDate.parse) ,
       corporationTaxReturnDetailsResponse.taxSolvencyStatus,
       corporationTaxReturnDetailsResponse.accountingPeriods.map(x => x.map(AccountingPeriod.create))
     )

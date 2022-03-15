@@ -23,7 +23,7 @@ trait IfHelpers {
   def createValidCorporationTaxReturnDetails(): CorporationTaxReturnDetailsResponse = {
     CorporationTaxReturnDetailsResponse(
       utr = Some("1234567890"),
-      taxpayerStartDate =  Some("2015-04-21"),
+      taxPayerStartDate =  Some("2015-04-21"),
       taxSolvencyStatus =  Some("V"),
       accountingPeriods =  Some(Seq(
       AccountingPeriod(
