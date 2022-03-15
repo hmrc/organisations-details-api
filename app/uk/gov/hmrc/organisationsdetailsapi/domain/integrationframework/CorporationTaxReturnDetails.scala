@@ -31,7 +31,7 @@ object CorporationTaxReturnDetails {
 
   val apDatePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
   var utrPattern: Regex = "^[0-9]{10}$".r
-  val taxpayerStartDatePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
+  val taxPayerStartDatePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
   def validTaxSolvencyStatus(value: String): Boolean = Seq("V", "S", "I", "A").contains(value)
 
   implicit val accountingPeriodFormat: Format[AccountingPeriod] = Format[AccountingPeriod](
@@ -50,13 +50,13 @@ object CorporationTaxReturnDetails {
   implicit val corporationTaxReturnDetailsResponseFormat: Format[CorporationTaxReturnDetailsResponse] = Format[CorporationTaxReturnDetailsResponse](
     (
       (JsPath \ "utr").readNullable[String](pattern(utrPattern, "Invalid UTR format")) and
-      (JsPath \ "taxpayerStartDate").readNullable[String](pattern(taxpayerStartDatePattern, "Invalid taxpayer start date")) and
+      (JsPath \ "taxPayerStartDate").readNullable[String](pattern(taxPayerStartDatePattern, "Invalid taxPayer start date")) and
       (JsPath \ "taxSolvencyStatus").readNullable[String](verifying(validTaxSolvencyStatus)) and
       (JsPath \ "accountingPeriods").readNullable[Seq[AccountingPeriod]]
     )(CorporationTaxReturnDetailsResponse.apply _),
     (
       (JsPath \ "utr").writeNullable[String] and
-      (JsPath \ "taxpayerStartDate").writeNullable[String] and
+      (JsPath \ "taxPayerStartDate").writeNullable[String] and
       (JsPath \ "taxSolvencyStatus").writeNullable[String] and
       (JsPath \ "accountingPeriods").writeNullable[Seq[AccountingPeriod]]
     )(unlift(CorporationTaxReturnDetailsResponse.unapply))
