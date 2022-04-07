@@ -100,7 +100,7 @@ class OrganisationsMatchingConnectorSpec
           |}
           |""".stripMargin
 
-      stubWithResponseStatus(OK, jsonResponse, matchId);
+      stubWithResponseStatus(OK, jsonResponse, matchId)
 
       organisationsMatchingConnector.resolve(matchIdUUID).map(result => {
         result.matchId shouldBe UUID.fromString(matchId)
@@ -116,9 +116,9 @@ class OrganisationsMatchingConnectorSpec
 
       val jsonResponse = ""
 
-      stubWithResponseStatus(NOT_FOUND, jsonResponse, matchId);
+      stubWithResponseStatus(NOT_FOUND, jsonResponse, matchId)
       assertThrows[MatchNotFoundException] {
-        Await.result(organisationsMatchingConnector.resolve(matchIdUUID), 2 seconds)
+        Await.result(organisationsMatchingConnector.resolve(matchIdUUID), 2.seconds)
       }
     }
   }

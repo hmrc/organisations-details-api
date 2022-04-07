@@ -33,11 +33,11 @@ class VersioningRequestHandler @Inject()(config: Configuration,
                                          filters: HttpFilters)
   extends RequestHandler(router, errorHandler, httpConfiguration, filters) {
 
-  private lazy val unversionedContexts = Try {
-    config
-      .getOptional[Seq[String]]("versioning.unversionedContexts")
-      .getOrElse(Seq.empty[String])
-  }.getOrElse(Seq.empty[String])
+  private lazy val unversionedContexts =
+    Try(config.getOptional[Seq[String]]("versioning.unversionedContexts"))
+      .toOption
+      .flatten
+      .getOrElse(Seq.empty)
 
   override def routeRequest(request: RequestHeader): Option[Handler] = {
     val requestContext = extractUriContext(request)

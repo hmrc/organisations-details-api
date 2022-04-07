@@ -111,7 +111,7 @@ case class B(value: String, children: Iterable[Node]) extends Node {
             } else {
               n1
             }) ++ b.children.filter(n1 => !a.hasChild(n1.get)))
-      case (a: L, b: B) => b
+      case (_: L, b: B) => b
       case _            => a1
     }
 }

@@ -25,7 +25,7 @@ case class NumberOfEmployeeCounts(numberOfEmployees: Option[Int], dateOfCount: O
 object NumberOfEmployeeCounts {
 
   def create(count: Count) : NumberOfEmployeeCounts =
-    NumberOfEmployeeCounts(count.employeeCount.map(_.toInt), count.dateTaken)
+    NumberOfEmployeeCounts(count.employeeCount, count.dateTaken)
 
   implicit val numberOfEmployeeCountsWrites : Writes[NumberOfEmployeeCounts] =
     (
