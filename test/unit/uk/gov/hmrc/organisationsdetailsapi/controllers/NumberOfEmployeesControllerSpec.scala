@@ -53,7 +53,7 @@ class NumberOfEmployeesControllerSpec
   private val bodyParsers = PlayBodyParsers()
 
   private val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-  private val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+  private val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
 
   private val sampleMatchId = "32696d72-6216-475f-b213-ba76921cf459"
   private val sampleMatchIdUUID = UUID.fromString(sampleMatchId)

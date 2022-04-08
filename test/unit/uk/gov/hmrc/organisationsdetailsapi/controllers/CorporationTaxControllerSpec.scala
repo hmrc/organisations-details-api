@@ -52,7 +52,7 @@ class CorporationTaxControllerSpec
   implicit val sys: ActorSystem = ActorSystem("MyTest")
 
   private val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-  private val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+  private val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
 
   private val sampleMatchId = "32696d72-6216-475f-b213-ba76921cf459"
   private val sampleMatchIdUUID = UUID.fromString(sampleMatchId)
@@ -179,7 +179,7 @@ class CorporationTaxControllerSpec
     "fail when insufficient enrolments" in {
       when(mockScopesService.getEndPointScopes("corporation-tax")).thenReturn(Seq("test-scope"))
       given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
-        .willReturn(failed(new InsufficientEnrolments()))
+        .willReturn(failed(InsufficientEnrolments()))
 
 
       val response = await(controller.corporationTax(sampleMatchIdUUID)(FakeRequest()))

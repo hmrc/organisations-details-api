@@ -16,15 +16,16 @@
 
 package it.uk.gov.hmrc.organisationsdetailsapi.cache.services
 
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.concurrent.{ IntegrationPatience, ScalaFutures }
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.OptionValues
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{ Json, OFormat }
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
 import org.scalatest.freespec.AnyFreeSpec
-import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService}
+import play.api.Application
+import uk.gov.hmrc.organisationsdetailsapi.services.{ CacheIdBase, CacheService }
 
 import scala.concurrent.Future
 
@@ -34,7 +35,7 @@ class CacheServiceSpec
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   trait AppBuilder {
-    val app = new GuiceApplicationBuilder().build()
+    val app: Application = new GuiceApplicationBuilder().build()
   }
 
   "cache service" - {

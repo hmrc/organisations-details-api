@@ -74,104 +74,50 @@ class RequestHeaderUtilsSpec extends AnyWordSpec with Matchers {
     }
 
     "validate correlationId successfully when CorrelationId header exists in correct format" in {
+      val request = FakeRequest(GET, "/", Headers("CorrelationId" -> "1ed32c2b-7f45-4b30-b15e-64166dd97e9b"), ())
 
-      val requestHeader: RequestHeader = new RequestHeader {
-        override def headers: Headers = new Headers(Seq(("CorrelationId", "1ed32c2b-7f45-4b30-b15e-64166dd97e9b")))
-
-        override def connection: RemoteConnection = ???
-        override def method: String = ???
-        override def target: RequestTarget = ???
-        override def version: String = ???
-        override def attrs: TypedMap = ???
-      }
-
-      val result = validateCorrelationId(requestHeader)
+      val result = validateCorrelationId(request)
 
       result shouldBe UUID.fromString("1ed32c2b-7f45-4b30-b15e-64166dd97e9b")
 
     }
 
     "validateCorrelationId throws exception when CorrelationId header exists in incorrect format" in {
+      val request = FakeRequest(GET, "/", Headers("CorrelationId" -> "IncorrectFormat"), ())
 
-      val requestHeader: RequestHeader = new RequestHeader {
-        override def headers: Headers = new Headers(Seq(("CorrelationId", "IncorrectFormat")))
-
-        override def connection: RemoteConnection = ???
-        override def method: String = ???
-        override def target: RequestTarget = ???
-        override def version: String = ???
-        override def attrs: TypedMap = ???
-      }
-
-      val exception = intercept[BadRequestException] { validateCorrelationId(requestHeader) }
+      val exception = intercept[BadRequestException] { validateCorrelationId(request) }
 
       exception.message shouldBe "Malformed CorrelationId"
     }
 
     "validateCorrelationId throws exception when CorrelationId header is missing" in {
+      val request = FakeRequest(GET, "/")
 
-      val requestHeader: RequestHeader = new RequestHeader {
-        override def headers: Headers = new Headers(Seq())
-
-        override def connection: RemoteConnection = ???
-        override def method: String = ???
-        override def target: RequestTarget = ???
-        override def version: String = ???
-        override def attrs: TypedMap = ???
-      }
-
-      val exception = intercept[BadRequestException] { validateCorrelationId(requestHeader) }
+      val exception = intercept[BadRequestException] { validateCorrelationId(request) }
 
       exception.message shouldBe "CorrelationId is required"
     }
 
     "maybeCorrelationId successfully when CorrelationId header exists in correct format" in {
+      val request = FakeRequest(GET, "/", Headers("CorrelationId" -> "1ed32c2b-7f45-4b30-b15e-64166dd97e9b"), ())
 
-      val requestHeader: RequestHeader = new RequestHeader {
-        override def headers: Headers = new Headers(Seq(("CorrelationId", "1ed32c2b-7f45-4b30-b15e-64166dd97e9b")))
-
-        override def connection: RemoteConnection = ???
-        override def method: String = ???
-        override def target: RequestTarget = ???
-        override def version: String = ???
-        override def attrs: TypedMap = ???
-      }
-
-      val result = maybeCorrelationId(requestHeader)
+      val result = maybeCorrelationId(request)
 
       result shouldBe Some("1ed32c2b-7f45-4b30-b15e-64166dd97e9b")
     }
 
     "maybeCorrelationId returns None when CorrelationId header is missing" in {
+      val request = FakeRequest(GET, "/")
 
-      val requestHeader: RequestHeader = new RequestHeader {
-        override def headers: Headers = new Headers(Seq())
-
-        override def connection: RemoteConnection = ???
-        override def method: String = ???
-        override def target: RequestTarget = ???
-        override def version: String = ???
-        override def attrs: TypedMap = ???
-      }
-
-      val result =  maybeCorrelationId(requestHeader)
+      val result =  maybeCorrelationId(request)
 
       result shouldBe None
     }
 
     "maybeCorrelationId returns None when CorrelationId header is malformed" in {
+      val request = FakeRequest(GET, "/", Headers("CorrelationId" -> "IncorrectFormat"), ())
 
-      val requestHeader: RequestHeader = new RequestHeader {
-        override def headers: Headers = new Headers(Seq(("CorrelationId", "IncorrectFormat")))
-
-        override def connection: RemoteConnection = ???
-        override def method: String = ???
-        override def target: RequestTarget = ???
-        override def version: String = ???
-        override def attrs: TypedMap = ???
-      }
-
-      val result =  maybeCorrelationId(requestHeader)
+      val result =  maybeCorrelationId(request)
 
       result shouldBe None
     }

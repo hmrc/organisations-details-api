@@ -82,7 +82,7 @@ class IfConnectorSpec
   trait Setup {
     val matchId = "80a6bb14-d888-436e-a541-4000674c60aa"
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-    val sampleCorrelationIdHeader: (String, String) = ("CorrelationId" -> sampleCorrelationId)
+    val sampleCorrelationIdHeader: (String, String) = "CorrelationId" -> sampleCorrelationId
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -93,12 +93,12 @@ class IfConnectorSpec
     val underTest = new IfConnector(config, httpClient, auditHelper)
   }
 
-  override def beforeEach() {
+  override def beforeEach(): Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
 
-  override def afterEach() {
+  override def afterEach(): Unit = {
     wireMockServer.stop()
   }
 
@@ -288,7 +288,7 @@ class IfConnectorSpec
         Mockito.reset(underTest.auditHelper)
 
         stubFor(
-          get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+          get(urlPathMatching(s"/organisations/self-assessment/$utr/return/details"))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
@@ -323,7 +323,7 @@ class IfConnectorSpec
         val jsonResponse: String = Json.prettyPrint(Json.toJson(saReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+          get(urlPathMatching(s"/organisations/self-assessment/$utr/return/details"))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
@@ -350,7 +350,7 @@ class IfConnectorSpec
         val jsonResponse: String = Json.prettyPrint(Json.toJson(invalidSaReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/self-assessment/${utr}/return/details"))
+          get(urlPathMatching(s"/organisations/self-assessment/$utr/return/details"))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))

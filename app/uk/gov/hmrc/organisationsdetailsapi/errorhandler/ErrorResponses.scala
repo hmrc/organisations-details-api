@@ -17,15 +17,15 @@
 package uk.gov.hmrc.organisationsdetailsapi.errorhandler
 
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json.{Json, Writes}
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Result
 import play.api.mvc.Results._
 
 sealed abstract class ErrorResponse(val httpStatusCode: Int, val errorCode: String, val message: String) {
-  implicit val errorResponseWrites: Writes[ErrorResponse] = new Writes[ErrorResponse] {
-    def writes(e: ErrorResponse): JsValue = Json.obj("code" -> e.errorCode, "message" -> e.message)
-  }
+  implicit val errorResponseWrites: Writes[ErrorResponse] =
+    (e: ErrorResponse) => Json.obj("code" -> e.errorCode, "message" -> e.message)
+
   def toHttpResponse: Result = Status(httpStatusCode)(toJson(this))
 }
 
@@ -33,7 +33,7 @@ object ErrorResponses {
 
   case object ErrorNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource can not be found")
   case class ErrorInternalServer(errorMessage: String = "Failed to process request")
-    extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", message=errorMessage)
+    extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", message = errorMessage)
   case object ErrorTooManyRequests extends ErrorResponse(TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", "Rate limit exceeded")
   case class ErrorUnauthorized(errorMessage: String) extends ErrorResponse(UNAUTHORIZED, "UNAUTHORIZED", errorMessage)
   case class ErrorInvalidRequest(errorMessage: String)

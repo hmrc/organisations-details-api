@@ -46,15 +46,12 @@ class CacheService @Inject()(
             result
           }
       } else {
-      fallbackFunction
-    }
+        fallbackFunction
+      }
 
   }
     def fetch[T: Format](matchId: UUID): Future[Option[T]] = {
-      cachingClient.fetchAndGetEntry(matchId.toString) flatMap {
-        result =>
-          Future.successful(result)
-      }
+      cachingClient.fetchAndGetEntry(matchId.toString)
     }
 }
 

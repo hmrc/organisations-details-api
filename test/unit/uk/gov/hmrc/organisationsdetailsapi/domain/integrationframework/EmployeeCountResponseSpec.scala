@@ -33,7 +33,7 @@ class EmployeeCountResponseSpec extends AnyWordSpec with Matchers {
       ))
     )
 
-    val result = EmployeeCountRequest.createFromRequest(controllerRequest);
+    val result = EmployeeCountRequest.createFromRequest(controllerRequest)
 
     result.startDate shouldBe "2019-01-01"
     result.endDate shouldBe "2019-10-10"

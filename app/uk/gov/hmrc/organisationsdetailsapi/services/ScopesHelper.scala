@@ -29,7 +29,7 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
   /**
    * @param scopes The list of scopes associated with the user
    * @param endpoints The endpoints for which to construct the query string
-   * @param payeRef The PAYE reference
+   * @param employerRef The emploher reference
    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
    */
   def getQueryStringWithParameterisedFilters(scopes: Iterable[String],
@@ -41,8 +41,8 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
 
   /**
    * @param scopes The list of scopes associated with the user
-   * @param endpoints The endpoints for which to construct the query string
-   * @param payeRef The PAYE reference
+   * @param endpoint The endpoint for which to construct the query string
+   * @param employerRef The employer reference
    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
    */
   def getQueryStringWithParameterisedFilters(scopes: Iterable[String],
@@ -106,9 +106,10 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
                   allowedList: Option[List[String]],
                   excludeInternal: Boolean = false): HalResource = {
 
-    val links = excludeInternal match {
-      case true  => getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getExternalEndpoints(scopes))
-      case false => getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getInternalEndpoints(scopes)) ++
+    val links = if (excludeInternal) {
+      getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getExternalEndpoints(scopes))
+    } else {
+      getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getInternalEndpoints(scopes)) ++
         getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getExternalEndpoints(scopes))
     }
 

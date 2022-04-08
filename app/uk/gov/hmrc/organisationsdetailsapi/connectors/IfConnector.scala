@@ -118,48 +118,46 @@ class IfConnector @Inject()(
                          request: RequestHeader,
                          requestUrl: String)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = x.recoverWith {
-    case validationError: JsValidationException => {
+    case validationError: JsValidationException =>
       logger.warn("Integration Framework JsValidationException encountered")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl,
         s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
-    }
-    case Upstream5xxResponse(msg, code, _, _) => {
+
+    case Upstream5xxResponse(msg, code, _, _) =>
       logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
       Future.failed(new InternalServerException("Something went wrong."))
-    }
-    case Upstream4xxResponse(msg, 429, _, _) => {
+
+    case Upstream4xxResponse(msg, 429, _, _) =>
       logger.warn(s"IF Rate limited: $msg")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
-    }
-    case Upstream4xxResponse(msg, 404, _, _) => {
+
+    case Upstream4xxResponse(msg, 404, _, _) =>
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
-      msg.contains("NO_DATA_FOUND") match {
-        case true => noDataFound(requestUrl)
-        case _    =>
-          logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
-          Future.failed(new InternalServerException("Something went wrong."))
+      if (msg.contains("NO_DATA_FOUND")) {
+        noDataFound(requestUrl)
+      } else {
+        logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
+        Future.failed(new InternalServerException("Something went wrong."))
       }
-    }
-    case Upstream4xxResponse(msg, code, _, _) => {
+
+    case Upstream4xxResponse(msg, code, _, _) =>
       logger.warn(s"Integration Framework Upstream4xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       Future.failed(new InternalServerException("Something went wrong."))
-    }
 
-    case e: Exception => {
+    case e: Exception =>
       logger.warn(s"Integration Framework Exception encountered")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, e.getMessage)
       Future.failed(new InternalServerException("Something went wrong."))
-    }
   }
 
   private def noDataFound[A](url: String): Future[A] = {
-    val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
-    val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
-    val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
+    lazy val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
+    lazy val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
+    lazy val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
 
     if (url.contains("counts"))
       Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
