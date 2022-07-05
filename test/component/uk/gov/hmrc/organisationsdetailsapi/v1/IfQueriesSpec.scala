@@ -24,22 +24,22 @@ class IfQueriesSpec extends BaseSpec {
   val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
 
   Feature("Query strings for 'corporation-tax' endpoint") {
-    Scenario("For read:organisations-details-ho-ssp") {
-      val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "corporation-tax")
+    Scenario("For read:organisations-details-ho-suv") {
+      val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-suv"), "corporation-tax")
       queryString mustBe "taxSolvencyStatus"
     }
   }
 
   Feature("Query strings for 'self-assessment' endpoint") {
-    Scenario("For read:organisations-details-ho-ssp") {
-      val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "self-assessment")
+    Scenario("For read:organisations-details-ho-suv") {
+      val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-suv"), "self-assessment")
       queryString mustBe "taxSolvencyStatus"
     }
   }
 
   Feature("Query strings for 'number-of-employees' endpoint") {
-    Scenario("For read:organisations-details-ho-ssp") {
-      val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-ssp"), "number-of-employees")
+    Scenario("For read:organisations-details-ho-suv") {
+      val queryString = helper.getQueryStringFor(Seq("read:organisations-details-ho-suv"), "number-of-employees")
       queryString mustBe "references(counts(dateTaken,employeeCount),districtNumber,payeReference)"
     }
   }

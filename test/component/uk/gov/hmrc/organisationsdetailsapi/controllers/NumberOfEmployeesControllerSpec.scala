@@ -29,7 +29,7 @@ import java.util.UUID
 class NumberOfEmployeesControllerSpec extends BaseSpec {
   private val matchId = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
   private val utr = "1234567890"
-  private val scopes = List("read:organisations-details-ho-ssp")
+  private val scopes = List("read:organisations-details-ho-suv")
   private val validMatch = OrganisationMatch(matchId, utr)
 
   private val validNumberOfEmployeesIfResponse = EmployeeCountResponse(
