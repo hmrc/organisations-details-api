@@ -109,13 +109,13 @@ trait PrivilegedAuthentication extends AuthorisedFunctions with Logging {
            |matchId: $matchId
            |endpointScopes: ${endpointScopes.toList}
            |authPredicate: $predicate
-           |
-           |authorisation: ${hc.authorization.mkString}
-           |gaToken: ${hc.gaToken.mkString}
-           |gaUserId: ${hc.gaUserId.mkString}
-           |
-           |headers: ${request.headers.headers}
            |""".stripMargin)
+
+      logger.info(
+        s"""Auth details (2):
+           |matchId: $matchId
+           |authorisation: ${ hc.authorization.map("****" + _.value.drop(10).dropRight(4) + "****").mkString }
+           |authorisation2: ${ request.headers.get("Authorization").map("****" + _.drop(10).dropRight(4) + "****").mkString }""".stripMargin)
 
       authorised(predicate).retrieve(Retrievals.allEnrolments) {
         scopes => {
