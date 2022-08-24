@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import play.api.Logger
+import play.api.{ Logger, Logging }
 import play.api.libs.json._
-import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
+import play.api.mvc.{ ControllerComponents, Request, RequestHeader, Result }
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
+import uk.gov.hmrc.auth.core.{ AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments }
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException }
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 abstract class BaseApiController (cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions {
 
@@ -88,7 +88,7 @@ object SchemaValidationError {
   implicit val format: OFormat[SchemaValidationError] = Json.format
 }
 
-trait PrivilegedAuthentication extends AuthorisedFunctions {
+trait PrivilegedAuthentication extends AuthorisedFunctions with Logging {
 
   def authPredicate(scopes: Iterable[String]): Predicate =
     scopes.map(Enrolment(_): Predicate).reduce(_ or _)
@@ -103,13 +103,34 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 
     else {
-      authorised(authPredicate(endpointScopes)).retrieve(Retrievals.allEnrolments) {
+      val predicate = authPredicate(endpointScopes)
+      logger.info(
+        s"""Auth details for:
+           |matchId: $matchId
+           |endpointScopes: ${endpointScopes.toList}
+           |authPredicate: $predicate
+           |
+           |authorisation: ${hc.authorization.mkString}
+           |gaToken: ${hc.gaToken.mkString}
+           |gaUserId: ${hc.gaUserId.mkString}
+           |
+           |headers: ${request.headers.headers}
+           |""".stripMargin)
+
+      authorised(predicate).retrieve(Retrievals.allEnrolments) {
         scopes => {
 
           auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
 
           f(scopes.enrolments.map(e => e.key))
         }
+      }.recoverWith {
+        case e: InsufficientEnrolments =>
+          logger.error(s"$matchId - insufficient enrollments", e)
+          Future.failed(e)
+        case e: AuthorisationException =>
+          logger.error(s"$matchId - authorisation exception", e)
+          Future.failed(e)
       }
     }
   }
