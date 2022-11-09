@@ -5,8 +5,6 @@ TwirlKeys.templateImports := Seq.empty
 
 val appName = "organisations-details-api"
 
-val silencerVersion = "1.7.1"
-
 lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq(
     "uk.gov.hmrc.organisationsdetailsapi.utils.Binders._"))
@@ -36,16 +34,11 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
   .settings(
     majorVersion                     := 0,
-    scalaVersion                     := "2.12.12",
+    scalaVersion                     := "2.13.8",
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test(),
     // ***************
     // Use the silencer plugin to suppress warnings
-    scalacOptions += "-P:silencer:pathFilters=routes",
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
-    ),
-    // ***************
+    scalacOptions += "-Wconf:src=routes/.*:s",
     testOptions in Test := Seq(Tests.Filter(unitFilter))
   )
   .settings(PlayKeys.playDefaultPort := 9656)
