@@ -30,6 +30,7 @@ import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.collection.immutable.Seq
 
 @Singleton
 class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
@@ -54,7 +55,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
         expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
 ) {
 
-  implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
+  implicit lazy val crypto: Encrypter with Decrypter = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
 
   def cache[T](id: String, value: T)(
