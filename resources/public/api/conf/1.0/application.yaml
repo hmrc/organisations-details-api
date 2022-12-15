@@ -9,6 +9,10 @@ servers:
     description: Development
   - url: https://api.qa.tax.service.gov.uk
     description: QA
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: PRD
 
 paths:
   /organisations/details/corporation-tax:
