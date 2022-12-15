@@ -1,0 +1,546 @@
+openapi: 3.0.0
+info:
+  title: Organisations Details
+  contact: {}
+  version: '1.0'
+
+servers:
+  - url: https://api.isc.development.tax.service.gov.uk
+    description: Development
+  - url: https://api.qa.tax.service.gov.uk
+    description: QA
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: PRD
+
+paths:
+  /organisations/details/corporation-tax:
+    get:
+      tags:
+      - organisations
+      summary: Get an organisation's Corporation Tax details
+      description: >
+        <p>Use a matchId to get an organisation's Corporation Tax details. This includes turnover and tax solvency status.</p>
+
+        <p>This endpoint will return all available accounting periods within the 26 months before the latest accounting period end date.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanorganisation'sCorporationTaxdetails
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for 5 hours. Generated through the Organisations Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The organisation's Pay As You Earn income for the given period.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/OrganisationsDetailsCorporationTaxresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /organisations/details/corporation-tax?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                    taxSolvencyStatus: V
+                    dateOfRegistration: 2015-04-21
+                    accountingPeriods:
+                    - accountingPeriodStartDate: 2018-04-06
+                      accountingPeriodEndDate: 2018-10-05
+                      turnover: 38390
+                    - accountingPeriodStartDate: 2018-10-06
+                      accountingPeriodEndDate: 2019-04-05
+                      turnover: 2340
+              example:
+                _links:
+                  self:
+                    href: /organisations/details/corporation-tax?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                taxSolvencyStatus: V
+                dateOfRegistration: 2015-04-21
+                accountingPeriods:
+                - accountingPeriodStartDate: 2018-04-06
+                  accountingPeriodEndDate: 2018-10-05
+                  turnover: 38390
+                - accountingPeriodStartDate: 2018-10-06
+                  accountingPeriodEndDate: 2019-04-05
+                  turnover: 2340
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /organisations/details/self-assessment:
+    get:
+      tags:
+      - organisations
+      summary: Get an organisation's Self Assessment details
+      description: >
+        <p>Use a matchId to get an organisation's Self Assessment details. This includes turnover and tax solvency status.</p>
+
+        <p>This endpoint will return available data for the most recent 4 years before the current Self Assessment tax year (CY-4).</p>
+
+        <p>Self Assessment data may not be available for the most recent tax year because of the deadlines for sending tax returns. For example, the deadline for sending a tax return for the 2019-20 tax year was 31 October 2020 for a paper return, and 31 January 2021 for sending online.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanorganisation'sSelfAssessmentdetails
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for 5 hours. Generated through the Organisations Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The organisation's Self Assessment income for the given period.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/OrganisationsDetailsSelfAssessmentresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /organisations/details/self-assessment?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                    selfAssessmentStartDate: 2015-04-21
+                    taxSolvencyStatus: I
+                    taxReturns:
+                    - totalBusinessSalesTurnover: 1234.56
+                      taxYear: '2019'
+                    - totalBusinessSalesTurnover: 4567.89
+                      taxYear: '2020'
+              example:
+                _links:
+                  self:
+                    href: /organisations/details/self-assessment?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                selfAssessmentStartDate: 2015-04-21
+                taxSolvencyStatus: I
+                taxReturns:
+                - totalBusinessSalesTurnover: 1234.56
+                  taxYear: '2019'
+                - totalBusinessSalesTurnover: 4567.89
+                  taxYear: '2020'
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /organisations/details/number-of-employees:
+    post:
+      tags:
+      - organisations
+      summary: Find the number of employees for an organisation
+      description: >
+        <p>Use a matchId to find data about the number of employees for the requested time period.</p>
+
+        <p>This endpoint will return the number of employees for up to 10 employers (PAYE references) within the specified date range.</p>
+
+        <p>To make data available in near real time, the data source is refreshed on a daily basis. Changes can take up to 24 hours to be reflected.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Findthenumberofemployeesforanorganisation
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Organisations Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/OrganisationsDetailsNumberOfEmployeesrequest'
+              - example:
+                  fromDate: 2019-10-01
+                  toDate: 2020-04-05
+                  payeReference:
+                  - districtNumber: '456'
+                    schemeReference: RT882d
+                  - districtNumber: '123'
+                    schemeReference: AB888666
+            example:
+              fromDate: 2019-10-01
+              toDate: 2020-04-05
+              payeReference:
+              - districtNumber: '456'
+                schemeReference: RT882d
+              - districtNumber: '123'
+                schemeReference: AB888666
+        required: true
+      responses:
+        '200':
+          description: The organisation's number of employees for the given period.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/OrganisationsDetailsNumberOfEmployeesresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /organisations/details/number-of-employees?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                    employeeCounts:
+                    - payeReference: 456/RT882d
+                      counts:
+                      - dateOfCount: 2019-03
+                        numberOfEmployees: 1234
+                      - dateOfCount: 2019-11
+                        numberOfEmployees: 1466
+                      - dateOfCount: 2019-12
+                        numberOfEmployees: 1765
+                      - dateOfCount: 2020-01
+                        numberOfEmployees: 1666
+                      - dateOfCount: 2020-02
+                        numberOfEmployees: 1589
+                      - dateOfCount: 2020-03
+                        numberOfEmployees: 1555
+              example:
+                _links:
+                  self:
+                    href: /organisations/details/number-of-employees?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                employeeCounts:
+                - payeReference: 456/RT882d
+                  counts:
+                  - dateOfCount: 2019-03
+                    numberOfEmployees: 1234
+                  - dateOfCount: 2019-11
+                    numberOfEmployees: 1466
+                  - dateOfCount: 2019-12
+                    numberOfEmployees: 1765
+                  - dateOfCount: 2020-01
+                    numberOfEmployees: 1666
+                  - dateOfCount: 2020-02
+                    numberOfEmployees: 1589
+                  - dateOfCount: 2020-03
+                    numberOfEmployees: 1555
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+components:
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+      - code
+      type: object
+      properties:
+        code:
+          type: string
+    AccountingPeriod:
+      title: AccountingPeriod
+      type: object
+      properties:
+        accountingPeriodStartDate:
+          type: string
+          description: The start date of the accounting period.
+          example: 2018-04-06
+        accountingPeriodEndDate:
+          type: string
+          description: The end date of the accounting period.
+          example: 2018-10-05
+        turnover:
+          type: number
+          description: The amount of money taken by an organisation in the accounting period. Turnover is recorded in thousands of pounds (rounded to the nearest £1,000). Turnover is in the range of -1 to 99999999999.
+          example: 2340
+    Count:
+      title: Count
+      type: object
+      properties:
+        numberOfEmployees:
+          type: integer
+          description: The number of employees counted on a particular date. Minimum of 1, maximum of 99999999, multiple of 1.
+          format: int32
+          example: 1234
+        dateOfCount:
+          pattern: ^[1-2][0-9]{3}-[0-9]{2}$
+          type: string
+          description: The date the employee count was taken.
+          example: 2019-03
+    EmployeeCount:
+      title: EmployeeCount
+      required:
+      - payeReference
+      type: object
+      properties:
+        payeReference:
+          pattern: ^[0-9]{3}[/][a-zA-Z0-9]{1,10}$
+          type: string
+          description: The organisation's PAYE reference, consisting of districtNumber and schemeReference.
+          example: 456/RT882d
+        counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Count'
+          description: Employee counts.
+    Links:
+      title: Links
+      required:
+      - self
+      type: object
+      properties:
+        self:
+          type: object
+          description: The URI for this endpoint.
+      description: A list of links for possible actions related to this endpoint.
+    OrganisationsDetailsCorporationTaxresponse:
+      title: OrganisationsDetailsCorporationTaxresponse
+      required:
+      - _links
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links'
+          - description: A list of links for possible actions related to this endpoint.
+        taxSolvencyStatus:
+          allOf:
+          - $ref: '#/components/schemas/TaxSolvencyStatus'
+          - description: The tax solvency status for the organisation. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent.
+        dateOfRegistration:
+          type: string
+          description: The registration date for the company.
+          example: 2018-04-06
+        accountingPeriods:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingPeriod'
+          description: The accounting periods.
+      description: Pay As You Earn
+    OrganisationsDetailsNumberOfEmployeesrequest:
+      title: OrganisationsDetailsNumberOfEmployeesrequest
+      required:
+      - fromDate
+      - toDate
+      - payeReference
+      type: object
+      properties:
+        fromDate:
+          type: string
+          description: The date that the data is requested from.
+          example: 2019-10-01
+        toDate:
+          type: string
+          description: The date that the data is requested to. If missing, it defaults to today's date.
+          example: 2020-04-05
+        payeReference:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayeReference'
+          description: The organisation's PAYE reference.
+    OrganisationsDetailsNumberOfEmployeesresponse:
+      title: OrganisationsDetailsNumberOfEmployeesresponse
+      required:
+      - _links
+      - employeeCounts
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links'
+          - description: A list of links for possible actions related to this endpoint.
+        employeeCounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeCount'
+          description: Details about the employee count. This includes the organisation's PAYE reference, dates of counts, and the number of employees recorded in each count.
+      description: Number of employees response
+    OrganisationsDetailsSelfAssessmentresponse:
+      title: OrganisationsDetailsSelfAssessmentresponse
+      required:
+      - _links
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessmentStartDate:
+          type: string
+          description: The start date for Self Assessment data.
+          example: 2015-04-21
+        taxSolvencyStatus:
+          allOf:
+          - $ref: '#/components/schemas/TaxSolvencyStatus1'
+          - description: The tax solvency status for the organisation. I – Insolvent, S – Solvent.
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn'
+          description: Self Assessment tax returns.
+      description: Self Assessment
+    PayeReference:
+      title: PayeReference
+      type: object
+      properties:
+        districtNumber:
+          type: string
+          description: The organisation's district number.
+          example: '456'
+        schemeReference:
+          type: string
+          description: The organisation's scheme reference.
+          example: RT882d
+    TaxReturn:
+      title: TaxReturn
+      type: object
+      properties:
+        totalBusinessSalesTurnover:
+          type: number
+          description: Total Business sales turnover, in range of -99999999999.99 to 99999999999.99.
+          example: 1234.56
+        taxYear:
+          pattern: ^20[0-9]{2}$
+          type: string
+          description: The tax year.
+          example: '2020'
+    TaxSolvencyStatus:
+      title: TaxSolvencyStatus
+      enum:
+      - A
+      - V
+      - S
+      - I
+      type: string
+      description: The tax solvency status for the organisation. A - Administrative Order, V - Voluntary Arrangement, S - Solvent, I - Insolvent.
+    TaxSolvencyStatus1:
+      title: TaxSolvencyStatus1
+      enum:
+      - I
+      - S
+      type: string
+      description: The tax solvency status for the organisation. I – Insolvent, S – Solvent.
+tags:
+- name: organisations
+  description: ''
