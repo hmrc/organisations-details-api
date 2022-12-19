@@ -1,0 +1,163 @@
+#%RAML 1.0
+---
+title: Organisations Details
+version: 1.0
+protocols: [ HTTPS ]
+baseUri: https://api.service.hmrc.gov.uk/
+
+documentation:
+ - title: Overview
+   content: !include docs/overview.md
+ - title: Data availability
+   content: !include docs/data-availability.md
+ - title: Versioning
+   content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/versioning.md
+ - title: Errors
+   content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/errors.md
+ - title: Testing
+   content: !include docs/testing.md
+
+mediaType: [ application/json, application/hal+json ]
+uses:
+  sec: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/securitySchemes.raml
+  headers: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/headers.raml
+  annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
+  types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
+
+/organisations/details:
+  /corporation-tax:
+    get:
+      displayName: "Get an organisation's Corporation Tax details"
+      description: !include docs/organisations-details-corporation-tax-description.md
+      is: [headers.acceptHeader]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
+      (annotations.sandboxData): !include sandbox/ct-sandbox-data.md
+      headers:
+        CorrelationId:
+          description: !include ./includes/correlationId.md
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      queryParameters:
+        matchId:
+          description: "A short-lived universally unique identifier (UUID), typically valid for 5 hours. Generated through the Organisations Matching API."
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      responses:
+        200:
+          description: "The organisation's Pay As You Earn income for the given period."
+          body:
+            application/json:
+              example: !include examples/corporation-tax-response.json
+              type: !include schemas/corporation-tax-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+  /self-assessment:
+    get:
+      displayName: "Get an organisation's Self Assessment details"
+      description: !include docs/organisations-details-self-assessment-description.md
+      is: [headers.acceptHeader]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
+      (annotations.sandboxData): !include sandbox/sa-sandbox-data.md
+      headers:
+        CorrelationId:
+          description: !include ./includes/correlationId.md
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      queryParameters:
+        matchId:
+          description: "A short-lived universally unique identifier (UUID), typically valid for 5 hours. Generated through the Organisations Matching API."
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      responses:
+        200:
+          description: "The organisation's Self Assessment income for the given period."
+          body:
+            application/json:
+              example: !include examples/sa-response.json
+              type: !include schemas/sa-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+  /number-of-employees:
+    post:
+      displayName: "Find the number of employees for an organisation"
+      description: !include docs/organisations-details-number-of-employees-description.md
+      is: [headers.acceptHeader]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
+      (annotations.sandboxData): !include sandbox/number-of-employees-sandbox-data.md
+      headers:
+        CorrelationId:
+          description: !include ./includes/correlationId.md
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      queryParameters:
+        matchId:
+          description: "A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Organisations Matching API."
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      body:
+        application/json:
+          type: !include schemas/number-of-employees-request.json
+          example: !include examples/number-of-employees-request.json
+      responses:
+        200:
+          description: "The organisation's number of employees for the given period."
+          body:
+            application/json:
+              example: !include examples/number-of-employees-response.json
+              type: !include schemas/number-of-employees-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND

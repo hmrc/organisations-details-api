@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   title: Organisations Details
   contact: {}
@@ -13,6 +13,10 @@ servers:
     description: Sandbox
   - url: https://api.service.hmrc.gov.uk
     description: PRD
+
+security:
+  - userRestricted:
+      - assigned
 
 paths:
   /organisations/details/corporation-tax:
