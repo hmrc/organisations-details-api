@@ -366,7 +366,13 @@ components:
           authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
           refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
-          scopes: { }
+          scopes:
+              E: corporation-tax taxSolvencyStatus
+              I: self assessment taxSolvencyStatus
+              J: number of employees references/counts/employeeCount
+              K: number of employees references/payeReference
+              L: number of employees references/districtNumber
+              M: number of employees references/counts/dateTaken
   schemas:
     errorResponse:
       title: errorResponse
