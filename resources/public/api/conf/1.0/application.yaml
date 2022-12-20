@@ -367,12 +367,7 @@ components:
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
           refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
           scopes:
-              E: corporation-tax taxSolvencyStatus
-              I: self assessment taxSolvencyStatus
-              J: number of employees references/counts/employeeCount
-              K: number of employees references/payeReference
-              L: number of employees references/districtNumber
-              M: number of employees references/counts/dateTaken
+            assigned : depending on your assigned scopes you will see the json keys your scopes allow.
   schemas:
     errorResponse:
       title: errorResponse
