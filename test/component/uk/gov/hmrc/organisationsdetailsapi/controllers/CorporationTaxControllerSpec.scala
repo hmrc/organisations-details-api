@@ -32,7 +32,7 @@ class CorporationTaxControllerSpec extends BaseSpec {
 
   val matchId: UUID = UUID.fromString("ee7e0f90-18eb-4a25-a3ac-77f27beb2f0f")
   val utr = "1234567890"
-  val scopes = List("read:organisations-details-ho-suv")
+  val scopes = List("read:organisations-details-ho-ssp", "read:organisations-details-ho-suv")
   val period1: AccountingPeriod = AccountingPeriod(Some(LocalDate.of(2018, 4, 6)), Some(LocalDate.of(2018, 10, 5)), Some(38390))
   val period2: AccountingPeriod = AccountingPeriod(Some(LocalDate.of(2018, 10, 6)), Some(LocalDate.of(2018, 4, 5)), Some(2340))
   val taxSolvencyStatus: Some[String] = Some("V")
