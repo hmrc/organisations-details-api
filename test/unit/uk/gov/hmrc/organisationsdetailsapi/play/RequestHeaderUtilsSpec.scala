@@ -18,11 +18,9 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.play
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.typedmap.TypedMap
-import play.api.mvc.request.{RemoteConnection, RequestTarget}
-import play.api.mvc.{Headers, RequestHeader}
+import play.api.mvc.Headers
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{ACCEPT, GET}
+import play.api.test.Helpers.{ ACCEPT, GET }
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
 
@@ -85,7 +83,9 @@ class RequestHeaderUtilsSpec extends AnyWordSpec with Matchers {
     "validateCorrelationId throws exception when CorrelationId header exists in incorrect format" in {
       val request = FakeRequest(GET, "/", Headers("CorrelationId" -> "IncorrectFormat"), ())
 
-      val exception = intercept[BadRequestException] { validateCorrelationId(request) }
+      val exception = intercept[BadRequestException] {
+        validateCorrelationId(request)
+      }
 
       exception.message shouldBe "Malformed CorrelationId"
     }
@@ -93,7 +93,9 @@ class RequestHeaderUtilsSpec extends AnyWordSpec with Matchers {
     "validateCorrelationId throws exception when CorrelationId header is missing" in {
       val request = FakeRequest(GET, "/")
 
-      val exception = intercept[BadRequestException] { validateCorrelationId(request) }
+      val exception = intercept[BadRequestException] {
+        validateCorrelationId(request)
+      }
 
       exception.message shouldBe "CorrelationId is required"
     }
@@ -109,7 +111,7 @@ class RequestHeaderUtilsSpec extends AnyWordSpec with Matchers {
     "maybeCorrelationId returns None when CorrelationId header is missing" in {
       val request = FakeRequest(GET, "/")
 
-      val result =  maybeCorrelationId(request)
+      val result = maybeCorrelationId(request)
 
       result shouldBe None
     }
@@ -117,7 +119,7 @@ class RequestHeaderUtilsSpec extends AnyWordSpec with Matchers {
     "maybeCorrelationId returns None when CorrelationId header is malformed" in {
       val request = FakeRequest(GET, "/", Headers("CorrelationId" -> "IncorrectFormat"), ())
 
-      val result =  maybeCorrelationId(request)
+      val result = maybeCorrelationId(request)
 
       result shouldBe None
     }
