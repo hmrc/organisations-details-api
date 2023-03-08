@@ -1,3 +1,2 @@
-GET    /api/definition                              @uk.gov.hmrc.organisationsdetailsapi.controllers.DocumentationController.definition()
-GET    /api/documentation/:version/:endpointName    @uk.gov.hmrc.organisationsdetailsapi.controllers.DocumentationController.documentation(version,endpointName)
-GET    /api/conf/:version/*file                     @uk.gov.hmrc.organisationsdetailsapi.controllers.DocumentationController.raml(version, file)
+GET        /api/definition                 uk.gov.hmrc.organisationsdetailsapi.controllers.DocumentationController.definition()
+GET        /api/conf/:version/*file        uk.gov.hmrc.organisationsdetailsapi.controllers.DocumentationController.specification(version, file)
