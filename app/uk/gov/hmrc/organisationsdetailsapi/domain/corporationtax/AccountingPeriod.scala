@@ -27,7 +27,7 @@ case class AccountingPeriod(accountingPeriodStartDate: Option[LocalDate], accoun
 
 object AccountingPeriod {
 
-  def create(accountingPeriod : IfAccountingPeriod) : AccountingPeriod = {
+  def create(accountingPeriod: IfAccountingPeriod): AccountingPeriod = {
     AccountingPeriod(
       accountingPeriod.apStartDate.map(LocalDate.parse),
       accountingPeriod.apEndDate.map(LocalDate.parse),
@@ -39,5 +39,5 @@ object AccountingPeriod {
     (JsPath \ "accountingPeriodStartDate").writeNullable[LocalDate] and
       (JsPath \ "accountingPeriodEndDate").writeNullable[LocalDate] and
       (JsPath \ "turnover").writeNullable[Int]
-  )(unlift(AccountingPeriod.unapply))
+    )(unlift(AccountingPeriod.unapply))
 }

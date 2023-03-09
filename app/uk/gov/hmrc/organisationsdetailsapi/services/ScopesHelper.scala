@@ -27,8 +27,8 @@ import javax.inject.Inject
 class ScopesHelper @Inject()(scopesService: ScopesService) {
 
   /**
-   * @param scopes The list of scopes associated with the user
-   * @param endpoints The endpoints for which to construct the query string
+   * @param scopes      The list of scopes associated with the user
+   * @param endpoints   The endpoints for which to construct the query string
    * @param employerRef The emploher reference
    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
    */
@@ -40,8 +40,8 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
   }
 
   /**
-   * @param scopes The list of scopes associated with the user
-   * @param endpoint The endpoint for which to construct the query string
+   * @param scopes      The list of scopes associated with the user
+   * @param endpoint    The endpoint for which to construct the query string
    * @param employerRef The employer reference
    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
    */
@@ -52,34 +52,38 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
 
 
   /**
-   * @param scopes The list of scopes associated with the user
+   * @param scopes   The list of scopes associated with the user
    * @param endpoint The endpoint for which to construct the query string
    * @return A google fields-style query string with the fields determined by the provided endpoint and scopes
    */
   def getQueryStringFor(scopes: Iterable[String], endpoint: String): String = {
     val filters = scopesService.getValidFilters(scopes, List(endpoint))
-    s"${PathTree(scopesService.getIfDataPaths(scopes, List(endpoint))).toString}${if (filters.nonEmpty)
-      s"&filter=${filters.mkString("&filter=")}"
-    else ""}"
+    s"${PathTree(scopesService.getIfDataPaths(scopes, List(endpoint))).toString}${
+      if (filters.nonEmpty)
+        s"&filter=${filters.mkString("&filter=")}"
+      else ""
+    }"
   }
 
   /**
-   * @param scopes The list of scopes associated with the user
+   * @param scopes    The list of scopes associated with the user
    * @param endpoints The endpoints for which to construct the query string
    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
    */
   def getQueryStringFor(scopes: Iterable[String],
                         endpoints: List[String]): String = {
     val filters = scopesService.getValidFilters(scopes, endpoints)
-    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${if (filters.nonEmpty)
-      s"&filter=${filters.mkString("&filter=")}"
-    else ""}"
+    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${
+      if (filters.nonEmpty)
+        s"&filter=${filters.mkString("&filter=")}"
+      else ""
+    }"
   }
 
   /**
    * @param endpoint The endpoint that the user has called
-   * @param scopes The list of scopes associated with the user
-   * @param data The data to be returned from the endpoint
+   * @param scopes   The list of scopes associated with the user
+   * @param data     The data to be returned from the endpoint
    * @return A HalResource containing data, and a list of valid links determined by the provided scopes
    */
   def getHalResponse(endpoint: String, scopes: List[String], data: Option[JsValue]): HalResource = {

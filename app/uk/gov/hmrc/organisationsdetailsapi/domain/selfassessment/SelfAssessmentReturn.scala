@@ -22,10 +22,10 @@ import play.api.libs.json.{JsPath, Writes}
 case class SelfAssessmentReturn(totalBusinessSalesTurnover: Option[Double], taxYear: Option[String])
 
 object SelfAssessmentReturn {
-  implicit val selfAssessmentReturnWrites : Writes[SelfAssessmentReturn] = (
+  implicit val selfAssessmentReturnWrites: Writes[SelfAssessmentReturn] = (
     (JsPath \ "totalBusinessSalesTurnover").writeNullable[Double] and
       (JsPath \ "taxYear").writeNullable[String]
-  )(unlift(SelfAssessmentReturn.unapply))
+    )(unlift(SelfAssessmentReturn.unapply))
 }
 
 

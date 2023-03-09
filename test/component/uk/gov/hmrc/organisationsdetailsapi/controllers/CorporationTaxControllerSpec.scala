@@ -16,17 +16,16 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import java.time.LocalDate
+import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-
-import java.util.UUID
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
 import scalaj.http.{Http, HttpOptions}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.AccountingPeriod
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{AccountingPeriod => IfAccountingPeriod}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, AccountingPeriod => IfAccountingPeriod}
+
+import java.time.LocalDate
+import java.util.UUID
 
 class CorporationTaxControllerSpec extends BaseSpec {
 

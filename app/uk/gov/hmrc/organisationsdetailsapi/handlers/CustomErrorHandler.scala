@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.handlers
 
-import javax.inject.Inject
 import play.api.Configuration
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND}
 import play.api.libs.json.Json
@@ -29,13 +28,14 @@ import uk.gov.hmrc.play.bootstrap.backend.http.{ErrorResponse, JsonErrorHandler}
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CustomErrorHandler @Inject()(
-  auditConnector: AuditConnector,
-  httpAuditEvent: HttpAuditEvent,
-  configuration: Configuration)(implicit ec: ExecutionContext)
-    extends JsonErrorHandler(auditConnector, httpAuditEvent, configuration) {
+                                    auditConnector: AuditConnector,
+                                    httpAuditEvent: HttpAuditEvent,
+                                    configuration: Configuration)(implicit ec: ExecutionContext)
+  extends JsonErrorHandler(auditConnector, httpAuditEvent, configuration) {
 
   import httpAuditEvent.dataEvent
 

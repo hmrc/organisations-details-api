@@ -31,19 +31,19 @@ object AuthStub extends MockHost(22000) {
 
   private def privilegedAuthority(scope: String) = obj(
     "authorise" -> arr(toJson(Enrolment(scope))),
-    "retrieve"  -> JsArray()
+    "retrieve" -> JsArray()
   )
 
   private def privilegedAuthority(scopes: List[String]) = {
 
     val predicateJson = authPredicate(scopes).toJson match {
       case arr: JsArray => arr
-      case other        => Json.arr(other)
+      case other => Json.arr(other)
     }
 
     obj(
       "authorise" -> predicateJson,
-      "retrieve"  -> arr(toJson("allEnrolments"))
+      "retrieve" -> arr(toJson("allEnrolments"))
     )
   }
 
@@ -54,9 +54,12 @@ object AuthStub extends MockHost(22000) {
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
         .willReturn(aResponse()
           .withStatus(Status.OK)
-          .withBody(s"""{"internalId": "some-id", "allEnrolments": [ ${scopes
-            .map(scope => s"""{ "key": "$scope", "value": ""}""")
-            .reduce((a, b) => s"$a, $b")} ]}""")))
+          .withBody(
+            s"""{"internalId": "some-id", "allEnrolments": [ ${
+              scopes
+                .map(scope => s"""{ "key": "$scope", "value": ""}""")
+                .reduce((a, b) => s"$a, $b")
+            } ]}""")))
 
   def willAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): Unit =
     mock.register(

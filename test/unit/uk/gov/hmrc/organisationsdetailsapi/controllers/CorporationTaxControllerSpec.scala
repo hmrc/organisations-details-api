@@ -17,37 +17,37 @@
 package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import akka.actor.ActorSystem
-import play.api.http.Status._
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
+import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController
 import uk.gov.hmrc.organisationsdetailsapi.domain.corporationtax.{AccountingPeriod, CorporationTaxResponse}
 import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService}
 import utils.TestSupport
+
 import java.time.LocalDate
 import java.util.UUID
-import org.mockito.BDDMockito.`given`
-import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.failed
 
 class CorporationTaxControllerSpec
   extends AnyWordSpec
-  with Matchers
-  with MockitoSugar
-  with TestSupport
-  with BeforeAndAfterEach {
+    with Matchers
+    with MockitoSugar
+    with TestSupport
+    with BeforeAndAfterEach {
 
   implicit val sys: ActorSystem = ActorSystem("MyTest")
 
@@ -108,27 +108,27 @@ class CorporationTaxControllerSpec
       jsonBodyOf(result) shouldBe
         Json.parse(
           s"""
-            |{
-            |    "taxSolvencyStatus": "V",
-            |    "_links": {
-            |        "self": {
-            |            "href": "/organisations/details/corporation-tax?matchId=$sampleMatchIdUUID"
-            |        }
-            |    },
-            |    "dateOfRegistration": "2014-04-21",
-            |    "accountingPeriods": [
-            |        {
-            |            "accountingPeriodStartDate": "2017-04-06",
-            |            "accountingPeriodEndDate": "2017-10-05",
-            |            "turnover": 38390
-            |        },
-            |        {
-            |            "accountingPeriodStartDate": "2017-10-06",
-            |            "accountingPeriodEndDate": "2018-04-05",
-            |            "turnover": 2340
-            |        }
-            |    ]
-            |} """.stripMargin
+             |{
+             |    "taxSolvencyStatus": "V",
+             |    "_links": {
+             |        "self": {
+             |            "href": "/organisations/details/corporation-tax?matchId=$sampleMatchIdUUID"
+             |        }
+             |    },
+             |    "dateOfRegistration": "2014-04-21",
+             |    "accountingPeriods": [
+             |        {
+             |            "accountingPeriodStartDate": "2017-04-06",
+             |            "accountingPeriodEndDate": "2017-10-05",
+             |            "turnover": 38390
+             |        },
+             |        {
+             |            "accountingPeriodStartDate": "2017-10-06",
+             |            "accountingPeriodEndDate": "2018-04-05",
+             |            "turnover": 2340
+             |        }
+             |    ]
+             |} """.stripMargin
         )
 
     }

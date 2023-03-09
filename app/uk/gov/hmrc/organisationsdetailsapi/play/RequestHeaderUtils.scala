@@ -77,7 +77,7 @@ object RequestHeaderUtils {
   private def versionedUri(urlPath: String, version: String) = {
     urlPath match {
       case "/" => s"/v$version"
-      case _   => s"/v$version$urlPath"
+      case _ => s"/v$version$urlPath"
     }
   }
 
@@ -88,6 +88,6 @@ object RequestHeaderUtils {
       throw new BadRequestException("Malformed CorrelationId")
     }
 
-  private def getUuidStringOption(uuidString : String) =
+  private def getUuidStringOption(uuidString: String) =
     Some(uuidString).filter(UuidValidator.validate)
 }

@@ -30,17 +30,16 @@ import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework._
-import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, NumberOfEmployeesResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, NumberOfEmployeesResponse, PayeReference => RequestPayeReference}
 import uk.gov.hmrc.organisationsdetailsapi.services._
-import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{PayeReference => RequestPayeReference}
-import java.util.UUID
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
+class NumberOfEmployeesServiceSpec extends AnyWordSpec with Matchers {
 
   private val stubbedCache = new CacheService(null, new CacheRepositoryConfiguration(Configuration())) {
 
@@ -123,11 +122,11 @@ class NumberOfEmployeesServiceSpec  extends AnyWordSpec with Matchers {
             Some("2020-04-05"),
             Some(Seq(
               PayeReferenceAndCount(
-                  Some("456"),
-                  Some("RT882d"),
-                  Some(Seq(
-                    Count(Some("2019-10"), Some(1234)),
-                    Count(Some("2019-11"), Some(1466)))
+                Some("456"),
+                Some("RT882d"),
+                Some(Seq(
+                  Count(Some("2019-10"), Some(1234)),
+                  Count(Some("2019-11"), Some(1466)))
                 ))
             ))
           )))

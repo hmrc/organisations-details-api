@@ -23,7 +23,7 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.PayeRefer
 case class NumberOfEmployeesResponse(payeReference: Option[String], counts: Option[Seq[NumberOfEmployeeCounts]])
 
 object NumberOfEmployeesResponse {
-  def create(payeReferenceAndCount: PayeReferenceAndCount) : NumberOfEmployeesResponse = {
+  def create(payeReferenceAndCount: PayeReferenceAndCount): NumberOfEmployeesResponse = {
 
     val payeRef = (payeReferenceAndCount.payeReference, payeReferenceAndCount.districtNumber) match {
       case (Some(payeRef), Some(districtNum)) => Some(s"$districtNum/$payeRef")
@@ -36,7 +36,7 @@ object NumberOfEmployeesResponse {
     )
   }
 
-  implicit val numberOfEmployeesResponseWrites : Writes[NumberOfEmployeesResponse] =
+  implicit val numberOfEmployeesResponseWrites: Writes[NumberOfEmployeesResponse] =
     (
       (JsPath \ "payeReference").writeNullable[String] and
         (JsPath \ "counts").writeNullable[Seq[NumberOfEmployeeCounts]]

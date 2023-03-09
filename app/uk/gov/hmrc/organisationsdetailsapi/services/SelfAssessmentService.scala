@@ -16,25 +16,24 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.services
 
-import java.util.UUID
-
-import javax.inject.{Inject, Named}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
 import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.SelfAssessmentResponse
 
+import java.util.UUID
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class SelfAssessmentService @Inject()(
-                                         scopesHelper: ScopesHelper,
-                                         scopesService: ScopesService,
-                                         cacheService: CacheService,
-                                         ifConnector: IfConnector,
-                                         organisationsMatchingConnector: OrganisationsMatchingConnector,
-                                         @Named("retryDelay") retryDelay: Int
-                                         ) {
+                                       scopesHelper: ScopesHelper,
+                                       scopesService: ScopesService,
+                                       cacheService: CacheService,
+                                       ifConnector: IfConnector,
+                                       organisationsMatchingConnector: OrganisationsMatchingConnector,
+                                       @Named("retryDelay") retryDelay: Int
+                                     ) {
 
   def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[SelfAssessmentResponse] = {
     organisationsMatchingConnector.resolve(matchId).flatMap {

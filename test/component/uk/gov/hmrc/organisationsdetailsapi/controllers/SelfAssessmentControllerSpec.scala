@@ -16,13 +16,14 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import java.util.UUID
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.{Http, HttpOptions}
 import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
+
+import java.util.UUID
 
 class SelfAssessmentControllerSpec extends BaseSpec {
 

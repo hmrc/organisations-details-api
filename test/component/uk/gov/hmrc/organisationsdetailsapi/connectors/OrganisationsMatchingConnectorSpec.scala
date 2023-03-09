@@ -17,7 +17,7 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.connectors
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, configureFor, get, stubFor, urlPathMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -28,12 +28,11 @@ import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
+import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.TestSupport
 
 import java.util.UUID
-import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
-
 import scala.concurrent._
 import scala.concurrent.duration._
 
@@ -54,7 +53,7 @@ class OrganisationsMatchingConnectorSpec
   override lazy val fakeApplication = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
-      "cache.enabled"  -> false,
+      "cache.enabled" -> false,
       "auditing.enabled" -> false,
       "microservice.services.organisations-matching-api.host" -> "localhost",
       "microservice.services.organisations-matching-api.port" -> "11122"
@@ -94,11 +93,11 @@ class OrganisationsMatchingConnectorSpec
 
       val jsonResponse =
         s"""
-          |{
-          |    "matchId": "$matchId",
-          |    "utr": "1234567890"
-          |}
-          |""".stripMargin
+           |{
+           |    "matchId": "$matchId",
+           |    "utr": "1234567890"
+           |}
+           |""".stripMargin
 
       stubWithResponseStatus(OK, jsonResponse, matchId)
 

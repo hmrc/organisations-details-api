@@ -31,11 +31,11 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class CorporationTaxController @Inject()(val authConnector: AuthConnector,
-                                                  cc: ControllerComponents,
-                                                  corporationTaxService: CorporationTaxService,
-                                                  implicit val auditHelper: AuditHelper,
-                                                  scopesService: ScopesService)
-                                                 (implicit ec: ExecutionContext) extends BaseApiController(cc) with PrivilegedAuthentication {
+                                         cc: ControllerComponents,
+                                         corporationTaxService: CorporationTaxService,
+                                         implicit val auditHelper: AuditHelper,
+                                         scopesService: ScopesService)
+                                        (implicit ec: ExecutionContext) extends BaseApiController(cc) with PrivilegedAuthentication {
 
   override val logger: Logger = Logger(classOf[CorporationTaxController].getName)
 

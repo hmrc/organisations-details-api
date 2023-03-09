@@ -80,7 +80,7 @@ class ScopesService @Inject()(configuration: Configuration) {
     val keys = uniqueDataFields.filter(endpointDataItems.contains)
     keys.nonEmpty match {
       case true => keys.reduce(_ + _)
-      case _    => ""
+      case _ => ""
     }
   }
 

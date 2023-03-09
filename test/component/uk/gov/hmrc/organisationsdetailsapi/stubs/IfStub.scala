@@ -16,13 +16,13 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock.{ aResponse, equalToJson, get, post, urlPathEqualTo }
+import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse }
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
 
 
 object IfStub extends MockHost(8443) {

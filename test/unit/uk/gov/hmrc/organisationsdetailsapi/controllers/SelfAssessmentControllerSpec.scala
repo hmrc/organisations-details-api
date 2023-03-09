@@ -16,17 +16,14 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import java.time.LocalDate
-import java.util.UUID
-
 import akka.actor.ActorSystem
-import play.api.http.Status._
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -37,16 +34,17 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.{SelfAssessment
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, SelfAssessmentService}
 import utils.TestSupport
 
+import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.concurrent.Future
 
 class SelfAssessmentControllerSpec
   extends AnyWordSpec
-  with Matchers
-  with MockitoSugar
-  with TestSupport
-  with BeforeAndAfterEach {
+    with Matchers
+    with MockitoSugar
+    with TestSupport
+    with BeforeAndAfterEach {
 
   implicit val sys: ActorSystem = ActorSystem("MyTest")
 

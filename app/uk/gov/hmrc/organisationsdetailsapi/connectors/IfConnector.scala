@@ -16,21 +16,21 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.connectors
 
-import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Writes
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
+import play.api.mvc.RequestHeader
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IfConnector @Inject()(
@@ -39,7 +39,7 @@ class IfConnector @Inject()(
                              val auditHelper: AuditHelper,
                            ) {
 
-  private val logger  = Logger(classOf[IfConnector].getName)
+  private val logger = Logger(classOf[IfConnector].getName)
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
 
   private val integrationFrameworkBearerToken =
@@ -94,20 +94,20 @@ class IfConnector @Inject()(
 
   def setHeaders(requestHeader: RequestHeader) = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
-    "Environment"             -> integrationFrameworkEnvironment,
-    "CorrelationId"           -> extractCorrelationId(requestHeader)
+    "Environment" -> integrationFrameworkEnvironment,
+    "CorrelationId" -> extractCorrelationId(requestHeader)
   )
 
   private def call[T](url: String, matchId: String)
-                  (implicit rds: HttpReads[T], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+                     (implicit rds: HttpReads[T], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
     recover(http.GET[T](url, headers = setHeaders(request)) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)
 
-  private def post[I,O](url: String, matchId: String, body: I)
-                     (implicit wts: Writes[I], reads: HttpReads[O], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.POST[I,O](url, body, headers = setHeaders(request)) map { response =>
+  private def post[I, O](url: String, matchId: String, body: I)
+                        (implicit wts: Writes[I], reads: HttpReads[O], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+    recover(http.POST[I, O](url, body, headers = setHeaders(request)) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
       response
     }, extractCorrelationId(request), matchId, request, url)
@@ -156,8 +156,8 @@ class IfConnector @Inject()(
 
   private def noDataFound[A](url: String): Future[A] = {
     lazy val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
-    lazy val emptyCtReturn              = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
-    lazy val emptySaReturn              = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
+    lazy val emptyCtReturn = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
+    lazy val emptySaReturn = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
 
     if (url.contains("counts"))
       Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])

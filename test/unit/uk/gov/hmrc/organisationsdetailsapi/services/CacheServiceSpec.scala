@@ -27,8 +27,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheRepository, CacheRepositoryConfiguration}
 import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService, CorporationTaxCacheId, SaCacheId}
 import utils.TestSupport
-import java.util.UUID
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with TestSupport {

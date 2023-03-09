@@ -23,7 +23,7 @@ import uk.gov.hmrc.organisationsdetailsapi.services.NumberOfEmployeesCacheId
 
 import java.util.UUID
 
-class CacheIdSpec extends AnyWordSpec with Matchers  {
+class CacheIdSpec extends AnyWordSpec with Matchers {
 
   private val sampleValidRequest = NumberOfEmployeesRequest(
     "2019-10-01",

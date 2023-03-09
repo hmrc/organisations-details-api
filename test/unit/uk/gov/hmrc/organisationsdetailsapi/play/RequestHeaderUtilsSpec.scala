@@ -20,7 +20,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.mvc.Headers
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{ ACCEPT, GET }
+import play.api.test.Helpers.{ACCEPT, GET}
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
 

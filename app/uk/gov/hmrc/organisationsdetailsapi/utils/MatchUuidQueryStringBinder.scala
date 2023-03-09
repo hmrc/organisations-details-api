@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.utils
 
-import java.util.UUID
-
 import play.api.mvc.QueryStringBindable
 
+import java.util.UUID
 import scala.util.Try
 
 class MatchUuidQueryStringBinder extends QueryStringBindable[UUID] {
@@ -34,7 +33,7 @@ class MatchUuidQueryStringBinder extends QueryStringBindable[UUID] {
         } else {
           Left(s"$parameterName format is invalid")
         }
-      case None                 => Left(s"$parameterName is required")
+      case None => Left(s"$parameterName is required")
     }) getOrElse Left(s"$parameterName format is invalid"))
   }
 
