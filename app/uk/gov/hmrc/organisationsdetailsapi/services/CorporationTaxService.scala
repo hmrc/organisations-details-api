@@ -27,14 +27,14 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorporationTaxService @Inject()(
-                                         scopesHelper: ScopesHelper,
-                                         scopesService: ScopesService,
-                                         cacheService: CacheService,
-                                         ifConnector: IfConnector,
-                                         organisationsMatchingConnector: OrganisationsMatchingConnector,
-                                         @Named("retryDelay") retryDelay: Int
-                                         )
-extends BaseService(retryDelay, organisationsMatchingConnector) {
+                                       scopesHelper: ScopesHelper,
+                                       scopesService: ScopesService,
+                                       cacheService: CacheService,
+                                       ifConnector: IfConnector,
+                                       organisationsMatchingConnector: OrganisationsMatchingConnector,
+                                       @Named("retryDelay") retryDelay: Int
+                                     )
+  extends BaseService(retryDelay, organisationsMatchingConnector) {
 
   def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[CorporationTaxResponse] = {
     resolve(matchId).flatMap {

@@ -33,7 +33,7 @@ class NumberOfEmployeesService @Inject()(
                                           ifConnector: IfConnector,
                                           organisationsMatchingConnector: OrganisationsMatchingConnector,
                                           @Named("retryDelay") retryDelay: Int
-                              )
+                                        )
   extends BaseService(retryDelay, organisationsMatchingConnector) {
 
   def get(matchId: UUID, employeeCountRequest: NumberOfEmployeesRequest, scopes: Iterable[String])
@@ -57,8 +57,8 @@ class NumberOfEmployeesService @Inject()(
               )
             }
           ).map(x => x.references.map(
-              y => y.map(NumberOfEmployeesResponse.create)
-          )
+          y => y.map(NumberOfEmployeesResponse.create)
+        )
         )
     }
   }

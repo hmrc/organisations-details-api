@@ -16,8 +16,8 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.audit
 
-import org.mockito.Mockito.{times, verify}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify}
 import org.mockito.{ArgumentCaptor, Mockito}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -29,7 +29,7 @@ import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.audit.models._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
-class AuditHelperSpec  extends AsyncWordSpec with Matchers with MockitoSugar {
+class AuditHelperSpec extends AsyncWordSpec with Matchers with MockitoSugar {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

@@ -23,6 +23,7 @@ import play.api.libs.json.{Format, JsPath}
 import scala.util.matching.Regex
 
 case class PayeReference(districtNumber: String, schemeReference: String);
+
 case class NumberOfEmployeesRequest(fromDate: String, toDate: String, payeReference: Seq[PayeReference])
 
 object NumberOfEmployeesRequest {
@@ -30,27 +31,27 @@ object NumberOfEmployeesRequest {
   val districtPattern: Regex = "^[0-9]{3}$".r
   val schemeRefPattern: Regex = "^[a-zA-Z0-9]{1,10}$".r
 
-  implicit val referencesReads: Format[PayeReference] = Format[PayeReference] (
+  implicit val referencesReads: Format[PayeReference] = Format[PayeReference](
     (
       (JsPath \ "districtNumber").read[String](pattern(districtPattern, "District number is in the incorrect format")) and
         (JsPath \ "schemeReference").read[String](pattern(schemeRefPattern, "Scheme reference is in the incorrect format"))
-    )(PayeReference.apply _ ),
+      )(PayeReference.apply _),
     (
       (JsPath \ "districtNumber").write[String] and
-      (JsPath \ "schemeReference").write[String]
-    )(unlift(PayeReference.unapply))
+        (JsPath \ "schemeReference").write[String]
+      )(unlift(PayeReference.unapply))
   )
 
-  implicit val numberOfEmployeesRequestReads: Format[NumberOfEmployeesRequest] = Format[NumberOfEmployeesRequest] (
+  implicit val numberOfEmployeesRequestReads: Format[NumberOfEmployeesRequest] = Format[NumberOfEmployeesRequest](
     (
       (JsPath \ "fromDate").read[String](pattern(datePattern, "fromDate is in the incorrect format")) and
         (JsPath \ "toDate").read[String](pattern(datePattern, "endDate is in the incorrect format")) and
         (JsPath \ "payeReference").read[Seq[PayeReference]]
-    ) (NumberOfEmployeesRequest.apply _ ),
+      )(NumberOfEmployeesRequest.apply _),
     (
       (JsPath \ "fromDate").write[String] and
-      (JsPath \ "toDate").write[String] and
-      (JsPath \ "payeReference").write[Seq[PayeReference]]
-    )(unlift(NumberOfEmployeesRequest.unapply))
+        (JsPath \ "toDate").write[String] and
+        (JsPath \ "payeReference").write[Seq[PayeReference]]
+      )(unlift(NumberOfEmployeesRequest.unapply))
   )
 }

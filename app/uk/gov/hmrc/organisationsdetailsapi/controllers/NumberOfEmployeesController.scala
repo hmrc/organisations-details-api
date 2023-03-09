@@ -37,7 +37,7 @@ class NumberOfEmployeesController @Inject()(val authConnector: AuthConnector,
                                             implicit val auditHelper: AuditHelper,
                                             scopesService: ScopesService,
                                             bodyParsers: PlayBodyParsers)
-                                           (implicit ec: ExecutionContext) extends BaseApiController(cc) with PrivilegedAuthentication  {
+                                           (implicit ec: ExecutionContext) extends BaseApiController(cc) with PrivilegedAuthentication {
 
   override val logger: Logger = Logger(classOf[NumberOfEmployeesController].getName)
 

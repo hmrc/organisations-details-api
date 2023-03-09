@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import akka.actor.ActorSystem
-import play.api.http.Status._
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -25,6 +24,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.HeaderNames
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.PlayBodyParsers
 import play.api.test.{FakeRequest, Helpers}
@@ -58,7 +58,7 @@ class NumberOfEmployeesControllerSpec
   private val sampleMatchId = "32696d72-6216-475f-b213-ba76921cf459"
   private val sampleMatchIdUUID = UUID.fromString(sampleMatchId)
 
-  private val sampleRequest  = NumberOfEmployeesRequest(
+  private val sampleRequest = NumberOfEmployeesRequest(
     "2019-10-01",
     "2020-04-05",
     Seq(
@@ -102,7 +102,7 @@ class NumberOfEmployeesControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockNumberOfEmployeesService.get(refEq(sampleMatchIdUUID), eqTo(sampleRequest),  eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockNumberOfEmployeesService.get(refEq(sampleMatchIdUUID), eqTo(sampleRequest), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Some(Seq(
           NumberOfEmployeesResponse(
             Some("123/RT882d"),
@@ -172,7 +172,7 @@ class NumberOfEmployeesControllerSpec
 
 
       val response = await(controller.numberOfEmployees(sampleMatchIdUUID)
-          (fakeRequestNoCorrelationHeader.withBody(sampleRequestAsJson).withHeaders("CorrelationId" -> "Not a valid correlationId")))
+      (fakeRequestNoCorrelationHeader.withBody(sampleRequestAsJson).withHeaders("CorrelationId" -> "Not a valid correlationId")))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
         any(), any(), any(), any(), any())(any())

@@ -43,7 +43,7 @@ class NumberOfEmployeesResponseSpec extends AnyWordSpec with Matchers {
 
   "creates correctly from IF number of employee count" in {
 
-    val payeReferenceAndCount =  PayeReferenceAndCount(
+    val payeReferenceAndCount = PayeReferenceAndCount(
       Some("123"),
       Some("RT882d"),
       None

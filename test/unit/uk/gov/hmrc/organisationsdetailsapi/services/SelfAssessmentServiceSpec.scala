@@ -16,9 +16,6 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
-import java.time.LocalDate
-import java.util.UUID
-
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
@@ -36,6 +33,8 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAsse
 import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.SelfAssessmentResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
+import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

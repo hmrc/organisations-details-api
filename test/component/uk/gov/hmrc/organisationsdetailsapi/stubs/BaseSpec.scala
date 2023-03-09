@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
-import java.util.concurrent.TimeUnit
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
@@ -29,6 +28,7 @@ import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http.MimeTypes.JSON
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
 trait BaseSpec
@@ -37,14 +37,14 @@ trait BaseSpec
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
-      "mongodb.uri"                                     -> "mongodb://127.0.0.1:27017/organisations-details-api",
-      "microservice.services.integration-framework.host"       -> "127.0.0.1",
-      "auditing.enabled"                                       -> false,
-      "auditing.traceRequests"                                 -> false,
-      "microservice.services.auth.port"                        -> AuthStub.port,
-      "microservice.services.organisations-matching-api.port"  -> OrganisationsMatchingApiStub.port,
-      "microservice.services.integration-framework.port"       -> IfStub.port,
-      "run.mode"                                               -> "It"
+      "mongodb.uri" -> "mongodb://127.0.0.1:27017/organisations-details-api",
+      "microservice.services.integration-framework.host" -> "127.0.0.1",
+      "auditing.enabled" -> false,
+      "auditing.traceRequests" -> false,
+      "microservice.services.auth.port" -> AuthStub.port,
+      "microservice.services.organisations-matching-api.port" -> OrganisationsMatchingApiStub.port,
+      "microservice.services.integration-framework.port" -> IfStub.port,
+      "run.mode" -> "It"
     )
     .build()
 

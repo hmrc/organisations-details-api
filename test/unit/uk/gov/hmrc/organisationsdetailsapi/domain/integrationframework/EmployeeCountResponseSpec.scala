@@ -28,9 +28,9 @@ class EmployeeCountResponseSpec extends AnyWordSpec with Matchers {
       "2019-10-10",
       Seq(
         PayeReference(
-        "456",
-        "RT882d"
-      ))
+          "456",
+          "RT882d"
+        ))
     )
 
     val result = EmployeeCountRequest.createFromRequest(controllerRequest)

@@ -38,28 +38,28 @@ object SelfAssessmentReturnDetail {
   implicit val taxYearFormat: Format[TaxYear] = Format(
     (
       (JsPath \ "taxyear").readNullable[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
-      (JsPath \ "businessSalesTurnover").readNullable[Double]
-    )(TaxYear.apply _),
+        (JsPath \ "businessSalesTurnover").readNullable[Double]
+      )(TaxYear.apply _),
     (
       (JsPath \ "taxyear").writeNullable[String] and
-      (JsPath \ "businessSalesTurnover").writeNullable[Double]
-    )(unlift(TaxYear.unapply))
+        (JsPath \ "businessSalesTurnover").writeNullable[Double]
+      )(unlift(TaxYear.unapply))
   )
 
   implicit val selfAssessmentResponseFormat: Format[SelfAssessmentReturnDetailResponse] = Format(
     (
       (JsPath \ "utr").readNullable[String](pattern(utrPattern, "UTR pattern is incorrect")) and
-      (JsPath \ "startDate").readNullable[String](pattern(datePattern, "Date pattern is incorrect")) and
-      (JsPath \ "taxpayerType").readNullable[String](pattern(taxPayerTypePattern, "Invalid taxpayer type")) and
-      (JsPath \ "taxSolvencyStatus").readNullable[String](verifying(taxSolvencyStatusValidator)) and
-      (JsPath \ "taxyears").readNullable[Seq[TaxYear]]
-    )(SelfAssessmentReturnDetailResponse.apply _),
+        (JsPath \ "startDate").readNullable[String](pattern(datePattern, "Date pattern is incorrect")) and
+        (JsPath \ "taxpayerType").readNullable[String](pattern(taxPayerTypePattern, "Invalid taxpayer type")) and
+        (JsPath \ "taxSolvencyStatus").readNullable[String](verifying(taxSolvencyStatusValidator)) and
+        (JsPath \ "taxyears").readNullable[Seq[TaxYear]]
+      )(SelfAssessmentReturnDetailResponse.apply _),
     (
       (JsPath \ "utr").writeNullable[String] and
-      (JsPath \ "startDate").writeNullable[String] and
-      (JsPath \ "taxpayerType").writeNullable[String] and
-      (JsPath \ "taxSolvencyStatus").writeNullable[String] and
-      (JsPath \ "taxyears").writeNullable[Seq[TaxYear]]
-    )(unlift(SelfAssessmentReturnDetailResponse.unapply))
+        (JsPath \ "startDate").writeNullable[String] and
+        (JsPath \ "taxpayerType").writeNullable[String] and
+        (JsPath \ "taxSolvencyStatus").writeNullable[String] and
+        (JsPath \ "taxyears").writeNullable[Seq[TaxYear]]
+      )(unlift(SelfAssessmentReturnDetailResponse.unapply))
   )
 }

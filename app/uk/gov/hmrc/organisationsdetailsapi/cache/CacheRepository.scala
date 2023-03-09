@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.cache
 
-import java.time.{LocalDateTime, ZoneOffset}
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}
 import play.api.Configuration
@@ -27,10 +26,10 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
+import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.collection.immutable.Seq
 
 @Singleton
 class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
@@ -39,9 +38,9 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
                                ) extends PlayMongoRepository[Entry](
   mongoComponent = mongo,
   collectionName = cacheConfig.collName,
-  domainFormat   = Entry.format,
+  domainFormat = Entry.format,
   replaceIndexes = true,
-  indexes        = Seq(
+  indexes = Seq(
     IndexModel(
       ascending("id"),
       IndexOptions().name("_id").
@@ -61,7 +60,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   def cache[T](id: String, value: T)(
     implicit formats: Format[T]) = {
 
-    val jsonEncryptor           = new JsonEncryptor[T]()
+    val jsonEncryptor = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
 
     val entry = new Entry(

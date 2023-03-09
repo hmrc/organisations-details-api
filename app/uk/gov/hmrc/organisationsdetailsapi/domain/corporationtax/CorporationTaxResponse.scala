@@ -28,14 +28,14 @@ object CorporationTaxResponse {
 
   def create(corporationTaxReturnDetailsResponse: CorporationTaxReturnDetailsResponse): CorporationTaxResponse =
     CorporationTaxResponse(
-      corporationTaxReturnDetailsResponse.taxpayerStartDate.map(LocalDate.parse) ,
+      corporationTaxReturnDetailsResponse.taxpayerStartDate.map(LocalDate.parse),
       corporationTaxReturnDetailsResponse.taxSolvencyStatus,
       corporationTaxReturnDetailsResponse.accountingPeriods.map(x => x.map(AccountingPeriod.create))
     )
 
-  implicit val corporationTaxResponseWrites : Writes[CorporationTaxResponse] = (
+  implicit val corporationTaxResponseWrites: Writes[CorporationTaxResponse] = (
     (JsPath \ "dateOfRegistration").writeNullable[LocalDate] and
       (JsPath \ "taxSolvencyStatus").writeNullable[String] and
       (JsPath \ "accountingPeriods").writeNullable[Seq[AccountingPeriod]]
-  )(unlift(CorporationTaxResponse.unapply))
+    )(unlift(CorporationTaxResponse.unapply))
 }

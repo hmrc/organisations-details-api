@@ -47,7 +47,7 @@ import scala.concurrent.ExecutionContext
 
 
 class IfConnectorSpec
-    extends AnyWordSpec
+  extends AnyWordSpec
     with BeforeAndAfterEach
     with TestSupport
     with MockitoSugar
@@ -66,9 +66,9 @@ class IfConnectorSpec
   override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
-      "cache.enabled"  -> false,
-      "auditing.enabled"                                       -> false,
-      "auditing.traceRequests"                                 -> false,
+      "cache.enabled" -> false,
+      "auditing.enabled" -> false,
+      "auditing.traceRequests" -> false,
       "microservice.services.integration-framework.host" -> "127.0.0.1",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
@@ -175,7 +175,7 @@ class IfConnectorSpec
           .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(404)))
 
-      intercept[InternalServerException]{
+      intercept[InternalServerException] {
         await(
           underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
@@ -302,7 +302,7 @@ class IfConnectorSpec
                 |  ]
                 |}""".stripMargin)))))
 
-        val result:SelfAssessmentReturnDetailResponse = await(
+        val result: SelfAssessmentReturnDetailResponse = await(
           underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
@@ -329,7 +329,7 @@ class IfConnectorSpec
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
-        val result:SelfAssessmentReturnDetailResponse = await(
+        val result: SelfAssessmentReturnDetailResponse = await(
           underTest.getSaReturnDetails(UUID.randomUUID().toString, utr, None)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
@@ -473,14 +473,15 @@ class IfConnectorSpec
       Mockito.reset(underTest.auditHelper)
 
       val jsonRequest: String = Json.prettyPrint(Json.toJson(employeeCountRequest))
-      val jsonResponse: String = """{
-                            |  "failures": [
-                            |    {
-                            |      "code": "INVALID_PAYLOAD",
-                            |      "reason": "Submission has not passed validation. Invalid payload."
-                            |    }
-                            |  ]
-                            |}""".stripMargin
+      val jsonResponse: String =
+        """{
+          |  "failures": [
+          |    {
+          |      "code": "INVALID_PAYLOAD",
+          |      "reason": "Submission has not passed validation. Invalid payload."
+          |    }
+          |  ]
+          |}""".stripMargin
 
       stubFor(
         post(urlPathMatching(s"/organisations/employers/employee/counts"))

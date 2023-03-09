@@ -167,7 +167,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     )
 
   def auditAuthScopes(matchId: String,
-                      scopes:  String,
+                      scopes: String,
                       request: RequestHeader)
                      (implicit hc: HeaderCarrier): Unit =
     auditConnector.sendExplicitAudit(

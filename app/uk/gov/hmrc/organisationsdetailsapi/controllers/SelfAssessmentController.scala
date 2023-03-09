@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import java.util.UUID
-
-import javax.inject.Inject
 import play.api.Logger
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
@@ -29,6 +26,8 @@ import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, SelfAssessmentService}
 
+import java.util.UUID
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class SelfAssessmentController @Inject()(val authConnector: AuthConnector,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepository
 import utils.TestSupport
-import java.util.UUID
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 class CacheRepositorySpec
@@ -36,7 +36,7 @@ class CacheRepositorySpec
     with BeforeAndAfterEach
     with MongoSupport
     with TestSupport {
-  
+
   private val cacheTtl = 60
   private val id = UUID.randomUUID().toString
   private val testValue = TestClass("one", "two")

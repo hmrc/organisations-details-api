@@ -21,10 +21,9 @@ import com.google.common.io.BaseEncoding
 import play.api.libs.json.Format
 import uk.gov.hmrc.organisationsdetailsapi.cache.{CacheRepository, CacheRepositoryConfiguration}
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesRequest
+
 import java.util.UUID
-
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class CacheService @Inject()(
@@ -46,18 +45,20 @@ class CacheService @Inject()(
             result
           }
       } else {
-        fallbackFunction
-      }
+      fallbackFunction
+    }
 
   }
-    def fetch[T: Format](matchId: UUID): Future[Option[T]] = {
-      cachingClient.fetchAndGetEntry(matchId.toString)
-    }
+
+  def fetch[T: Format](matchId: UUID): Future[Option[T]] = {
+    cachingClient.fetchAndGetEntry(matchId.toString)
+  }
 }
 
 
 trait CacheIdBase {
   val id: String
+
   override def toString: String = id
 
   def encodeVal(toEncode: String): String =

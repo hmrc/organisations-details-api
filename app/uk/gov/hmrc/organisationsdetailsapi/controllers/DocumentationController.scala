@@ -16,15 +16,20 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
+import akka.stream.Materializer
 import controllers.Assets
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.filters.cors.CORSActionBuilder
 import uk.gov.hmrc.organisationsdetailsapi.views._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
+
 @Singleton
 class DocumentationController @Inject()(cc: ControllerComponents, assets: Assets, config: Configuration)
+                                       (implicit ec: ExecutionContext, materializer: Materializer)
   extends BackendController(cc) {
 
   private lazy val v1EndpointsEnabled: Boolean =
@@ -41,13 +46,10 @@ class DocumentationController @Inject()(cc: ControllerComponents, assets: Assets
     Ok(txt.definition(v1EndpointsEnabled, v1Status))
       .withHeaders(CONTENT_TYPE -> JSON)
   }
-  def documentation(
-                     version: String,
-                     endpointName: String
-                   ): Action[AnyContent] =
-    assets.at(s"/public/api/documentation/$version", s"${endpointName.replaceAll(" ", "-")}.xml")
 
-  def raml(version: String, file: String): Action[AnyContent] =
-    assets.at(s"/public/api/conf/$version", file)
-
+  def specification(version: String, file: String): Action[AnyContent] = {
+    CORSActionBuilder(config).async { implicit request =>
+      assets.at(s"/public/api/conf/$version", file)(request)
+    }
+  }
 }

@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
 
-import play.api.libs.functional.syntax.unlift
-import play.api.libs.json.{Format, JsPath}
-import play.api.libs.json.Reads.pattern
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
+import play.api.libs.json.{Format, JsPath}
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmployeesRequest
 
 import scala.util.matching.Regex
@@ -51,12 +49,12 @@ object Count {
   implicit val countFormat: Format[Count] = Format(
     (
       (JsPath \ "dateTaken").readNullable[String](pattern(datePattern, "Date is in incorrect format")) and
-      (JsPath \ "employeeCount").readNullable[Int](verifying[Int](isInRangeAndWholeNumber))
-    )(Count.apply _),
+        (JsPath \ "employeeCount").readNullable[Int](verifying[Int](isInRangeAndWholeNumber))
+      )(Count.apply _),
     (
       (JsPath \ "dateTaken").writeNullable[String] and
-      (JsPath \ "employeeCount").writeNullable[Int]
-    )(unlift(Count.unapply))
+        (JsPath \ "employeeCount").writeNullable[Int]
+      )(unlift(Count.unapply))
   )
 }
 
@@ -69,27 +67,27 @@ object EmployeeCountResponse {
   implicit val referencesFormat: Format[PayeReferenceAndCount] = Format(
     (
       (JsPath \ "districtNumber").readNullable[String](pattern(districtPattern, "District number is in the incorrect format")) and
-      (JsPath \ "payeReference").readNullable[String](pattern(payeRefPattern, "Paye reference is in the incorrect format")) and
-      (JsPath \ "counts").readNullable[Seq[Count]]
-    )(PayeReferenceAndCount.apply _),
+        (JsPath \ "payeReference").readNullable[String](pattern(payeRefPattern, "Paye reference is in the incorrect format")) and
+        (JsPath \ "counts").readNullable[Seq[Count]]
+      )(PayeReferenceAndCount.apply _),
     (
       (JsPath \ "districtNumber").writeNullable[String] and
-      (JsPath \ "payeReference").writeNullable[String] and
-      (JsPath \ "counts").writeNullable[Seq[Count]]
-    )(unlift(PayeReferenceAndCount.unapply))
+        (JsPath \ "payeReference").writeNullable[String] and
+        (JsPath \ "counts").writeNullable[Seq[Count]]
+      )(unlift(PayeReferenceAndCount.unapply))
   )
 
   implicit val ifEmployeeCountFormat: Format[EmployeeCountResponse] = Format(
     (
       (JsPath \ "startDate").readNullable[String](pattern(datePattern, "startDate is in the incorrect format")) and
-      (JsPath \ "endDate").readNullable[String](pattern(datePattern, "endDate is in the incorrect format")) and
-      (JsPath \ "references").readNullable[Seq[PayeReferenceAndCount]]
-    )(EmployeeCountResponse.apply _),
+        (JsPath \ "endDate").readNullable[String](pattern(datePattern, "endDate is in the incorrect format")) and
+        (JsPath \ "references").readNullable[Seq[PayeReferenceAndCount]]
+      )(EmployeeCountResponse.apply _),
     (
       (JsPath \ "startDate").writeNullable[String] and
-      (JsPath \ "endDate").writeNullable[String] and
-      (JsPath \ "references").writeNullable[Seq[PayeReferenceAndCount]]
-    )(unlift(EmployeeCountResponse.unapply))
+        (JsPath \ "endDate").writeNullable[String] and
+        (JsPath \ "references").writeNullable[Seq[PayeReferenceAndCount]]
+      )(unlift(EmployeeCountResponse.unapply))
   )
 }
 
@@ -102,25 +100,25 @@ object EmployeeCountRequest {
   implicit val referencesFormat: Format[PayeReference] = Format(
     (
       (JsPath \ "districtNumber").read[String](pattern(districtPattern, "District number is in the incorrect format")) and
-      (JsPath \ "payeReference").read[String](pattern(payeRefPattern, "Paye reference is in the incorrect format"))
-    )(PayeReference.apply _),
+        (JsPath \ "payeReference").read[String](pattern(payeRefPattern, "Paye reference is in the incorrect format"))
+      )(PayeReference.apply _),
     (
       (JsPath \ "districtNumber").write[String] and
-      (JsPath \ "payeReference").write[String]
-    )(unlift(PayeReference.unapply))
+        (JsPath \ "payeReference").write[String]
+      )(unlift(PayeReference.unapply))
   )
 
   implicit val ifEmployeeCountRequestFormat: Format[EmployeeCountRequest] = Format(
     (
       (JsPath \ "startDate").read[String](pattern(datePattern, "startDate is in the incorrect format")) and
-      (JsPath \ "endDate").read[String](pattern(datePattern, "endDate is in the incorrect format")) and
-      (JsPath \ "references").read[Seq[PayeReference]]
-    )(EmployeeCountRequest.apply _),
+        (JsPath \ "endDate").read[String](pattern(datePattern, "endDate is in the incorrect format")) and
+        (JsPath \ "references").read[Seq[PayeReference]]
+      )(EmployeeCountRequest.apply _),
     (
       (JsPath \ "startDate").write[String] and
-      (JsPath \ "endDate").write[String] and
-      (JsPath \ "references").write[Seq[PayeReference]]
-    )(unlift(EmployeeCountRequest.unapply))
+        (JsPath \ "endDate").write[String] and
+        (JsPath \ "references").write[Seq[PayeReference]]
+      )(unlift(EmployeeCountRequest.unapply))
   )
 
   def createFromRequest(request: NumberOfEmployeesRequest): EmployeeCountRequest =

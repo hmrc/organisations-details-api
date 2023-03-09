@@ -24,10 +24,10 @@ case class NumberOfEmployeeCounts(numberOfEmployees: Option[Int], dateOfCount: O
 
 object NumberOfEmployeeCounts {
 
-  def create(count: Count) : NumberOfEmployeeCounts =
+  def create(count: Count): NumberOfEmployeeCounts =
     NumberOfEmployeeCounts(count.employeeCount, count.dateTaken)
 
-  implicit val numberOfEmployeeCountsWrites : Writes[NumberOfEmployeeCounts] =
+  implicit val numberOfEmployeeCountsWrites: Writes[NumberOfEmployeeCounts] =
     (
       (JsPath \ "numberOfEmployees").writeNullable[Int] and
         (JsPath \ "dateOfCount").writeNullable[String]
