@@ -96,7 +96,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
+                  - $ref: '#/components/schemas/errorResponse400'
                   - example:
                       code: INVALID_REQUEST
               examples:
@@ -111,7 +111,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
+                  - $ref: '#/components/schemas/errorResponse404'
                   - example:
                       code: NOT_FOUND
               examples:
@@ -193,7 +193,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
+                  - $ref: '#/components/schemas/errorResponse400'
                   - example:
                       code: INVALID_REQUEST
               examples:
@@ -208,7 +208,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
+                  - $ref: '#/components/schemas/errorResponse404'
                   - example:
                       code: NOT_FOUND
               examples:
@@ -330,7 +330,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
+                  - $ref: '#/components/schemas/errorResponse400'
                   - example:
                       code: INVALID_REQUEST
               examples:
@@ -345,7 +345,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
+                  - $ref: '#/components/schemas/errorResponse404'
                   - example:
                       code: NOT_FOUND
               examples:
@@ -369,7 +369,7 @@ components:
           scopes:
             assigned: depending on your assigned scopes you will see the json keys your scopes allow.
   schemas:
-    errorResponse:
+    errorResponse400:
       title: errorResponse
       required:
         - code
@@ -377,6 +377,16 @@ components:
       properties:
         code:
           type: string
+          description: Invalid request
+    errorResponse404:
+      title: errorResponse
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+          description: Not found
     AccountingPeriod:
       title: AccountingPeriod
       type: object
