@@ -1,0 +1,48 @@
+{
+  "vrn": "1234567890",
+  "appDate": "20160425",
+  "taxYears": [
+    {
+      "taxYear": "2019",
+      "vatReturns": [
+        {
+          "calendarMonth": 1,
+          "liabilityMonth": 10,
+          "numMonthsAssessed": 5,
+          "box6Total": 6542,
+          "returnType": "Regular Return",
+          "source": "VMF"
+        },
+        {
+          "calendarMonth": 2,
+          "liabilityMonth": 11,
+          "numMonthsAssessed": 6,
+          "box6Total": 12345.23,
+          "returnType": "Regular Return",
+          "source": "VMF"
+        }
+      ]
+    },
+    {
+      "taxYear": "2020",
+      "vatReturns": [
+        {
+          "calendarMonth": 12,
+          "liabilityMonth": 9,
+          "numMonthsAssessed": 4,
+          "box6Total": 2344,
+          "returnType": "Regular Return",
+          "source": "ADR(ETMP)"
+        },
+        {
+          "calendarMonth": 6,
+          "liabilityMonth": 3,
+          "numMonthsAssessed": 1,
+          "box6Total": 123.23,
+          "returnType": "Regular Return",
+          "source": "ADR(ETMP)"
+        }
+      ]
+    }
+  ]
+}
