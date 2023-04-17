@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
 
-import play.api.libs.json.{Format, Json, Reads}
+import play.api.libs.json.{Format, Json}
 
 
 object VatReturnDetails {
