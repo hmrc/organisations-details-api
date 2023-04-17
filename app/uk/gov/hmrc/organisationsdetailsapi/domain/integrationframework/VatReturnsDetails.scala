@@ -16,18 +16,10 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
 
-
-import play.api.libs.json.{Format, JsPath, JsResult, JsValue, Reads}
-import scala.util.matching.Regex
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
+import play.api.libs.json.{Json, Reads}
 
 
-//make all optional, excluding fields for scope etc
-
-
-
-object VatReturnDetails{
+object VatReturnDetails {
 
   case class VatReturn(calendarMonth: Option[Int], liabilityMonth: Option[Int], numMonthsAssessed: Option[Int], box6Total: Option[Int], returnType: Option[String], source: Option[String])
 
@@ -35,26 +27,15 @@ object VatReturnDetails{
 
   case class VatReturnDetailsResponse(vrn: Option[String], appDate: Option[String], taxYears: Option[Seq[TaxYears]])
 
-  implicit val vatReturn: Reads[VatReturn] =
-    (
-      (JsPath \ "calendarMonth").readNullable[Int] and
-        (JsPath \ "liabilityMonth").readNullable[Int] and
-        (JsPath \ "numMonthsAssessed").readNullable[Int] and
-        (JsPath \"box6Total").readNullable[Int] and
-        (JsPath \ "returnType").readNullable[String] and
-        (JsPath \ "source").readNullable[String]
-    )(VatReturn.apply _)
+  object VatReturn {
+    implicit val vatReturn: Reads[VatReturn] = Json.reads[VatReturn]
+  }
 
-  implicit val taxYears: Reads[TaxYears] =
-  (
-      (JsPath \ "taxYear").readNullable[String] and
-        (JsPath \ "vatReturns").readNullable[Seq[VatReturn]]
-  )(TaxYears.apply _)
+  object TaxYears {
+    implicit val taxYears: Reads[TaxYears] = Json.reads[TaxYears]
+  }
 
-  implicit val vatReturnDetailsResponseFormat: Reads[VatReturnDetailsResponse]=
-    (
-      (JsPath \ "vrn").readNullable[String] and
-        (JsPath \ "appDate").readNullable[String] and
-        (JsPath \ "taxYears").readNullable[Seq[TaxYears]]
-      )(VatReturnDetailsResponse.apply _)
+  object VatReturnDetailsResponse {
+    implicit val vatReturnDetailsResponseFormat: Reads[VatReturnDetailsResponse] = Json.reads[VatReturnDetailsResponse]
+  }
 }
