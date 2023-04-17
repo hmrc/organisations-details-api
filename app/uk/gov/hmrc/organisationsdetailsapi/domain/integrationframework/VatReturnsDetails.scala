@@ -16,26 +16,27 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Format, Json, Reads}
 
 
 object VatReturnDetails {
 
   case class VatReturn(calendarMonth: Option[Int], liabilityMonth: Option[Int], numMonthsAssessed: Option[Int], box6Total: Option[Int], returnType: Option[String], source: Option[String])
+  object VatReturn {
+    implicit val vatReturn: Format[VatReturn] = Json.format[VatReturn]
+  }
 
   case class TaxYears(taxYear: Option[String], vatReturns: Option[Seq[VatReturn]])
+  object TaxYears {
+    implicit val taxYears: Format[TaxYears] = Json.format[TaxYears]
+  }
 
   case class VatReturnDetailsResponse(vrn: Option[String], appDate: Option[String], taxYears: Option[Seq[TaxYears]])
-
-  object VatReturn {
-    implicit val vatReturn: Reads[VatReturn] = Json.reads[VatReturn]
-  }
-
-  object TaxYears {
-    implicit val taxYears: Reads[TaxYears] = Json.reads[TaxYears]
-  }
-
   object VatReturnDetailsResponse {
-    implicit val vatReturnDetailsResponseFormat: Reads[VatReturnDetailsResponse] = Json.reads[VatReturnDetailsResponse]
+    implicit val vatReturnDetailsResponseFormat: Format[VatReturnDetailsResponse] = Json.format[VatReturnDetailsResponse]
   }
+
 }
+
+
+
