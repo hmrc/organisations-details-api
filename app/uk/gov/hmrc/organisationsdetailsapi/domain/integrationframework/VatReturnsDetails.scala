@@ -37,6 +37,3 @@ object VatReturnDetails {
   }
 
 }
-
-
-
