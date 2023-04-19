@@ -38,6 +38,7 @@ import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.VatReturnDetails.VatReturnDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{IfHelpers, TestSupport}
@@ -103,6 +104,7 @@ class IfConnectorSpec
   }
 
   val utr = "1234567890"
+  val vrn = "1246353"
 
   val taxReturn: CorporationTaxReturnDetailsResponse = createValidCorporationTaxReturnDetails()
   val saReturn: SelfAssessmentReturnDetailResponse = createValidSelfAssessmentReturnDetails()
@@ -112,10 +114,13 @@ class IfConnectorSpec
   val invalidSaReturn: SelfAssessmentReturnDetailResponse = createValidSelfAssessmentReturnDetails().copy(utr = Some(""))
   val invalidEmployeeCountRequest: EmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse: EmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
+  val vatReturn: VatReturnDetailsResponse = createValidVatReturnDetails()
+  val invalidVatReturn: VatReturnDetailsResponse = createValidVatReturnDetails().copy(vrn = Some(""))
 
   val emptyEmployeeCountResponse: EmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
   val emptyCtReturn: CorporationTaxReturnDetailsResponse = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
   val emptySaReturn: SelfAssessmentReturnDetailResponse = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
+  val emptyVatReturn: VatReturnDetailsResponse = VatReturnDetailsResponse(None, None, None)
 
   "IF Connector" should {
 
@@ -268,6 +273,99 @@ class IfConnectorSpec
         intercept[InternalServerException] {
           await(
             underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
+          )
+        }
+
+        verify(underTest.auditHelper,
+          times(1)).auditIfApiFailure(any(), any(), any(), any(), matches("^Error parsing IF response"))(any())
+
+      }
+    }
+
+    "getVatReturnDetails" should {
+
+      "Fail when IF returns a NOT_DATA_FOUND and return error in body" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
+
+        stubFor(
+          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
+              """{
+                |  "failures": [
+                |    {
+                |      "code": "NO_DATA_FOUND",
+                |      "reason": "The remote endpoint has indicated no data was found for the provided utr."
+                |    }
+                |  ]
+                |}""".stripMargin)))))
+
+        val result: VatReturnDetailsResponse = await(
+          underTest.getVatReturnDetails(UUID.randomUUID().toString, vrn, Some("fields(A,B,C)"))(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        )
+
+        result shouldBe emptyVatReturn
+
+        verify(underTest.auditHelper,
+          times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
+      }
+
+      "successfully parse valid VatReturnDetailsResponse from IF response" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
+
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(vatReturn))
+
+        stubFor(
+          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
+            .willReturn(okJson(jsonResponse)))
+
+        val result: VatReturnDetailsResponse = await(
+          underTest.getVatReturnDetails(UUID.randomUUID().toString, vrn, Some("fields(A,B,C)"))(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        )
+
+        result shouldBe vatReturn
+
+        verify(underTest.auditHelper,
+          times(0)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+
+      }
+
+      "successfully parse invalid VatReturnDetailsResponse from IF response" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
+
+        val jsonResponse: String = Json.prettyPrint(Json.toJson(invalidVatReturn))
+
+        stubFor(
+          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
+            .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
+            .willReturn(okJson(jsonResponse)))
+
+
+        intercept[InternalServerException] {
+          await(
+            underTest.getVatReturnDetails(UUID.randomUUID().toString, vrn, Some("fields(A,B,C)"))(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec

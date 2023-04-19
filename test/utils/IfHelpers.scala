@@ -16,6 +16,7 @@
 
 package utils
 
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.VatReturnDetails.{TaxYears, VatReturn, VatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework._
 
 trait IfHelpers {
@@ -36,6 +37,29 @@ trait IfHelpers {
           apEndDate = Some("2019-04-05"),
           turnover = Some(2340)
         )))
+    )
+  }
+
+  def createValidVatReturnDetails(): VatReturnDetailsResponse = {
+    VatReturnDetailsResponse(
+      vrn = Some("djfuyfyj") ,
+      appDate= Some("kjhkjh"),
+      taxYears = Some(Seq(
+        TaxYears(
+          taxYear = Some("hjgjh"),
+          vatReturns = Some(Seq(
+            VatReturn(
+              calendarMonth = Some(1),
+              liabilityMonth = Some(1),
+              numMonthsAssessed = Some(1),
+              box6Total = Some(1),
+              returnType = Some("ggg"),
+              source = Some("ggg")
+            )
+          ))
+        )
+      )
+      )
     )
   }
 
