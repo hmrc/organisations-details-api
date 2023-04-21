@@ -26,8 +26,8 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.Corporati
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.VatReturnDetails.{VatReturnDetailsResponse, _}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.VatReturnDetailsResponse._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, VatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -70,12 +70,12 @@ class IfConnector @Inject()(
     request: RequestHeader,
     ec: ExecutionContext): Future[VatReturnDetailsResponse] = {
 
-    val corporationTaxUrl =
+    val vatTaxUrl =
       s"$baseUrl/organisations/vat/$vrn/return/details${
         filter.map(f => s"?fields=$f").getOrElse("")
       }"
 
-    call[VatReturnDetailsResponse](corporationTaxUrl, matchId)
+    call[VatReturnDetailsResponse](vatTaxUrl, matchId)
   }
 
   def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(
@@ -106,7 +106,7 @@ class IfConnector @Inject()(
 
   private def extractCorrelationId(requestHeader: RequestHeader) = validateCorrelationId(requestHeader).toString
 
-  def setHeaders(requestHeader: RequestHeader) = Seq(
+  def setHeaders(requestHeader: RequestHeader): Seq[(String, String)] = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
     "Environment" -> integrationFrameworkEnvironment,
     "CorrelationId" -> extractCorrelationId(requestHeader)
@@ -150,7 +150,7 @@ class IfConnector @Inject()(
 
     case Upstream4xxResponse(msg, 404, _, _) =>
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
-      if (msg.contains("NO_DATA_FOUND")) {
+      if (msg.contains("NO_DATA_FOUND") || msg.contains("NO_VAT_RETURNS_DETAIL_FOUND")) {
         noDataFound(requestUrl)
       } else {
         logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
@@ -172,6 +172,7 @@ class IfConnector @Inject()(
     lazy val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
     lazy val emptyCtReturn = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
     lazy val emptySaReturn = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
+    lazy val emptyVatReturn = VatReturnDetailsResponse(None, None, None)
 
     if (url.contains("counts"))
       Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
@@ -179,6 +180,8 @@ class IfConnector @Inject()(
       Future.successful(emptyCtReturn.asInstanceOf[A])
     else if (url.contains("self-assessment"))
       Future.successful(emptySaReturn.asInstanceOf[A])
+    else if (url.contains("vat"))
+      Future.successful(emptyVatReturn.asInstanceOf[A])
     else
       Future.failed(new InternalServerException("Something went wrong."))
   }

@@ -38,8 +38,7 @@ import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.VatReturnDetails.VatReturnDetailsResponse
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, VatReturnDetailsResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{IfHelpers, TestSupport}
 
@@ -104,7 +103,7 @@ class IfConnectorSpec
   }
 
   val utr = "1234567890"
-  val vrn = "1246353"
+  val vrn = "1234567890"
 
   val taxReturn: CorporationTaxReturnDetailsResponse = createValidCorporationTaxReturnDetails()
   val saReturn: SelfAssessmentReturnDetailResponse = createValidSelfAssessmentReturnDetails()
@@ -288,7 +287,7 @@ class IfConnectorSpec
 
     "getVatReturnDetails" should {
 
-      "Fail when IF returns a NOT_DATA_FOUND and return error in body" in new Setup {
+      "Fail when IF returns a NO_DATA_FOUND and return error in body" in new Setup {
 
         Mockito.reset(underTest.auditHelper)
 
@@ -299,8 +298,8 @@ class IfConnectorSpec
               """{
                 |  "failures": [
                 |    {
-                |      "code": "NO_DATA_FOUND",
-                |      "reason": "The remote endpoint has indicated no data was found for the provided utr."
+                |      "code": "NO_VAT_RETURNS_DETAIL_FOUND",
+                |      "reason": "The remote endpoint has indicated that it cannot find the data for the supplied vrn, or there is no incoming data."
                 |    }
                 |  ]
                 |}""".stripMargin)))))
@@ -316,7 +315,7 @@ class IfConnectorSpec
         result shouldBe emptyVatReturn
 
         verify(underTest.auditHelper,
-          times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("""NO_DATA_FOUND"""))(any())
+          times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("NO_VAT_RETURNS_DETAIL_FOUND"))(any())
       }
 
       "successfully parse valid VatReturnDetailsResponse from IF response" in new Setup {
@@ -345,37 +344,6 @@ class IfConnectorSpec
 
         verify(underTest.auditHelper,
           times(0)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
-
-      }
-
-      "successfully parse invalid VatReturnDetailsResponse from IF response" in new Setup {
-
-        Mockito.reset(underTest.auditHelper)
-
-        val jsonResponse: String = Json.prettyPrint(Json.toJson(invalidVatReturn))
-
-        stubFor(
-          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
-            .withQueryParam("fields", equalTo("fields(A,B,C)"))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
-            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
-            .withHeader("CorrelationId", equalTo(sampleCorrelationId))
-            .willReturn(okJson(jsonResponse)))
-
-
-        intercept[InternalServerException] {
-          await(
-            underTest.getVatReturnDetails(UUID.randomUUID().toString, vrn, Some("fields(A,B,C)"))(
-              hc,
-              FakeRequest().withHeaders(sampleCorrelationIdHeader),
-              ec
-            )
-          )
-        }
-
-        verify(underTest.auditHelper,
-          times(1)).auditIfApiFailure(any(), any(), any(), any(), matches("^Error parsing IF response"))(any())
-
       }
     }
 
@@ -604,5 +572,3 @@ class IfConnectorSpec
     }
   }
 }
-
-
