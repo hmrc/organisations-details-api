@@ -114,7 +114,6 @@ class IfConnectorSpec
   val invalidEmployeeCountRequest: EmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse: EmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
   val vatReturn: VatReturnDetailsResponse = createValidVatReturnDetails()
-  val invalidVatReturn: VatReturnDetailsResponse = createValidVatReturnDetails().copy(vrn = Some(""))
 
   val emptyEmployeeCountResponse: EmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
   val emptyCtReturn: CorporationTaxReturnDetailsResponse = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
