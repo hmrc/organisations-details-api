@@ -31,6 +31,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
@@ -76,15 +77,17 @@ class IfConnectorSpec
     )
     .build()
 
-  implicit val ec: ExecutionContext =
-    fakeApplication.injector.instanceOf[ExecutionContext]
 
   trait Setup {
     val matchId = "80a6bb14-d888-436e-a541-4000674c60aa"
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
     val sampleCorrelationIdHeader: (String, String) = "CorrelationId" -> sampleCorrelationId
 
+    implicit val ec: ExecutionContext =
+      fakeApplication.injector.instanceOf[ExecutionContext]
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders(sampleCorrelationIdHeader)
+
 
     val config: ServicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
     val httpClient: HttpClient = fakeApplication.injector.instanceOf[HttpClient]
@@ -286,7 +289,7 @@ class IfConnectorSpec
 
     "getVatReturnDetails" should {
 
-      "Fail when IF returns a NO_DATA_FOUND and return error in body" in new Setup {
+      "Fail when IF returns a NO_VAT_RETURNS_DETAIL_FOUND and return error in body" in new Setup {
 
         Mockito.reset(underTest.auditHelper)
 
@@ -304,11 +307,7 @@ class IfConnectorSpec
                 |}""".stripMargin)))))
 
         val result: VatReturnDetailsResponse = await(
-          underTest.getVatReturnDetails(UUID.randomUUID().toString, vrn, Some("fields(A,B,C)"))(
-            hc,
-            FakeRequest().withHeaders(sampleCorrelationIdHeader),
-            ec
-          )
+          underTest.getVatReturnDetails(matchId, vrn, Some("fields(A,B,C)"))
         )
 
         result shouldBe emptyVatReturn
@@ -332,17 +331,13 @@ class IfConnectorSpec
             .willReturn(okJson(jsonResponse)))
 
         val result: VatReturnDetailsResponse = await(
-          underTest.getVatReturnDetails(UUID.randomUUID().toString, vrn, Some("fields(A,B,C)"))(
-            hc,
-            FakeRequest().withHeaders(sampleCorrelationIdHeader),
-            ec
-          )
+          underTest.getVatReturnDetails(matchId, vrn, Some("fields(A,B,C)"))
         )
 
         result shouldBe vatReturn
 
-        verify(underTest.auditHelper,
-          times(0)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiResponse(any(), any(), any(), any(), any())(any())
       }
     }
 
