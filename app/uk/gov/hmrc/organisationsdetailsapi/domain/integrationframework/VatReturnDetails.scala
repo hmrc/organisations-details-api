@@ -19,8 +19,6 @@ package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
 import play.api.libs.json.{Format, Json}
 
 
-object VatReturnDetails {
-
   case class VatReturn(calendarMonth: Option[Int], liabilityMonth: Option[Int], numMonthsAssessed: Option[Int], box6Total: Option[Int], returnType: Option[String], source: Option[String])
   object VatReturn {
     implicit val vatReturn: Format[VatReturn] = Json.format[VatReturn]
@@ -35,5 +33,3 @@ object VatReturnDetails {
   object VatReturnDetailsResponse {
     implicit val vatReturnDetailsResponseFormat: Format[VatReturnDetailsResponse] = Json.format[VatReturnDetailsResponse]
   }
-
-}
