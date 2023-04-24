@@ -1,3 +1,4 @@
-GET         /corporation-tax            @uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController.corporationTax(matchId: java.util.UUID)
-POST        /number-of-employees        @uk.gov.hmrc.organisationsdetailsapi.controllers.NumberOfEmployeesController.numberOfEmployees(matchId: java.util.UUID)
-GET         /self-assessment            @uk.gov.hmrc.organisationsdetailsapi.controllers.SelfAssessmentController.selfAssessment(matchId: java.util.UUID)
+GET    /corporation-tax            @uk.gov.hmrc.organisationsdetailsapi.controllers.CorporationTaxController.corporationTax(matchId: java.util.UUID)
+POST   /number-of-employees        @uk.gov.hmrc.organisationsdetailsapi.controllers.NumberOfEmployeesController.numberOfEmployees(matchId: java.util.UUID)
+GET    /self-assessment            @uk.gov.hmrc.organisationsdetailsapi.controllers.SelfAssessmentController.selfAssessment(matchId: java.util.UUID)
+POST   /vat                        @uk.gov.hmrc.organisationsdetailsapi.controllers.VatReturnDetailsController.vat(matchId: java.util.UUID)

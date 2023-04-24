@@ -28,8 +28,8 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
-import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{SelfAssessmentReturnDetailResponse, TaxYear}
+import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.SelfAssessmentResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 

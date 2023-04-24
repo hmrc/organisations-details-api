@@ -30,9 +30,9 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class BaseApiController(cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions {
+abstract class BaseApiController(cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions with PrivilegedAuthentication {
 
-  protected val logger: Logger = play.api.Logger(this.getClass)
+  protected override val logger: Logger = play.api.Logger(this.getClass)
 
   protected override implicit def hc(implicit rh: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequest(rh)

@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain
+package uk.gov.hmrc.organisationsdetailsapi.domain.vat
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfTaxYear
 
-import java.util.UUID
+case class TaxYear(taxYear: Option[String], vatReturns: Seq[VatReturn])
 
-case class OrganisationMatch(matchId: UUID, utr: String)
+object TaxYear {
+  implicit val taxYearFormat = Json.format[TaxYear]
 
-object OrganisationMatch {
-  implicit val organisationMatchFormat: Format[OrganisationMatch] = Json.format[OrganisationMatch]
+  def fromIfResponse(ifData: IfTaxYear): TaxYear = {
+    TaxYear(
+      ifData.taxYear,
+      ifData.vatReturns.map(_.map(VatReturn.fromIfResponse)).getOrElse(Seq.empty)
+    )
+  }
 }

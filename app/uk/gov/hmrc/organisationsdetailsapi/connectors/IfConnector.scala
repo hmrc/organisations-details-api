@@ -26,8 +26,8 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.Corporati
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.VatReturnDetailsResponse._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, VatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatReturnDetailsResponse._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -68,14 +68,14 @@ class IfConnector @Inject()(
   def getVatReturnDetails(matchId: String, vrn: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[VatReturnDetailsResponse] = {
+    ec: ExecutionContext): Future[IfVatReturnDetailsResponse] = {
 
     val vatTaxUrl =
       s"$baseUrl/organisations/vat/$vrn/return/details${
         filter.map(f => s"?fields=$f").getOrElse("")
       }"
 
-    call[VatReturnDetailsResponse](vatTaxUrl, matchId)
+    call[IfVatReturnDetailsResponse](vatTaxUrl, matchId)
   }
 
   def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(

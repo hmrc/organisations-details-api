@@ -18,7 +18,7 @@ package uk.gov.hmrc.organisationsdetailsapi.services
 
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
-import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
+import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}

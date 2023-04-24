@@ -20,8 +20,8 @@ import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.{Http, HttpOptions}
-import uk.gov.hmrc.organisationsdetailsapi.domain.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{Count, EmployeeCountRequest, EmployeeCountResponse, PayeReferenceAndCount}
+import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeesRequest, PayeReference => RequestPayeReference}
 
 import java.util.UUID
