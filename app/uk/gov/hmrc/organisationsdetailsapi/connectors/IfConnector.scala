@@ -172,7 +172,6 @@ class IfConnector @Inject()(
     lazy val emptyEmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
     lazy val emptyCtReturn = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
     lazy val emptySaReturn = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
-    lazy val emptyVatReturn = VatReturnDetailsResponse(None, None, None)
 
     if (url.contains("counts"))
       Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
@@ -181,7 +180,7 @@ class IfConnector @Inject()(
     else if (url.contains("self-assessment"))
       Future.successful(emptySaReturn.asInstanceOf[A])
     else if (url.contains("vat"))
-      Future.successful(emptyVatReturn.asInstanceOf[A])
+      Future.failed(new NotFoundException("VAT details could not be found"))
     else
       Future.failed(new InternalServerException("Something went wrong."))
   }

@@ -20,9 +20,9 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.matching.EqualToJsonPattern
-import org.mockito.ArgumentMatchers.{any, contains, matches}
+import org.mockito.ArgumentMatchers.{ any, contains, matches }
 import org.mockito.Mockito
-import org.mockito.Mockito.{times, verify}
+import org.mockito.Mockito.{ times, verify }
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -33,15 +33,15 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException}
+import uk.gov.hmrc.http.{ HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException }
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, VatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, VatReturnDetailsResponse }
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.{IfHelpers, TestSupport}
+import utils.{ IfHelpers, TestSupport }
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext
@@ -121,7 +121,6 @@ class IfConnectorSpec
   val emptyEmployeeCountResponse: EmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
   val emptyCtReturn: CorporationTaxReturnDetailsResponse = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
   val emptySaReturn: SelfAssessmentReturnDetailResponse = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
-  val emptyVatReturn: VatReturnDetailsResponse = VatReturnDetailsResponse(None, None, None)
 
   "IF Connector" should {
 
@@ -306,14 +305,12 @@ class IfConnectorSpec
                 |  ]
                 |}""".stripMargin)))))
 
-        val result: VatReturnDetailsResponse = await(
-          underTest.getVatReturnDetails(matchId, vrn, Some("fields(A,B,C)"))
-        )
+        intercept[NotFoundException] {
+          await(underTest.getVatReturnDetails(matchId, vrn, Some("fields(A,B,C)")))
+        }
 
-        result shouldBe emptyVatReturn
-
-        verify(underTest.auditHelper,
-          times(1)).auditIfApiFailure(any(), any(), any(), any(), contains("NO_VAT_RETURNS_DETAIL_FOUND"))(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiFailure(any(), any(), any(), any(), contains("NO_VAT_RETURNS_DETAIL_FOUND"))(any())
       }
 
       "successfully parse valid VatReturnDetailsResponse from IF response" in new Setup {
