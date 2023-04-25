@@ -16,13 +16,13 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
-import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED}
-import play.api.libs.json.Json
-import scalaj.http.{Http, HttpOptions}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse}
-import uk.gov.hmrc.organisationsdetailsapi.domain.matching.{OrganisationMatch, OrganisationVatMatch}
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{TaxYear, VatReturnDetailsResponse, VatReturn}
+import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{ AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub }
+import play.api.http.Status.{ BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED }
+import play.api.libs.json.{ JsObject, Json }
+import scalaj.http.{ Http, HttpOptions }
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.matching.{ OrganisationMatch, OrganisationVatMatch }
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{ TaxYear, VatReturn, VatReturnDetailsResponse }
 
 import java.util.UUID
 
@@ -30,7 +30,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
 
   val matchId: UUID = UUID.randomUUID()
   val vrn = "1234567890"
-  val scopes = List("read:organisations-details-ho-ssp", "read:organisations-details-ho-suv")
+  val scopes = List("read:organisations-details-ho-suv")
   val validMatch: OrganisationVatMatch = OrganisationVatMatch(matchId, vrn)
 
   val validVatIfResponse: IfVatReturnDetailsResponse = IfVatReturnDetailsResponse(
@@ -92,7 +92,9 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
 
       response.code mustBe OK
 
-      Json.parse(response.body) mustBe Json.toJson(validResponse)
+      Json.parse(response.body) mustBe Json.obj(
+        "_links" -> Json.obj("self" -> Json.obj("href" -> s"/organisations/details/vat?matchId=$matchId"))
+      ) ++ Json.toJson(validResponse).asInstanceOf[JsObject]
     }
   }
 
