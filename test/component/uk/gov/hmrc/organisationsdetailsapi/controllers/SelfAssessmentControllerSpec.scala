@@ -63,8 +63,6 @@ class SelfAssessmentControllerSpec extends BaseSpec {
         .option(HttpOptions.readTimeout(10000))
         .asString
 
-      println(response + "RESPONSE HERE")
-
       response.code mustBe OK
 
       Json.parse(response.body) mustBe Json.parse(

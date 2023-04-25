@@ -16,8 +16,10 @@
 
 package component.uk.gov.hmrc.organisationsdetailsapi.stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, okJson, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{ aResponse, get, okJson, urlEqualTo }
 import play.api.libs.json.Json
+
+import java.util.UUID
 
 object OrganisationsMatchingApiStub extends MockHost(9657) {
 
@@ -31,4 +33,9 @@ object OrganisationsMatchingApiStub extends MockHost(9657) {
       get(urlEqualTo(s"/match-record/$matchId"))
         .willReturn(okJson(Json.obj("matchId" -> matchId, "utr" -> utr).toString)))
 
+  def hasMatchingVatRecord(matchId: UUID, vrn: String): Unit =
+    mock.register(
+      get(urlEqualTo(s"/match-record/vat/$matchId"))
+        .willReturn(okJson(Json.obj("matchId" -> matchId.toString, "vrn" -> vrn).toString))
+    )
 }

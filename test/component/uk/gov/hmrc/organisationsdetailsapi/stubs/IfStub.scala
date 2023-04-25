@@ -64,19 +64,21 @@ object IfStub extends MockHost(8443) {
       get(urlPathEqualTo(s"/organisations/self-assessment/$utr/return/details"))
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
 
-  def searchVatReturnDetails(vrn: String, result :IfVatReturnDetailsResponse): Unit =
+  def searchVatReturnDetails(vrn: String, result: IfVatReturnDetailsResponse): Unit =
     mock.register(
-      get(urlPathEqualTo(s"/organisations/vat/$vrn/return/details"))
-        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(result).toString())))
+      get(urlPathEqualTo(s"/organisations/vat/$vrn/returns-details"))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(result).toString()))
+    )
 
   def searchVatReturnDetailsNotFound(vrn: String): Unit =
     mock.register(
-      get(urlPathEqualTo(s"/organisations/vat/$vrn/return/details"))
+      get(urlPathEqualTo(s"/organisations/vat/$vrn/returns-details"))
         .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND")))
 
   def searchVatReturnDetailsNotFoundRateLimited(vrn: String): StubMapping =
     mock.register(
-      get(urlPathEqualTo(s"/organisations/vat/$vrn/return/details"))
-        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+      get(urlPathEqualTo(s"/organisations/vat/$vrn/returns-details"))
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS))
+    )
 
 }
