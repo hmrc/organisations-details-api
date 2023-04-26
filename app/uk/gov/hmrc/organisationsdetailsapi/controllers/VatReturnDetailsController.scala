@@ -17,11 +17,11 @@
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import play.api.libs.json.Json
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{ maybeCorrelationId, validateCorrelationId }
-import uk.gov.hmrc.organisationsdetailsapi.services.{ ScopesService, VatReturnDetailsService }
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
+import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, VatReturnDetailsService}
 
 import java.util.UUID
 import javax.inject.Inject
@@ -35,10 +35,10 @@ class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
                                            implicit val auditHelper: AuditHelper,
                                            scopesService: ScopesService)
                                           (implicit ec: ExecutionContext) extends BaseApiController(cc) {
-  def vat(matchId: UUID) = Action.async { implicit request =>
+  def vat(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopesService.getEndPointScopes("vat"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
-      vatService.get(matchId, authScopes).map { vatResponse =>
+      vatService.get(matchId, "vat", authScopes).map { vatResponse =>
         val selfLink = HalLink("self", s"/organisations/details/vat?matchId=$matchId")
 
         val response = Json.toJson(state(vatResponse) ++ selfLink)
