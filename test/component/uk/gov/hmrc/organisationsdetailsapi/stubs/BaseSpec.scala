@@ -56,7 +56,7 @@ trait BaseSpec
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val correlationIdHeaderMalformed: (String, String) = "CorrelationId" -> "foo"
 
-  val validCorrelationHeader: (String, String) = ("CorrelationId", sampleCorrelationId)
+  val validCorrelationHeader: (String, String) = "CorrelationId" -> sampleCorrelationId
 
   protected def requestHeaders(
                                 acceptHeader: (String, String) = acceptHeaderVP1,
@@ -69,10 +69,6 @@ trait BaseSpec
 
   protected def requestHeadersMalformed(acceptHeader: (String, String) = acceptHeaderVP1) =
     Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader, correlationIdHeaderMalformed)
-
-  protected def invalidRequest(message: String) =
-    s"""{"code":"INVALID_REQUEST","message":"$message"}"""
-
 
   override protected def beforeEach(): Unit = {
     mocks.foreach(m => if (!m.server.isRunning) m.server.start())

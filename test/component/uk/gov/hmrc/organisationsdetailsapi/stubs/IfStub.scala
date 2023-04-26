@@ -73,7 +73,7 @@ object IfStub extends MockHost(8443) {
   def searchVatReturnDetailsNotFound(vrn: String): Unit =
     mock.register(
       get(urlPathEqualTo(s"/organisations/vat/$vrn/returns-details"))
-        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND")))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_VAT_RETURNS_DETAIL_FOUND")))
 
   def searchVatReturnDetailsNotFoundRateLimited(vrn: String): StubMapping =
     mock.register(
