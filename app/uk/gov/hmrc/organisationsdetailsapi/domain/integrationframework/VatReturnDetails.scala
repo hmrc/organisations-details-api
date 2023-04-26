@@ -23,7 +23,7 @@ case class IfVatReturn(
                         calendarMonth: Option[Int],
                         liabilityMonth: Option[Int],
                         numMonthsAssessed: Option[Int],
-                        box6Total: Option[Int],
+                        box6Total: Option[Double],
                         returnType: Option[String],
                         source: Option[String]
                       )

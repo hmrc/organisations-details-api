@@ -98,7 +98,7 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo("vat"), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Future.successful(sampleResponse))
 
       val result = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
@@ -180,7 +180,7 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo("vat"), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new TooManyRequestException("error")))
 
       val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
@@ -203,7 +203,7 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo("vat"), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new InternalServerException("error")))
 
       val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
@@ -226,7 +226,7 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo("vat"), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new IllegalArgumentException("error")))
 
       val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
@@ -248,7 +248,7 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo("vat"), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new Exception("error")))
 
       val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
