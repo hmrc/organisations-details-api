@@ -42,7 +42,7 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnDetailsResponse
 
 import scala.language.postfixOps
 
-class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers{
+class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
 
   private val stubbedCache = new CacheService(null, new CacheRepositoryConfiguration(Configuration())) {
     override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] = {
@@ -173,8 +173,8 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers{
         response.vrn.get shouldBe vrn
         response.taxYears.get.length shouldBe 1
       }
-      }
     }
   }
+}
 
 

@@ -17,13 +17,13 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import component.uk.gov.hmrc.organisationsdetailsapi.errorResponse
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{ AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub }
-import play.api.http.Status.{ BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS }
-import play.api.libs.json.{ JsObject, Json }
+import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
+import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS}
+import play.api.libs.json.{JsObject, Json}
 import scalaj.http.Http
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{ TaxYear, VatReturn, VatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{TaxYear, VatReturn, VatReturnDetailsResponse}
 
 import java.util.UUID
 import scala.util.Random
@@ -32,8 +32,8 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
 
   class Fixture {
     val matchId: UUID = UUID.randomUUID()
-    val vrn = (1 to 10).map(_ => Random.nextInt(10)).mkString("")
-    val scopes = List("read:organisations-details-ho-suv")
+    val vrn: String = (1 to 10).map(_ => Random.nextInt(10)).mkString("")
+    val scopes: List[String] = List("read:organisations-details-ho-suv")
     val validMatch: OrganisationVatMatch = OrganisationVatMatch(matchId, vrn)
 
     val validVatIfResponse: IfVatReturnDetailsResponse = IfVatReturnDetailsResponse(
@@ -58,7 +58,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       )
     )
 
-    val validResponse = VatReturnDetailsResponse(
+    val validResponse:VatReturnDetailsResponse = VatReturnDetailsResponse(
       vrn = Some(vrn),
       taxYears = Some(Seq(
         TaxYear(
