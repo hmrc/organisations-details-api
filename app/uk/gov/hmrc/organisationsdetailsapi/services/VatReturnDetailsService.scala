@@ -42,10 +42,12 @@ class VatReturnDetailsService @Inject()(
       val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq("vat"))
       cacheService.get(
         VatCacheId(matchId, cacheKey),
+        fallbackFunction = withRetry {
         ifConnector
-          .getVatReturnDetails(matchId.toString, vatMatch.vrn, Some(fieldsQuery))
+          .getVatReturnDetails(matchId.toString, vatMatch.vrn, Some(fieldsQuery))}
           .map(VatReturnDetailsResponse.fromIfResponse)
       )
+
     }
   }
 }
