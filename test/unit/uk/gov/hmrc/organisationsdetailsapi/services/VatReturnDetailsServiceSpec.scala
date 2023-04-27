@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{verify, when, times}
+import org.mockito.Mockito.{ times, verify, when }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -26,20 +26,18 @@ import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{ HeaderCarrier, NotFoundException, UpstreamErrorResponse }
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
-import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
-import uk.gov.hmrc.organisationsdetailsapi.domain.matching.{OrganisationMatch, OrganisationVatMatch}
+import uk.gov.hmrc.organisationsdetailsapi.connectors.{ IfConnector, OrganisationsMatchingConnector }
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-import scala.language.postfixOps
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse}
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnDetailsResponse
-
+import scala.concurrent.{ Await, Future }
 import scala.language.postfixOps
 
 class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
