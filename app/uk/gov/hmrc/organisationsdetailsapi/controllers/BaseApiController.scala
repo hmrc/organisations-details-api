@@ -17,22 +17,22 @@
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import play.api.libs.json._
-import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
-import play.api.{Logger, Logging}
+import play.api.mvc.{ ControllerComponents, Request, RequestHeader, Result }
+import play.api.{ Logger, Logging }
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
+import uk.gov.hmrc.auth.core.{ AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments }
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException, NotFoundException, TooManyRequestException }
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-abstract class BaseApiController(cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions {
+abstract class BaseApiController(cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions with PrivilegedAuthentication {
 
-  protected val logger: Logger = play.api.Logger(this.getClass)
+  protected override val logger: Logger = play.api.Logger(this.getClass)
 
   protected override implicit def hc(implicit rh: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequest(rh)
@@ -69,6 +69,10 @@ abstract class BaseApiController(cc: ControllerComponents) extends BackendContro
       logger.warn("Controllers IllegalArgumentException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
+    case e: NotFoundException =>
+      logger.warn("Controllers NotFoundException encountered")
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
+      ErrorNotFound.toHttpResponse
     case e: InternalServerException =>
       logger.warn("Controllers InternalServerException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)

@@ -40,15 +40,15 @@ trait IfHelpers {
     )
   }
 
-  def createValidVatReturnDetails(): VatReturnDetailsResponse = {
-    VatReturnDetailsResponse(
+  def createValidVatReturnDetails(): IfVatReturnDetailsResponse = {
+    IfVatReturnDetailsResponse(
       vrn = Some("1234567890") ,
       appDate= Some("kjhkjh"),
       taxYears = Some(Seq(
-        TaxYears(
+        IfTaxYear(
           taxYear = Some("hjgjh"),
           vatReturns = Some(Seq(
-            VatReturn(
+            IfVatReturn(
               calendarMonth = Some(1),
               liabilityMonth = Some(1),
               numMonthsAssessed = Some(1),

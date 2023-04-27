@@ -1,0 +1,19 @@
+{
+  "vrn": "1234567890",
+  "appDate": "20160425",
+  "taxYears": [
+    {
+      "taxYear": "2019",
+      "vatReturns": [
+        {
+          "calendarMonth": 1,
+          "liabilityMonth": 10,
+          "numMonthsAssessed": 5,
+          "box6Total": 6542,
+          "returnType": "Regular Return",
+          "source": "VMF"
+        }
+      ]
+    }
+  ]
+}

@@ -39,7 +39,7 @@ import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, VatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnDetailsResponse }
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{ IfHelpers, TestSupport }
 
@@ -116,7 +116,7 @@ class IfConnectorSpec
   val invalidSaReturn: SelfAssessmentReturnDetailResponse = createValidSelfAssessmentReturnDetails().copy(utr = Some(""))
   val invalidEmployeeCountRequest: EmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse: EmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
-  val vatReturn: VatReturnDetailsResponse = createValidVatReturnDetails()
+  val vatReturn: IfVatReturnDetailsResponse = createValidVatReturnDetails()
 
   val emptyEmployeeCountResponse: EmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
   val emptyCtReturn: CorporationTaxReturnDetailsResponse = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
@@ -293,7 +293,7 @@ class IfConnectorSpec
         Mockito.reset(underTest.auditHelper)
 
         stubFor(
-          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
+          get(urlPathMatching(s"/organisations/vat/$vrn/returns-details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
               """{
@@ -320,14 +320,14 @@ class IfConnectorSpec
         val jsonResponse: String = Json.prettyPrint(Json.toJson(vatReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
+          get(urlPathMatching(s"/organisations/vat/$vrn/returns-details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
-        val result: VatReturnDetailsResponse = await(
+        val result: IfVatReturnDetailsResponse = await(
           underTest.getVatReturnDetails(matchId, vrn, Some("fields(A,B,C)"))
         )
 
