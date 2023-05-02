@@ -22,7 +22,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, IfVatReturnDetailsResponse, SelfAssessmentReturnDetailResponse}
 
 
 object IfStub extends MockHost(8443) {
@@ -64,5 +64,21 @@ object IfStub extends MockHost(8443) {
       get(urlPathEqualTo(s"/organisations/self-assessment/$utr/return/details"))
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
 
+  def searchVatReturnDetails(vrn: String, result: IfVatReturnDetailsResponse): Unit =
+    mock.register(
+      get(urlPathEqualTo(s"/organisations/vat/$vrn/returns-details"))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(result).toString()))
+    )
+
+  def searchVatReturnDetailsNotFound(vrn: String): Unit =
+    mock.register(
+      get(urlPathEqualTo(s"/organisations/vat/$vrn/returns-details"))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_VAT_RETURNS_DETAIL_FOUND")))
+
+  def searchVatReturnDetailsNotFoundRateLimited(vrn: String): StubMapping =
+    mock.register(
+      get(urlPathEqualTo(s"/organisations/vat/$vrn/returns-details"))
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS))
+    )
 
 }

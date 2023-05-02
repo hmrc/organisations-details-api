@@ -18,12 +18,12 @@ package uk.gov.hmrc.organisationsdetailsapi.services
 
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.organisationsdetailsapi.connectors.{ IfConnector, OrganisationsMatchingConnector }
+import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnDetailsResponse
 
 import java.util.UUID
-import javax.inject.{ Inject, Named }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Named}
+import scala.concurrent.{ExecutionContext, Future}
 
 class VatReturnDetailsService @Inject()(
                                          scopesHelper: ScopesHelper,
@@ -42,10 +42,13 @@ class VatReturnDetailsService @Inject()(
       val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq("vat"))
       cacheService.get(
         VatCacheId(matchId, cacheKey),
-        ifConnector
-          .getVatReturnDetails(matchId.toString, vatMatch.vrn, Some(fieldsQuery))
+        fallbackFunction = withRetry {
+          ifConnector
+            .getVatReturnDetails(matchId.toString, vatMatch.vrn, Some(fieldsQuery))
+        }
           .map(VatReturnDetailsResponse.fromIfResponse)
       )
+
     }
   }
 }

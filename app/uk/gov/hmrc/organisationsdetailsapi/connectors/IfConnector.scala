@@ -71,7 +71,7 @@ class IfConnector @Inject()(
     ec: ExecutionContext): Future[IfVatReturnDetailsResponse] = {
 
     val vatTaxUrl =
-      s"$baseUrl/organisations/vat/$vrn/return/details${
+      s"$baseUrl/organisations/vat/$vrn/returns-details${
         filter.map(f => s"?fields=$f").getOrElse("")
       }"
 

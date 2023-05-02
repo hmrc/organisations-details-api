@@ -293,7 +293,7 @@ class IfConnectorSpec
         Mockito.reset(underTest.auditHelper)
 
         stubFor(
-          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
+          get(urlPathMatching(s"/organisations/vat/$vrn/returns-details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
               """{
@@ -320,7 +320,7 @@ class IfConnectorSpec
         val jsonResponse: String = Json.prettyPrint(Json.toJson(vatReturn))
 
         stubFor(
-          get(urlPathMatching(s"/organisations/vat/$vrn/return/details"))
+          get(urlPathMatching(s"/organisations/vat/$vrn/returns-details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))

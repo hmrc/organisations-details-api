@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain.vat
+package component.uk.gov.hmrc
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatReturnDetailsResponse
 
-case class VatReturnDetailsResponse(vrn: Option[String], taxYears: Option[Seq[TaxYear]])
-
-object VatReturnDetailsResponse {
-  implicit val vatReturnDetailsResponseFormat = Json.format[VatReturnDetailsResponse]
-
-  def fromIfResponse(ifData: IfVatReturnDetailsResponse): VatReturnDetailsResponse =
-    VatReturnDetailsResponse(
-      ifData.vrn,
-      ifData.taxYears.map(_.map(TaxYear.fromIfResponse))
-    )
+package object organisationsdetailsapi {
+  def errorResponse(code: String, message: String) =
+    Json.obj("code" -> code, "message" -> message)
 }
