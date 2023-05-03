@@ -365,7 +365,7 @@ paths:
         <p>This endpoint will return all available accounting periods within the 26 months before the latest accounting period end date.</p>
 
         <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
-      operationId: Getanorganisation'sVatReturndetails
+      operationId: GetAnOrganisationsVatReturnDetails
       parameters:
         - name: matchId
           in: query
@@ -552,7 +552,7 @@ components:
             - description: A list of links for possible actions related to this endpoint.
         vrn:
           type: string
-          description: The vrn.
+          description: The VAT registration number.
           example: ""
         taxYears:
           type: array
