@@ -400,7 +400,7 @@ paths:
                       _links:
                         self:
                           href: /organisations/details/vat?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
-                      vrn: "1234567890"
+                      vrn: "123456789"
                       taxYears:
                         - taxYear: "2019"
                           vatReturns:
@@ -553,7 +553,7 @@ components:
         vrn:
           type: string
           description: The VAT registration number.
-          example: ""
+          example: "123456789"
         taxYears:
           type: array
           items:
