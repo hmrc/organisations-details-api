@@ -354,6 +354,92 @@ paths:
                   value:
                     code: NOT_FOUND
       deprecated: false
+  /organisations/details/vat:
+    get:
+      tags:
+        - organisations
+      summary: Get an organisation's Vat Return details
+      description: >
+        <p>Use a matchId to get an organisation's Vat Return Details.</p>
+        
+        <p>This endpoint will return all available accounting periods within the 26 months before the latest accounting period end date.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: GetAnOrganisationsVatReturnDetails
+      parameters:
+        - name: matchId
+          in: query
+          description: A short-lived universally unique identifier (UUID), typically valid for 5 hours. Generated through the Organisations Matching API.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        - name: CorrelationId
+          in: header
+          description: >-
+            <p>A UUID, used for traceability purposes.</p>
+
+            <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The Organisation's VAT Return details.
+          headers: { }
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/VatReturnDetailsResponse'
+                  - example:
+                      _links:
+                        self:
+                          href: /organisations/details/vat?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                      vrn: "123456789"
+                      taxYears:
+                        - taxYear: "2019"
+                          vatReturns:
+                            - calendarMonth: 1
+                              liabilityMonth: 10
+                              numMonthsAssessed: 5
+                              box6Total: 6542
+                              returnType: "Regular Return"
+        '400':
+          description: ''
+          headers: { }
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse400'
+                  - example:
+                      code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: { }
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse404'
+                  - example:
+                      code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
 components:
   securitySchemes:
     userRestricted:
@@ -417,6 +503,62 @@ components:
           type: string
           description: The date the employee count was taken.
           example: 2019-03
+    VatReturn:
+      title: VatReturn
+      type: object
+      properties:
+        calendarMonth:
+          type: integer
+          description: The calendar month.
+          example: 1
+        liabilityMonth:
+          type: integer
+          description: The liability month.
+          example: 10
+        numMonthsAssessed:
+          type: integer
+          description: The number of months assessed.
+          example: 5
+        box6Total:
+          type: integer
+          description: The box6Total.
+          example: 6542
+        returnType:
+          type: string
+          description: The return type.
+          example: "Regular Return"
+    TaxYear:
+      title: TaxYear
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: "2019"
+        vatReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/VatReturn'
+          description: The vat return.
+    VatReturnDetailsResponse:
+      title: VatReturnDetailsResponse
+      required:
+        - _links
+      type: object
+      properties:
+        _links:
+          allOf:
+            - $ref: '#/components/schemas/Links'
+            - description: A list of links for possible actions related to this endpoint.
+        vrn:
+          type: string
+          description: The VAT registration number.
+          example: "123456789"
+        taxYears:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxYear'
+          description: The accounting periods.
     EmployeeCount:
       title: EmployeeCount
       required:
@@ -573,3 +715,4 @@ components:
 tags:
   - name: organisations
     description: ''
+
