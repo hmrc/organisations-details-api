@@ -358,11 +358,11 @@ paths:
     get:
       tags:
         - organisations
-      summary: Get an organisation's Vat Return details
+      summary: Get an organisation's VAT Return details
       description: >
-        <p>Use a matchId to get an organisation's Vat Return Details.</p>
+        <p>Use a matchId to get an organisation's VAT Return Details.</p>
         
-        <p>This endpoint will return all available accounting periods within the 26 months before the latest accounting period end date.</p>
+        <p>This endpoint will return all available accounting periods within the 48 months before the latest accounting period end date.</p>
 
         <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
       operationId: GetAnOrganisationsVatReturnDetails
@@ -539,7 +539,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VatReturn'
-          description: The vat return.
+          description: The VAT return.
     VatReturnDetailsResponse:
       title: VatReturnDetailsResponse
       required:
