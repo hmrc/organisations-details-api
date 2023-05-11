@@ -379,7 +379,7 @@ paths:
         - name: appDate
           in: query
           description: >-
-            <p>The date of application.</p>
+            <p>The date of application in format <code class="code--slim">yyyyMMdd</code>.</p>
             <p>Must conform to the regular expression <code class="code--slim">^[0-9]{8}$</code></p>
           required: true
           style: form
