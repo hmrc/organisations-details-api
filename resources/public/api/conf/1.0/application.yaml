@@ -378,7 +378,9 @@ paths:
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         - name: appDate
           in: query
-          description: The date of application.
+          description: >-
+            <p>The date of application.</p>
+            <p>Must conform to the regular expression <code class="code--slim">^[0-9]{8}$</code></p>
           required: true
           style: form
           explode: true
