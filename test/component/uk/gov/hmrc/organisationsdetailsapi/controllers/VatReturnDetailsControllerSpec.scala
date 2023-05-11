@@ -35,10 +35,11 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
     val vrn: String = (1 to 10).map(_ => Random.nextInt(10)).mkString("")
     val scopes: List[String] = List("read:organisations-details-ho-suv")
     val validMatch: OrganisationVatMatch = OrganisationVatMatch(matchId, vrn)
+    val appDate = "20220201"
 
     val validVatIfResponse: IfVatReturnDetailsResponse = IfVatReturnDetailsResponse(
       vrn = Some(vrn),
-      appDate = Some("20160425"),
+      appDate = Some("20220201"),
       taxYears = Some(Seq(
         IfTaxYear(
           taxYear = Some("2019"),
@@ -93,14 +94,14 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       IfStub.searchVatReturnDetails(validMatch.vrn, validVatIfResponse)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/vat?matchId=$matchId")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId&appDate=$appDate")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
       response.code mustBe OK
 
       Json.parse(response.body) mustBe Json.obj(
-        "_links" -> Json.obj("self" -> Json.obj("href" -> s"/organisations/details/vat?matchId=$matchId"))
+        "_links" -> Json.obj("self" -> Json.obj("href" -> s"/organisations/details/vat?matchId=$matchId&appDate=$appDate"))
       ) ++ Json.toJson(validResponse).asInstanceOf[JsObject]
     }
 
@@ -114,7 +115,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       OrganisationsMatchingApiStub.hasNoMatchingVatRecord(matchId, vrn)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/vat?matchId=$matchId")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId&appDate=$appDate")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
@@ -136,6 +137,22 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       response.code mustBe BAD_REQUEST
 
       Json.parse(response.body) mustBe errorResponse("INVALID_REQUEST", "matchId is required")
+    }
+
+    Scenario("a request is made with a missing appDate") {
+      val f = new Fixture
+      import f._
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .asString
+
+      response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe errorResponse("INVALID_REQUEST", "Missing parameter: appDate")
     }
 
     Scenario("a request is made with a malformed match id") {
@@ -161,7 +178,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/vat?matchId=$matchId")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId&appDate=$appDate")
         .headers(requestHeadersInvalid(acceptHeaderVP1))
         .asString
 
@@ -177,7 +194,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/vat?matchId=$matchId")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId&appDate=$appDate")
         .headers(requestHeadersMalformed(acceptHeaderVP1))
         .asString
 
@@ -199,7 +216,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       IfStub.searchVatReturnDetailsNotFound(validMatch.vrn)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/vat?matchId=$matchId")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId&appDate=$appDate")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 
@@ -223,7 +240,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       IfStub.searchVatReturnDetailsNotFoundRateLimited(validMatch.vrn)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/vat?matchId=$matchId")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId&appDate=$appDate")
         .headers(requestHeaders(acceptHeaderVP1))
         .asString
 

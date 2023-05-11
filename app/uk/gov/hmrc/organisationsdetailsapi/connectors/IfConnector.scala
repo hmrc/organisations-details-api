@@ -65,14 +65,14 @@ class IfConnector @Inject()(
     call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
   }
 
-  def getVatReturnDetails(matchId: String, vrn: String, filter: Option[String])(
+  def getVatReturnDetails(matchId: String, vrn: String, appDate: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[IfVatReturnDetailsResponse] = {
 
     val vatTaxUrl =
-      s"$baseUrl/organisations/vat/$vrn/returns-details${
-        filter.map(f => s"?fields=$f").getOrElse("")
+      s"$baseUrl/organisations/vat/$vrn/returns-details?appDate=$appDate${
+        filter.map(f => s"&fields=$f").getOrElse("")
       }"
 
     call[IfVatReturnDetailsResponse](vatTaxUrl, matchId)

@@ -62,7 +62,8 @@ class VatReturnDetailsControllerSpec
   private val mockScopesService = mock[ScopesService]
 
   private val mockVatReturnDetailsService = mock[VatReturnDetailsService]
-  val vrn = "1234567890"
+  private val vrn = "1234567890"
+  private val appDate = "20230503"
 
   private val controller = new VatReturnDetailsController(mockAuthConnector, Helpers.stubControllerComponents(),
     mockVatReturnDetailsService, mockAuditHelper, mockScopesService)
@@ -98,17 +99,17 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(appDate), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(Future.successful(sampleResponse))
 
-      val result = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
+      val result = await(controller.vat(sampleMatchIdUUID, appDate)(fakeRequest))
 
       verify(mockAuditHelper, times(1)).auditApiResponse(
         any(), any(), any(), any(), any(), any())(any())
 
       jsonBodyOf(result) shouldBe
         Json.obj(
-          "_links" -> Json.obj("self" -> Json.obj("href" -> s"/organisations/details/vat?matchId=$sampleMatchIdUUID"))
+          "_links" -> Json.obj("self" -> Json.obj("href" -> s"/organisations/details/vat?matchId=$sampleMatchIdUUID&appDate=$appDate"))
         ) ++ Json.toJson(sampleResponse).asInstanceOf[JsObject]
     }
 
@@ -117,7 +118,7 @@ class VatReturnDetailsControllerSpec
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
       when(mockScopesService.getEndPointScopes("vat")).thenReturn(Seq("test-scope"))
 
-      val response = await(controller.vat(sampleMatchIdUUID)(FakeRequest()))
+      val response = await(controller.vat(sampleMatchIdUUID, appDate)(FakeRequest()))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
         any(), any(), any(), any(), any())(any())
@@ -139,7 +140,7 @@ class VatReturnDetailsControllerSpec
       when(mockScopesService.getEndPointScopes("vat")).thenReturn(Seq("test-scope"))
 
 
-      val response = await(controller.vat(sampleMatchIdUUID)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
+      val response = await(controller.vat(sampleMatchIdUUID, appDate)(FakeRequest().withHeaders("CorrelationId" -> "Not a valid correlationId")))
 
       verify(mockAuditHelper, times(1)).auditApiFailure(
         any(), any(), any(), any(), any())(any())
@@ -161,7 +162,7 @@ class VatReturnDetailsControllerSpec
         .willReturn(failed(InsufficientEnrolments()))
 
 
-      val response = await(controller.vat(sampleMatchIdUUID)(FakeRequest()))
+      val response = await(controller.vat(sampleMatchIdUUID, appDate)(FakeRequest()))
 
       status(response) shouldBe UNAUTHORIZED
       jsonBodyOf(response) shouldBe Json.parse(
@@ -180,10 +181,10 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(appDate), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new TooManyRequestException("error")))
 
-      val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
+      val response = await(controller.vat(sampleMatchIdUUID, appDate)(fakeRequest))
 
       status(response) shouldBe TOO_MANY_REQUESTS
       jsonBodyOf(response) shouldBe Json.parse(
@@ -203,10 +204,10 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(appDate), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new InternalServerException("error")))
 
-      val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
+      val response = await(controller.vat(sampleMatchIdUUID, appDate)(fakeRequest))
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
       jsonBodyOf(response) shouldBe Json.parse(
@@ -226,10 +227,10 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(appDate), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new IllegalArgumentException("error")))
 
-      val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
+      val response = await(controller.vat(sampleMatchIdUUID, appDate)(fakeRequest))
 
       status(response) shouldBe BAD_REQUEST
       jsonBodyOf(response) shouldBe Json.parse(
@@ -248,10 +249,10 @@ class VatReturnDetailsControllerSpec
       when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
-      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(Set("test-scope")))(any(), any(), any()))
+      when(mockVatReturnDetailsService.get(refEq(sampleMatchIdUUID), eqTo(appDate), eqTo(Set("test-scope")))(any(), any(), any()))
         .thenReturn(failed(new Exception("error")))
 
-      val response = await(controller.vat(sampleMatchIdUUID)(fakeRequest))
+      val response = await(controller.vat(sampleMatchIdUUID, appDate)(fakeRequest))
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
       jsonBodyOf(response) shouldBe Json.parse(

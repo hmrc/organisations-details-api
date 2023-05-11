@@ -117,6 +117,7 @@ class IfConnectorSpec
   val invalidEmployeeCountRequest: EmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse: EmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
   val vatReturn: IfVatReturnDetailsResponse = createValidVatReturnDetails()
+  val appDate = "20230105"
 
   val emptyEmployeeCountResponse: EmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
   val emptyCtReturn: CorporationTaxReturnDetailsResponse = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
@@ -295,6 +296,7 @@ class IfConnectorSpec
         stubFor(
           get(urlPathMatching(s"/organisations/vat/$vrn/returns-details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .withQueryParam("appDate", equalTo(appDate))
             .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
               """{
                 |  "failures": [
@@ -306,7 +308,7 @@ class IfConnectorSpec
                 |}""".stripMargin)))))
 
         intercept[NotFoundException] {
-          await(underTest.getVatReturnDetails(matchId, vrn, Some("fields(A,B,C)")))
+          await(underTest.getVatReturnDetails(matchId, vrn, appDate, Some("fields(A,B,C)")))
         }
 
         verify(underTest.auditHelper, times(1))
@@ -322,13 +324,14 @@ class IfConnectorSpec
         stubFor(
           get(urlPathMatching(s"/organisations/vat/$vrn/returns-details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
+            .withQueryParam("appDate", equalTo(appDate))
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
         val result: IfVatReturnDetailsResponse = await(
-          underTest.getVatReturnDetails(matchId, vrn, Some("fields(A,B,C)"))
+          underTest.getVatReturnDetails(matchId, vrn, appDate, Some("fields(A,B,C)"))
         )
 
         result shouldBe vatReturn
