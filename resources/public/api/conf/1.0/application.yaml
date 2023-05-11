@@ -376,6 +376,16 @@ paths:
           schema:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        - name: appDate
+          in: query
+          description: The date of application.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            pattern: ^[0-9]{8}$
+            example: 20230105
         - name: CorrelationId
           in: header
           description: >-

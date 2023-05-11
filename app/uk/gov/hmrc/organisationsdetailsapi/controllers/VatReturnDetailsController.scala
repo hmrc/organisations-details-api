@@ -35,11 +35,11 @@ class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
                                            implicit val auditHelper: AuditHelper,
                                            scopesService: ScopesService)
                                           (implicit ec: ExecutionContext) extends BaseApiController(cc) {
-  def vat(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+  def vat(matchId: UUID, appDate: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopesService.getEndPointScopes("vat"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
-      vatService.get(matchId, authScopes).map { vatResponse =>
-        val selfLink = HalLink("self", s"/organisations/details/vat?matchId=$matchId")
+      vatService.get(matchId, appDate, authScopes).map { vatResponse =>
+        val selfLink = HalLink("self", s"/organisations/details/vat?matchId=$matchId&appDate=$appDate")
 
         val response = Json.toJson(state(vatResponse) ++ selfLink)
 

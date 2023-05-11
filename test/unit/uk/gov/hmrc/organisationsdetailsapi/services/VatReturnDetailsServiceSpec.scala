@@ -61,6 +61,8 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val rh: RequestHeader = FakeRequest()
 
+    val appDate = "20210203"
+
     val vatReturnDetailsService: VatReturnDetailsService =
       new VatReturnDetailsService(
         mockScopesHelper,
@@ -89,17 +91,23 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getVatReturnDetails(matchId, vrn, Some("ABC")))
+        when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
           .thenReturn(Future.successful(IfVatReturnDetailsResponse(
             Some(vrn),
-            Some("20160425"),
+            Some(appDate),
             Some(Seq(
               IfTaxYear(Some("2019"), Some(Seq(
-                IfVatReturn(Some(1), Some(10), Some(5), Some(6542), Some("Regular Return"), Some("VMF")))))
-            ))
-          )))
+                IfVatReturn(Some(1), Some(10), Some(5), Some(6542), Some("Regular Return"), Some("VMF"))
+              )
+              )
+              )
+            )
+            )
+          )
+          )
+          )
 
-        val response: VatReturnDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, scopes), 10 seconds)
+        val response: VatReturnDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
 
         response.vrn.get shouldBe vrn
         response.taxYears.get.length shouldBe 1
@@ -118,11 +126,11 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getVatReturnDetails(matchId, vrn, Some("ABC")))
+        when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
           .thenReturn(Future.failed(new Exception()))
 
         assertThrows[Exception] {
-          Await.result(vatReturnDetailsService.get(matchIdUUID, scopes), 10 seconds)
+          Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
         }
       }
 
@@ -134,7 +142,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
           .thenReturn(Future.failed(new NotFoundException("NOT_FOUND")))
 
         assertThrows[NotFoundException] {
-          Await.result(vatReturnDetailsService.get(matchIdUUID, scopes), 10 seconds)
+          Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
         }
       }
 
@@ -152,21 +160,27 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getVatReturnDetails(matchId, vrn, Some("ABC")))
+        when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
           .thenReturn(Future.failed(UpstreamErrorResponse("""Whoops!""", 503, 503)))
           .thenReturn(Future.successful(IfVatReturnDetailsResponse(
             Some(vrn),
             Some("20160425"),
             Some(Seq(
               IfTaxYear(Some("2019"), Some(Seq(
-                IfVatReturn(Some(1), Some(10), Some(5), Some(6542), Some("Regular Return"), Some("VMF")))))
-            ))
-          )))
+                IfVatReturn(Some(1), Some(10), Some(5), Some(6542), Some("Regular Return"), Some("VMF"))
+              )
+              )
+              )
+            )
+            )
+          )
+          )
+          )
 
-        val response: VatReturnDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, scopes), 10 seconds)
+        val response: VatReturnDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
 
         verify(mockIfConnector, times(2))
-          .getVatReturnDetails(any(), any(), any())(any(), any(), any())
+          .getVatReturnDetails(any(), any(), any(), any())(any(), any(), any())
 
         response.vrn.get shouldBe vrn
         response.taxYears.get.length shouldBe 1

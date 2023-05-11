@@ -35,7 +35,7 @@ class VatReturnDetailsService @Inject()(
                                        )
   extends BaseService(retryDelay, organisationsMatchingConnector) {
 
-  def get(matchId: UUID, scopes: Iterable[String])
+  def get(matchId: UUID, appDate: String, scopes: Iterable[String])
          (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[VatReturnDetailsResponse] = {
     organisationsMatchingConnector.resolveVat(matchId).flatMap { vatMatch =>
       val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, "vat")
@@ -43,8 +43,7 @@ class VatReturnDetailsService @Inject()(
       cacheService.get(
         VatCacheId(matchId, cacheKey),
         fallbackFunction = withRetry {
-          ifConnector
-            .getVatReturnDetails(matchId.toString, vatMatch.vrn, Some(fieldsQuery))
+          ifConnector.getVatReturnDetails(matchId.toString, vatMatch.vrn, appDate, Some(fieldsQuery))
         }
           .map(VatReturnDetailsResponse.fromIfResponse)
       )
