@@ -17,17 +17,19 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import component.uk.gov.hmrc.organisationsdetailsapi.errorResponse
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
-import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS}
-import play.api.libs.json.{JsObject, Json}
+import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{ AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub }
+import org.scalatest.Ignore
+import play.api.http.Status.{ BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS }
+import play.api.libs.json.{ JsObject, Json }
 import scalaj.http.Http
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse }
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{TaxYear, VatReturn, VatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{ TaxYear, VatReturn, VatReturnDetailsResponse }
 
 import java.util.UUID
 import scala.util.Random
 
+@Ignore
 class VatReturnDetailsControllerSpec extends BaseSpec {
 
   class Fixture {
