@@ -17,14 +17,14 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import component.uk.gov.hmrc.organisationsdetailsapi.errorResponse
-import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{ AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub }
+import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
 import org.scalatest.Ignore
-import play.api.http.Status.{ BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS }
-import play.api.libs.json.{ JsObject, Json }
+import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS}
+import play.api.libs.json.{JsObject, Json}
 import scalaj.http.Http
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriods, IfVatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{ TaxYear, VatReturn, VatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriods, VatReturn, VatReturnDetailsResponse}
 
 import java.util.UUID
 import scala.util.Random
@@ -37,44 +37,40 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
     val vrn: String = (1 to 10).map(_ => Random.nextInt(10)).mkString("")
     val scopes: List[String] = List("read:organisations-details-ho-suv")
     val validMatch: OrganisationVatMatch = OrganisationVatMatch(matchId, vrn)
-    val appDate = "20220201"
+    val appDate = "20160425"
+    val extractDate = "2023-04-10"
 
     val validVatIfResponse: IfVatReturnDetailsResponse = IfVatReturnDetailsResponse(
       vrn = Some(vrn),
       appDate = Some("20220201"),
-      taxYears = Some(Seq(
-        IfTaxYear(
-          taxYear = Some("2019"),
-          vatReturns = Some(Seq(
-            IfVatReturn(
-              calendarMonth = Some(1),
-              liabilityMonth = Some(10),
-              numMonthsAssessed = Some(5),
-              box6Total = Some(6542),
-              returnType = Some("Regular Return"),
-              source = Some("VMF")
-            )
-          )
-          )
+      extractDate = Some("2023-04-10"),
+      vatPeriods = Some(Seq(
+        IfVatPeriods(
+          periodKey = Some("23AG"),
+          billingPeriodFromDate = Some("2023-08-30"),
+          billingPeriodToDate = Some("2023-08-30"),
+          numDaysAssessed = Some(30),
+          box6Total = Some(6542),
+          returnType = Some("Regular Return"),
+          source = Some("VMF")
         )
       )
       )
     )
 
-    val validResponse:VatReturnDetailsResponse = VatReturnDetailsResponse(
+    val validResponse: VatReturnDetailsResponse = VatReturnDetailsResponse(
       vrn = Some(vrn),
-      taxYears = Some(Seq(
-        TaxYear(
-          taxYear = Some("2019"),
-          vatReturns = Some(Seq(
-            VatReturn(
-              calendarMonth = Some(1),
-              liabilityMonth = Some(10),
-              numMonthsAssessed = Some(5),
-              box6Total = Some(6542),
-              returnType = Some("Regular Return")
-            )
-          ))
+      appDate = Some(appDate),
+      extractDate = Some(extractDate),
+      vatPeriods = Some(Seq(
+        IfVatPeriods(
+          periodKey = Some("23AG"),
+          billingPeriodFromDate = Some("2023-08-30"),
+          billingPeriodToDate = Some("2023-08-30"),
+          numDaysAssessed = Some(30),
+          box6Total = Some(6542),
+          returnType = Some("Regular Return"),
+          source = Some("VMF")
         )
       )
       )

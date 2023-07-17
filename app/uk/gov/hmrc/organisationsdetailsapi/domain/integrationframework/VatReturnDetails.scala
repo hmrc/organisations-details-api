@@ -16,29 +16,24 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
 
-import play.api.libs.json.{ Format, Json }
+import play.api.libs.json.{Format, Json}
 
-
-case class IfVatReturn(
-                        calendarMonth: Option[Int],
-                        liabilityMonth: Option[Int],
-                        numMonthsAssessed: Option[Int],
+case class IfVatPeriods(periodKey: Option[String],
+                        billingPeriodFromDate: Option[String],
+                        billingPeriodToDate: Option[String],
+                        numDaysAssessed: Option[Int],
                         box6Total: Option[Double],
                         returnType: Option[String],
-                        source: Option[String]
-                      )
+                        source: Option[String])
 
-object IfVatReturn {
-  implicit val ifvatReturn: Format[IfVatReturn] = Json.format[IfVatReturn]
+object IfVatPeriods {
+  implicit val vatPeriods: Format[IfVatPeriods] = Json.format[IfVatPeriods]
 }
 
-case class IfTaxYear(taxYear: Option[String], vatReturns: Option[Seq[IfVatReturn]])
-
-object IfTaxYear {
-  implicit val ifTaxYear: Format[IfTaxYear] = Json.format[IfTaxYear]
-}
-
-case class IfVatReturnDetailsResponse(vrn: Option[String], appDate: Option[String], taxYears: Option[Seq[IfTaxYear]])
+case class IfVatReturnDetailsResponse(vrn: Option[String],
+                                      appDate: Option[String],
+                                      extractDate: Option[String],
+                                      vatPeriods: Option[Seq[IfVatPeriods]])
 
 object IfVatReturnDetailsResponse {
   implicit val ifVatReturnDetailsResponseFormat: Format[IfVatReturnDetailsResponse] = Json.format[IfVatReturnDetailsResponse]
