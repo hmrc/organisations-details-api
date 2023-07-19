@@ -1,5 +1,4 @@
 import sbt.Tests.{Group, SubProcess}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 TwirlKeys.templateImports := Seq.empty
 
@@ -63,7 +62,6 @@ lazy val microservice = Project(appName, file("."))
     ComponentTest / testGrouping := oneForkedJvmPerTest((ComponentTest / definedTests).value),
     ComponentTest / parallelExecution := false
   )
-  .settings(publishingSettings: _*)
   .settings(scoverageSettings: _*)
   .settings(resolvers ++= Seq(
     Resolver.jcenterRepo
