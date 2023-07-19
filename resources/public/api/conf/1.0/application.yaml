@@ -413,14 +413,16 @@ paths:
                         self:
                           href: /organisations/details/vat?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
                       vrn: "123456789"
-                      taxYears:
-                        - taxYear: "2019"
-                          vatReturns:
-                            - calendarMonth: 1
-                              liabilityMonth: 10
-                              numMonthsAssessed: 5
-                              box6Total: 6542
-                              returnType: "Regular Return"
+                      appDate: "20160425"
+                      extractDate: "2023-04-10"
+                      vatPeriods:
+                        - periodKey: "23AG"
+                          billingPeriodFromDate: "2023-08-30"
+                          billingPeriodToDate: "2023-08-30"
+                          numDaysAssessed: 30
+                          box6Total: 6542
+                          returnType: "Regular Return"
+                          source: "VMF"
         '400':
           description: ''
           headers: { }
@@ -539,19 +541,38 @@ components:
           type: string
           description: The return type.
           example: "Regular Return"
-    TaxYear:
-      title: TaxYear
+    VatPeriods:
+      title: VatPeriods
       type: object
       properties:
-        taxYear:
+        periodKey:
           type: string
-          description: The tax year.
-          example: "2019"
-        vatReturns:
-          type: array
-          items:
-            $ref: '#/components/schemas/VatReturn'
-          description: The VAT return.
+          description: The period key.
+          example: "23AG"
+        billingPeriodFromDate:
+          type: String
+          description: The ...
+          example: "2023-08-30"
+        billingPeriodToDate:
+          type: String
+          description: The ...
+          example: "2023-08-30"
+        numDaysAssessed:
+          type: String
+          description: the ...
+          example: 30
+        box6Total:
+          type: String
+          description: the ...
+          example: 6542
+        returnType:
+          type: String
+          description: the ..
+          example: "Regular Return"
+        source:
+          type: String
+          description: the ...
+          example: "VMF"
     VatReturnDetailsResponse:
       title: VatReturnDetailsResponse
       required:
@@ -566,11 +587,19 @@ components:
           type: string
           description: The VAT registration number.
           example: "123456789"
-        taxYears:
+        appDate:
+          type: String
+          description: The application date.
+          example: "20160425"
+        extractDate:
+          type: string
+          description: The extract date.
+          example: "2023-04-10"
+        vatPeriods:
           type: array
           items:
-            $ref: '#/components/schemas/TaxYear'
-          description: The accounting periods.
+            $ref: '#/components/schemas/VatPeriods'
+          description: The vat periods.
     EmployeeCount:
       title: EmployeeCount
       required:

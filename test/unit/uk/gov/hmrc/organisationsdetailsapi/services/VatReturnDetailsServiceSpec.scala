@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriods, IfVatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
@@ -98,7 +98,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
             Some(appDate),
             Some(extractionDate),
             Some(Seq(
-              IfVatPeriods(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
+              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
               )
             )
             )
@@ -166,7 +166,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
             Some(appDate),
             Some(extractionDate),
             Some(Seq(
-              IfVatPeriods(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
+              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
               )
             )
             )

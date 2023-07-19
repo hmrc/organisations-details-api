@@ -22,9 +22,9 @@ import org.scalatest.Ignore
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS}
 import play.api.libs.json.{JsObject, Json}
 import scalaj.http.Http
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriods, IfVatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriods, VatReturn, VatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriod, VatReturn, VatReturnDetailsResponse}
 
 import java.util.UUID
 import scala.util.Random
@@ -45,7 +45,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       appDate = Some("20220201"),
       extractDate = Some("2023-04-10"),
       vatPeriods = Some(Seq(
-        IfVatPeriods(
+        IfVatPeriod(
           periodKey = Some("23AG"),
           billingPeriodFromDate = Some("2023-08-30"),
           billingPeriodToDate = Some("2023-08-30"),
@@ -63,7 +63,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       appDate = Some(appDate),
       extractDate = Some(extractDate),
       vatPeriods = Some(Seq(
-        IfVatPeriods(
+        IfVatPeriod(
           periodKey = Some("23AG"),
           billingPeriodFromDate = Some("2023-08-30"),
           billingPeriodToDate = Some("2023-08-30"),

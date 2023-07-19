@@ -46,7 +46,7 @@ trait IfHelpers {
       appDate = Some("20220201"),
       extractDate = Some("2023-04-10"),
       vatPeriods = Some(Seq(
-        IfVatPeriods(
+        IfVatPeriod(
           periodKey = Some("23AG"),
           billingPeriodFromDate = Some("2023-08-30"),
           billingPeriodToDate = Some("2023-08-30"),

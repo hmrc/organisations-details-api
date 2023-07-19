@@ -32,7 +32,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.VatReturnDetailsController
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriods
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriod
 import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatReturn, VatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, VatReturnDetailsService}
 import utils.TestSupport
@@ -75,7 +75,7 @@ class VatReturnDetailsControllerSpec
     appDate = Some(appDate),
     extractDate = Some(extractDate),
     vatPeriods = Some(Seq(
-      IfVatPeriods(
+      IfVatPeriod(
         periodKey = Some("23AG"),
         billingPeriodFromDate = Some("2023-08-30"),
         billingPeriodToDate = Some("2023-08-30"),
