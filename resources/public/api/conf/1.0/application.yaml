@@ -517,30 +517,6 @@ components:
           type: string
           description: The date the employee count was taken.
           example: 2019-03
-    VatReturn:
-      title: VatReturn
-      type: object
-      properties:
-        calendarMonth:
-          type: integer
-          description: The calendar month.
-          example: 1
-        liabilityMonth:
-          type: integer
-          description: The liability month.
-          example: 10
-        numMonthsAssessed:
-          type: integer
-          description: The number of months assessed.
-          example: 5
-        box6Total:
-          type: integer
-          description: The box6Total.
-          example: 6542
-        returnType:
-          type: string
-          description: The return type.
-          example: "Regular Return"
     VatPeriods:
       title: VatPeriods
       type: object
@@ -551,27 +527,27 @@ components:
           example: "23AG"
         billingPeriodFromDate:
           type: String
-          description: The ...
+          description: The billing period from date.
           example: "2023-08-30"
         billingPeriodToDate:
           type: String
-          description: The ...
+          description: The billing period to date.
           example: "2023-08-30"
         numDaysAssessed:
           type: String
-          description: the ...
+          description: The numDaysAssessed.
           example: 30
         box6Total:
           type: String
-          description: the ...
+          description: The box6Total
           example: 6542
         returnType:
           type: String
-          description: the ..
+          description: The return type.
           example: "Regular Return"
         source:
           type: String
-          description: the ...
+          description: The source.
           example: "VMF"
     VatReturnDetailsResponse:
       title: VatReturnDetailsResponse
@@ -585,21 +561,21 @@ components:
             - description: A list of links for possible actions related to this endpoint.
         vrn:
           type: string
-          description: The VAT registration number.
+          description: VAT registration number.
           example: "123456789"
         appDate:
           type: String
-          description: The application date.
+          description: Date of the application.
           example: "20160425"
         extractDate:
           type: string
-          description: The extract date.
+          description: The latest extract loaded into the Data Tables. (Can be different to the date the API is called) Date Format is in yyyy-MM-dd (ISO 8601).
           example: "2023-04-10"
         vatPeriods:
           type: array
           items:
             $ref: '#/components/schemas/VatPeriods'
-          description: The vat periods.
+          description: Mandatory. An array of VAT period represented as objects.
     EmployeeCount:
       title: EmployeeCount
       required:
