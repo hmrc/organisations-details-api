@@ -65,7 +65,7 @@ class IfConnector @Inject()(
     call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
   }
 
-  def getVatReturnDetails(matchId: String, vrn: String, appDate: String, filter: Option[String])(
+  def getVatReturnPeriods(matchId: String, vrn: String, appDate: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[IfVatReturnDetailsResponse] = {
@@ -142,6 +142,12 @@ class IfConnector @Inject()(
       logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
       Future.failed(new InternalServerException("Something went wrong."))
+
+//    case UpstreamErrorResponse((msg, 400, _, _)) if requestUrl.contains("/vat") && msg.contains("INVALID_DATE") =>
+//      logger.warn(s"Integration Framework returned invalid appDate error")
+//      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Invalid appDate: $msg")
+//      val invalidAppDate = request.getQueryString("appDate").mkString
+//      Future.failed(new BadRequestException(s"Invalid appDate: $invalidAppDate"))
 
     case Upstream4xxResponse(msg, 429, _, _) =>
       logger.warn(s"IF Rate limited: $msg")

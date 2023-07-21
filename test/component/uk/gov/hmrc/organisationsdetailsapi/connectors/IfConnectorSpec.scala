@@ -308,7 +308,7 @@ class IfConnectorSpec
                 |}""".stripMargin)))))
 
         intercept[NotFoundException] {
-          await(underTest.getVatReturnDetails(matchId, vrn, appDate, Some("fields(A,B,C)")))
+          await(underTest.getVatReturnPeriods(matchId, vrn, appDate, Some("fields(A,B,C)")))
         }
 
         verify(underTest.auditHelper, times(1))
@@ -331,7 +331,7 @@ class IfConnectorSpec
             .willReturn(okJson(jsonResponse)))
 
         val result: IfVatReturnDetailsResponse = await(
-          underTest.getVatReturnDetails(matchId, vrn, appDate, Some("fields(A,B,C)"))
+          underTest.getVatReturnPeriods(matchId, vrn, appDate, Some("fields(A,B,C)"))
         )
 
         result shouldBe vatReturn

@@ -18,18 +18,16 @@ package component.uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import component.uk.gov.hmrc.organisationsdetailsapi.errorResponse
 import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, OrganisationsMatchingApiStub}
-import org.scalatest.Ignore
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS}
 import play.api.libs.json.{JsObject, Json}
 import scalaj.http.Http
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriod, VatReturn, VatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriod, VatReturn, VatPeriodsDetailsResponse}
 
 import java.util.UUID
 import scala.util.Random
 
-@Ignore
 class VatReturnDetailsControllerSpec extends BaseSpec {
 
   class Fixture {
@@ -42,7 +40,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
 
     val validVatIfResponse: IfVatReturnDetailsResponse = IfVatReturnDetailsResponse(
       vrn = Some(vrn),
-      appDate = Some("20220201"),
+      appDate = Some("20160425"),
       extractDate = Some("2023-04-10"),
       vatPeriods = Some(Seq(
         IfVatPeriod(
@@ -58,7 +56,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       )
     )
 
-    val validResponse: VatReturnDetailsResponse = VatReturnDetailsResponse(
+    val validResponse: VatPeriodsDetailsResponse = VatPeriodsDetailsResponse(
       vrn = Some(vrn),
       appDate = Some(appDate),
       extractDate = Some(extractDate),

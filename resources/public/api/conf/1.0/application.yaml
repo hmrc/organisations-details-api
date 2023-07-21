@@ -424,7 +424,7 @@ paths:
                           returnType: "Regular Return"
                           source: "VMF"
         '400':
-          description: ''
+          description: Bad Request
           headers: { }
           content:
             application/json:

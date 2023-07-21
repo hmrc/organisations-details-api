@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.VatReturnDetailsController
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriod
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatReturn, VatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatReturn, VatPeriodsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, VatReturnDetailsService}
 import utils.TestSupport
 
@@ -70,7 +70,7 @@ class VatReturnDetailsControllerSpec
   private val controller = new VatReturnDetailsController(mockAuthConnector, Helpers.stubControllerComponents(),
     mockVatReturnDetailsService, mockAuditHelper, mockScopesService)
 
-  private val sampleResponse = VatReturnDetailsResponse(
+  private val sampleResponse = VatPeriodsDetailsResponse(
     vrn = Some(vrn),
     appDate = Some(appDate),
     extractDate = Some(extractDate),
