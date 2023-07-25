@@ -28,6 +28,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
+import uk.gov.hmrc.http.BadRequestException
 
 class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
                                            cc: ControllerComponents,
@@ -35,9 +36,15 @@ class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
                                            implicit val auditHelper: AuditHelper,
                                            scopesService: ScopesService)
                                           (implicit ec: ExecutionContext) extends BaseApiController(cc) {
+  private def validateAppDate(appD: String) = if (appD.forall(_.isLetterOrDigit) && (appD.length == 8)) true
+  else {
+    throw new BadRequestException("AppDate is incorrect")
+  }
+
   def vat(matchId: UUID, appDate: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopesService.getEndPointScopes("vat"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
+      validateAppDate(appDate)
       vatService.get(matchId, appDate, authScopes).map { vatResponse =>
         val selfLink = HalLink("self", s"/organisations/details/vat?matchId=$matchId&appDate=$appDate")
 

@@ -23,7 +23,7 @@ import play.api.libs.json.{JsObject, Json}
 import scalaj.http.Http
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriod, VatReturn, VatPeriodsDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatPeriodsDetailsResponse
 
 import java.util.UUID
 import scala.util.Random
@@ -37,6 +37,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
     val validMatch: OrganisationVatMatch = OrganisationVatMatch(matchId, vrn)
     val appDate = "20160425"
     val extractDate = "2023-04-10"
+    val appDateIncorrect = "foo"
 
     val validVatIfResponse: IfVatReturnDetailsResponse = IfVatReturnDetailsResponse(
       vrn = Some(vrn),
@@ -149,6 +150,22 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       response.code mustBe BAD_REQUEST
 
       Json.parse(response.body) mustBe errorResponse("INVALID_REQUEST", "Missing parameter: appDate")
+    }
+
+    Scenario("a request is made with an incorrect appDate") {
+      val f = new Fixture
+      import f._
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/vat?matchId=$matchId&appDate=$appDateIncorrect")
+        .headers(requestHeaders(acceptHeaderVP1))
+        .asString
+
+      response.code mustBe BAD_REQUEST
+
+      Json.parse(response.body) mustBe errorResponse("INVALID_REQUEST", "AppDate is incorrect")
     }
 
     Scenario("a request is made with a malformed match id") {
