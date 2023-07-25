@@ -30,18 +30,12 @@ import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import uk.gov.hmrc.http.BadRequestException
 
-import scala.util.matching.Regex
-
 class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
                                            cc: ControllerComponents,
                                            vatService: VatReturnDetailsService,
                                            implicit val auditHelper: AuditHelper,
                                            scopesService: ScopesService)
                                           (implicit ec: ExecutionContext) extends BaseApiController(cc) {
-  def validateAppDate(appDate: String): Unit =
-    if (!appDate.matches("^[0-9]{8}$"))
-      throw new BadRequestException("AppDate is incorrect")
-
   def vat(matchId: UUID, appDate: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopesService.getEndPointScopes("vat"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
@@ -64,4 +58,8 @@ class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
       }
     } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/vat")
   }
+
+  def validateAppDate(appDate: String): Unit =
+    if (!appDate.matches("^[0-9]{8}$"))
+      throw new BadRequestException("AppDate is incorrect")
 }
