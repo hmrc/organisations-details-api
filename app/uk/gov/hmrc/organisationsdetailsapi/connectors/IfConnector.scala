@@ -26,8 +26,8 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.Corporati
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatReturnDetailsResponse._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatReturnsDetailsResponse._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -68,14 +68,14 @@ class IfConnector @Inject()(
   def getVatReturnDetails(matchId: String, vrn: String, appDate: String, filter: Option[String])(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[IfVatReturnDetailsResponse] = {
+    ec: ExecutionContext): Future[IfVatReturnsDetailsResponse] = {
 
     val vatTaxUrl =
       s"$baseUrl/organisations/vat/$vrn/returns-details?appDate=$appDate${
         filter.map(f => s"&fields=$f").getOrElse("")
       }"
 
-    call[IfVatReturnDetailsResponse](vatTaxUrl, matchId)
+    call[IfVatReturnsDetailsResponse](vatTaxUrl, matchId)
   }
 
   def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(
@@ -142,6 +142,12 @@ class IfConnector @Inject()(
       logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
       Future.failed(new InternalServerException("Something went wrong."))
+
+    case UpstreamErrorResponse((msg, 400, _, _)) if requestUrl.contains("/vat") && msg.contains("INVALID_DATE") =>
+      logger.warn(s"Integration Framework returned invalid appDate error")
+      val invalidAppDate = request.getQueryString("appDate").mkString
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Invalid appDate: $invalidAppDate. $msg")
+      Future.failed(new BadRequestException(s"Invalid appDate: $invalidAppDate"))
 
     case Upstream4xxResponse(msg, 429, _, _) =>
       logger.warn(s"IF Rate limited: $msg")

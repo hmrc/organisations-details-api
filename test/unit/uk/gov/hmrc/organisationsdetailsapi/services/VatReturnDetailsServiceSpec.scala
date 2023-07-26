@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{ times, verify, when }
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -26,18 +26,18 @@ import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{ HeaderCarrier, NotFoundException, UpstreamErrorResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
-import uk.gov.hmrc.organisationsdetailsapi.connectors.{ IfConnector, OrganisationsMatchingConnector }
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ IfTaxYear, IfVatReturn, IfVatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnsDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{ Await, Future }
+import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
@@ -62,6 +62,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
     implicit val rh: RequestHeader = FakeRequest()
 
     val appDate = "20210203"
+    val extractionDate = "2023-04-10"
 
     val vatReturnDetailsService: VatReturnDetailsService =
       new VatReturnDetailsService(
@@ -92,14 +93,12 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
           .thenReturn("DEF")
 
         when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
-          .thenReturn(Future.successful(IfVatReturnDetailsResponse(
+          .thenReturn(Future.successful(IfVatReturnsDetailsResponse(
             Some(vrn),
             Some(appDate),
+            Some(extractionDate),
             Some(Seq(
-              IfTaxYear(Some("2019"), Some(Seq(
-                IfVatReturn(Some(1), Some(10), Some(5), Some(6542), Some("Regular Return"), Some("VMF"))
-              )
-              )
+              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
               )
             )
             )
@@ -107,10 +106,10 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
           )
           )
 
-        val response: VatReturnDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
+        val response: VatReturnsDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
 
         response.vrn.get shouldBe vrn
-        response.taxYears.get.length shouldBe 1
+        response.vatPeriods.get.length shouldBe 1
       }
 
       "Return a failed future if IF or cache throws exception" in new Setup {
@@ -162,14 +161,12 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
 
         when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
           .thenReturn(Future.failed(UpstreamErrorResponse("""Whoops!""", 503, 503)))
-          .thenReturn(Future.successful(IfVatReturnDetailsResponse(
+          .thenReturn(Future.successful(IfVatReturnsDetailsResponse(
             Some(vrn),
-            Some("20160425"),
+            Some(appDate),
+            Some(extractionDate),
             Some(Seq(
-              IfTaxYear(Some("2019"), Some(Seq(
-                IfVatReturn(Some(1), Some(10), Some(5), Some(6542), Some("Regular Return"), Some("VMF"))
-              )
-              )
+              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
               )
             )
             )
@@ -177,13 +174,13 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
           )
           )
 
-        val response: VatReturnDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
+        val response: VatReturnsDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
 
         verify(mockIfConnector, times(2))
           .getVatReturnDetails(any(), any(), any(), any())(any(), any(), any())
 
         response.vrn.get shouldBe vrn
-        response.taxYears.get.length shouldBe 1
+        response.vatPeriods.get.length shouldBe 1
       }
     }
   }

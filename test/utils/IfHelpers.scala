@@ -40,23 +40,20 @@ trait IfHelpers {
     )
   }
 
-  def createValidVatReturnDetails(): IfVatReturnDetailsResponse = {
-    IfVatReturnDetailsResponse(
-      vrn = Some("1234567890") ,
-      appDate= Some("kjhkjh"),
-      taxYears = Some(Seq(
-        IfTaxYear(
-          taxYear = Some("hjgjh"),
-          vatReturns = Some(Seq(
-            IfVatReturn(
-              calendarMonth = Some(1),
-              liabilityMonth = Some(1),
-              numMonthsAssessed = Some(1),
-              box6Total = Some(1),
-              returnType = Some("ggg"),
-              source = Some("ggg")
-            )
-          ))
+  def createValidVatReturnDetails(): IfVatReturnsDetailsResponse = {
+    IfVatReturnsDetailsResponse(
+      vrn = Some("1234567890"),
+      appDate = Some("20220201"),
+      extractDate = Some("2023-04-10"),
+      vatPeriods = Some(Seq(
+        IfVatPeriod(
+          periodKey = Some("23AG"),
+          billingPeriodFromDate = Some("2023-08-30"),
+          billingPeriodToDate = Some("2023-08-30"),
+          numDaysAssessed = Some(30),
+          box6Total = Some(6542),
+          returnType = Some("Regular Return"),
+          source = Some("VMF")
         )
       )
       )

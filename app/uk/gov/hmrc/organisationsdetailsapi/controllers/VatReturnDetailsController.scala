@@ -28,6 +28,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
+import uk.gov.hmrc.http.BadRequestException
 
 class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
                                            cc: ControllerComponents,
@@ -38,6 +39,7 @@ class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
   def vat(matchId: UUID, appDate: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopesService.getEndPointScopes("vat"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
+      validateAppDate(appDate)
       vatService.get(matchId, appDate, authScopes).map { vatResponse =>
         val selfLink = HalLink("self", s"/organisations/details/vat?matchId=$matchId&appDate=$appDate")
 
@@ -56,4 +58,8 @@ class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
       }
     } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/vat")
   }
+
+  private def validateAppDate(appDate: String): Unit =
+    if (!appDate.matches("^[0-9]{8}$"))
+      throw new BadRequestException("AppDate is incorrect")
 }

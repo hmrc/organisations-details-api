@@ -39,7 +39,7 @@ import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnsDetailsResponse }
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{ IfHelpers, TestSupport }
 
@@ -116,7 +116,7 @@ class IfConnectorSpec
   val invalidSaReturn: SelfAssessmentReturnDetailResponse = createValidSelfAssessmentReturnDetails().copy(utr = Some(""))
   val invalidEmployeeCountRequest: EmployeeCountRequest = createValidEmployeeCountRequest().copy(startDate = "")
   val invalidEmployeeCountResponse: EmployeeCountResponse = createValidEmployeeCountResponse().copy(startDate = Some(""))
-  val vatReturn: IfVatReturnDetailsResponse = createValidVatReturnDetails()
+  val vatReturn: IfVatReturnsDetailsResponse = createValidVatReturnDetails()
   val appDate = "20230105"
 
   val emptyEmployeeCountResponse: EmployeeCountResponse = EmployeeCountResponse(None, None, Some(Seq()))
@@ -330,7 +330,7 @@ class IfConnectorSpec
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
 
-        val result: IfVatReturnDetailsResponse = await(
+        val result: IfVatReturnsDetailsResponse = await(
           underTest.getVatReturnDetails(matchId, vrn, appDate, Some("fields(A,B,C)"))
         )
 

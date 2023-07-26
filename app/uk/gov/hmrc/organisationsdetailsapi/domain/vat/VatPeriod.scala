@@ -14,27 +14,33 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework
+package uk.gov.hmrc.organisationsdetailsapi.domain.vat
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnsDetailsResponse}
 
-case class IfVatPeriod(periodKey: Option[String],
+case class VatPeriod(
+                       periodKey: Option[String],
                        billingPeriodFromDate: Option[String],
                        billingPeriodToDate: Option[String],
                        numDaysAssessed: Option[Int],
                        box6Total: Option[Double],
                        returnType: Option[String],
-                       source: Option[String])
+                       source: Option[String]
+                     )
 
-object IfVatPeriod {
-  implicit val vatPeriods: Format[IfVatPeriod] = Json.format[IfVatPeriod]
-}
+object VatPeriod {
+  implicit val vatPeriodFormat = Json.format[VatPeriod]
 
-case class IfVatReturnsDetailsResponse(vrn: Option[String],
-                                       appDate: Option[String],
-                                       extractDate: Option[String],
-                                       vatPeriods: Option[Seq[IfVatPeriod]])
-
-object IfVatReturnsDetailsResponse {
-  implicit val ifVatReturnDetailsResponseFormat: Format[IfVatReturnsDetailsResponse] = Json.format[IfVatReturnsDetailsResponse]
+  def fromIfResponse(ifData: IfVatPeriod): VatPeriod = {
+    VatPeriod(
+      ifData.periodKey,
+      ifData.billingPeriodFromDate,
+      ifData.billingPeriodToDate,
+      ifData.numDaysAssessed,
+      ifData.box6Total,
+      ifData.returnType,
+      ifData.source
+    )
+  }
 }

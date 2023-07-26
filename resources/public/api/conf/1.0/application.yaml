@@ -407,22 +407,24 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/VatReturnDetailsResponse'
+                  - $ref: '#/components/schemas/VatReturnsDetailsResponse'
                   - example:
                       _links:
                         self:
                           href: /organisations/details/vat?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
                       vrn: "123456789"
-                      taxYears:
-                        - taxYear: "2019"
-                          vatReturns:
-                            - calendarMonth: 1
-                              liabilityMonth: 10
-                              numMonthsAssessed: 5
-                              box6Total: 6542
-                              returnType: "Regular Return"
+                      appDate: "20160425"
+                      extractDate: "2023-04-10"
+                      vatPeriods:
+                        - periodKey: "23AG"
+                          billingPeriodFromDate: "2023-08-01"
+                          billingPeriodToDate: "2023-08-30"
+                          numDaysAssessed: 30
+                          box6Total: 6542.34
+                          returnType: "Regular Return"
+                          source: "VMF"
         '400':
-          description: ''
+          description: Bad Request
           headers: { }
           content:
             application/json:
@@ -515,45 +517,40 @@ components:
           type: string
           description: The date the employee count was taken.
           example: 2019-03
-    VatReturn:
-      title: VatReturn
+    VatPeriod:
+      title: VatPeriod
       type: object
       properties:
-        calendarMonth:
-          type: integer
-          description: The calendar month.
-          example: 1
-        liabilityMonth:
-          type: integer
-          description: The liability month.
-          example: 10
-        numMonthsAssessed:
-          type: integer
-          description: The number of months assessed.
-          example: 5
+        periodKey:
+          type: string
+          description: The VAT period (VMF) or Period Assignment Key (ETMP VAT) for the return being reported.
+          example: "23AG"
+        billingPeriodFromDate:
+          type: String
+          description: The date the VAT period return starts. Date Format is in yyyy-MM-dd (ISO 8601).
+          example: "2023-08-30"
+        billingPeriodToDate:
+          type: String
+          description: The date the VAT period return ends. Date Format is in yyyy-MM-dd (ISO 8601).
+          example: "2023-08-30"
+        numDaysAssessed:
+          type: String
+          description: The number of days between billingPeriodFromDate and billingPeriodToDate inclusively.
+          example: 30
         box6Total:
-          type: integer
-          description: The box6Total.
+          type: String
+          description: Box6 total outputs where the return is filed.
           example: 6542
         returnType:
-          type: string
-          description: The return type.
+          type: String
+          description: Return received date if populated then 'Regular return' else if CA issued then 'Central Assessment' else 'ICR Issued' from VMF/VLDS.
           example: "Regular Return"
-    TaxYear:
-      title: TaxYear
-      type: object
-      properties:
-        taxYear:
-          type: string
-          description: The tax year.
-          example: "2019"
-        vatReturns:
-          type: array
-          items:
-            $ref: '#/components/schemas/VatReturn'
-          description: The VAT return.
-    VatReturnDetailsResponse:
-      title: VatReturnDetailsResponse
+        source:
+          type: String
+          description: Sourced from “ADR(ETMP)” or “VMF”
+          example: "VMF"
+    VatReturnsDetailsResponse:
+      title: VatReturnsDetailsResponse
       required:
         - _links
       type: object
@@ -564,13 +561,21 @@ components:
             - description: A list of links for possible actions related to this endpoint.
         vrn:
           type: string
-          description: The VAT registration number.
+          description: The VRN that was passed in.
           example: "123456789"
-        taxYears:
+        appDate:
+          type: String
+          description: The date of the application. Date Format is in yyyyMMdd.
+          example: "20160425"
+        extractDate:
+          type: string
+          description: The latest extract loaded into the Data Tables. (Can be different to the date the API is called) Date Format is in yyyy-MM-dd (ISO 8601).
+          example: "2023-04-10"
+        vatPeriods:
           type: array
           items:
-            $ref: '#/components/schemas/TaxYear'
-          description: The accounting periods.
+            $ref: '#/components/schemas/VatPeriod'
+          description: Mandatory. An array of VAT period represented as objects.
     EmployeeCount:
       title: EmployeeCount
       required:

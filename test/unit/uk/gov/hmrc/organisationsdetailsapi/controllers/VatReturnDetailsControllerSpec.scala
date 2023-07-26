@@ -32,7 +32,8 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.VatReturnDetailsController
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{TaxYear, VatReturn, VatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriod
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriod, VatReturnsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, VatReturnDetailsService}
 import utils.TestSupport
 
@@ -63,27 +64,28 @@ class VatReturnDetailsControllerSpec
 
   private val mockVatReturnDetailsService = mock[VatReturnDetailsService]
   private val vrn = "1234567890"
-  private val appDate = "20230503"
+  private val appDate = "20160425"
+  private val extractDate = "2023-04-10"
 
   private val controller = new VatReturnDetailsController(mockAuthConnector, Helpers.stubControllerComponents(),
     mockVatReturnDetailsService, mockAuditHelper, mockScopesService)
 
-  private val sampleResponse = VatReturnDetailsResponse(
+  private val sampleResponse = VatReturnsDetailsResponse(
     vrn = Some(vrn),
-    taxYears = Some(Seq(
-      TaxYear(
-        taxYear = Some("2019"),
-        vatReturns = Some(Seq(
-          VatReturn(
-            calendarMonth = Some(1),
-            liabilityMonth = Some(10),
-            numMonthsAssessed = Some(5),
-            box6Total = Some(6542),
-            returnType = Some("Regular Return")
-          )
-        ))
+    appDate = Some(appDate),
+    extractDate = Some(extractDate),
+    vatPeriods = Some(Seq(
+      IfVatPeriod(
+        periodKey = Some("23AG"),
+        billingPeriodFromDate = Some("2023-08-30"),
+        billingPeriodToDate = Some("2023-08-30"),
+        numDaysAssessed = Some(30),
+        box6Total = Some(6542),
+        returnType = Some("Regular Return"),
+        source = Some("VMF")
       )
-    ))
+    )
+    )
   )
 
   override def beforeEach(): Unit = {

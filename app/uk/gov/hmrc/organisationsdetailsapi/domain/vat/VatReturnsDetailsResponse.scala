@@ -17,26 +17,18 @@
 package uk.gov.hmrc.organisationsdetailsapi.domain.vat
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatReturn
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatReturnsDetailsResponse, IfVatPeriod}
 
-case class VatReturn(
-                      calendarMonth: Option[Int],
-                      liabilityMonth: Option[Int],
-                      numMonthsAssessed: Option[Int],
-                      box6Total: Option[Double],
-                      returnType: Option[String]
-                    )
+case class VatReturnsDetailsResponse(vrn: Option[String], appDate: Option[String], extractDate: Option[String], vatPeriods: Option[Seq[IfVatPeriod]])
 
-object VatReturn {
-  implicit val vatReturnFormat = Json.format[VatReturn]
+object VatReturnsDetailsResponse {
+  implicit val vatReturnsDetailsResponseFormat = Json.format[VatReturnsDetailsResponse]
 
-  def fromIfResponse(ifData: IfVatReturn): VatReturn = {
-    VatReturn(
-      ifData.calendarMonth,
-      ifData.liabilityMonth,
-      ifData.numMonthsAssessed,
-      ifData.box6Total,
-      ifData.returnType
+  def fromIfResponse(ifData: IfVatReturnsDetailsResponse): VatReturnsDetailsResponse =
+    VatReturnsDetailsResponse(
+      ifData.vrn,
+      ifData.appDate,
+      ifData.extractDate,
+      ifData.vatPeriods
     )
-  }
 }
