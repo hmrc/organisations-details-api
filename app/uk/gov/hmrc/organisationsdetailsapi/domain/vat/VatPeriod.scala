@@ -17,7 +17,7 @@
 package uk.gov.hmrc.organisationsdetailsapi.domain.vat
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnsDetailsResponse}
 
 case class VatPeriod(
                        periodKey: Option[String],

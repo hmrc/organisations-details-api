@@ -43,7 +43,7 @@ class VatReturnDetailsService @Inject()(
       cacheService.get(
         VatCacheId(matchId, cacheKey),
         fallbackFunction = withRetry {
-          ifConnector.getVatReturnPeriods(matchId.toString, vatMatch.vrn, appDate, Some(fieldsQuery))
+          ifConnector.getVatReturnDetails(matchId.toString, vatMatch.vrn, appDate, Some(fieldsQuery))
         }
           .map(VatPeriodsDetailsResponse.fromIfResponse)
       )

@@ -30,11 +30,11 @@ object IfVatPeriod {
   implicit val vatPeriods: Format[IfVatPeriod] = Json.format[IfVatPeriod]
 }
 
-case class IfVatReturnDetailsResponse(vrn: Option[String],
-                                      appDate: Option[String],
-                                      extractDate: Option[String],
-                                      vatPeriods: Option[Seq[IfVatPeriod]])
+case class IfVatReturnsDetailsResponse(vrn: Option[String],
+                                       appDate: Option[String],
+                                       extractDate: Option[String],
+                                       vatPeriods: Option[Seq[IfVatPeriod]])
 
-object IfVatReturnDetailsResponse {
-  implicit val ifVatReturnDetailsResponseFormat: Format[IfVatReturnDetailsResponse] = Json.format[IfVatReturnDetailsResponse]
+object IfVatReturnsDetailsResponse {
+  implicit val ifVatReturnDetailsResponseFormat: Format[IfVatReturnsDetailsResponse] = Json.format[IfVatReturnsDetailsResponse]
 }

@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatPeriodsDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
@@ -92,8 +92,8 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getVatReturnPeriods(matchId, vrn, appDate, Some("ABC")))
-          .thenReturn(Future.successful(IfVatReturnDetailsResponse(
+        when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
+          .thenReturn(Future.successful(IfVatReturnsDetailsResponse(
             Some(vrn),
             Some(appDate),
             Some(extractionDate),
@@ -125,7 +125,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getVatReturnPeriods(matchId, vrn, appDate, Some("ABC")))
+        when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
           .thenReturn(Future.failed(new Exception()))
 
         assertThrows[Exception] {
@@ -159,9 +159,9 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getVatReturnPeriods(matchId, vrn, appDate, Some("ABC")))
+        when(mockIfConnector.getVatReturnDetails(matchId, vrn, appDate, Some("ABC")))
           .thenReturn(Future.failed(UpstreamErrorResponse("""Whoops!""", 503, 503)))
-          .thenReturn(Future.successful(IfVatReturnDetailsResponse(
+          .thenReturn(Future.successful(IfVatReturnsDetailsResponse(
             Some(vrn),
             Some(appDate),
             Some(extractionDate),
@@ -177,7 +177,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
         val response: VatPeriodsDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
 
         verify(mockIfConnector, times(2))
-          .getVatReturnPeriods(any(), any(), any(), any())(any(), any(), any())
+          .getVatReturnDetails(any(), any(), any(), any())(any(), any(), any())
 
         response.vrn.get shouldBe vrn
         response.vatPeriods.get.length shouldBe 1

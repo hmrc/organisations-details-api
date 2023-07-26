@@ -40,8 +40,8 @@ trait IfHelpers {
     )
   }
 
-  def createValidVatReturnDetails(): IfVatReturnDetailsResponse = {
-    IfVatReturnDetailsResponse(
+  def createValidVatReturnDetails(): IfVatReturnsDetailsResponse = {
+    IfVatReturnsDetailsResponse(
       vrn = Some("1234567890"),
       appDate = Some("20220201"),
       extractDate = Some("2023-04-10"),

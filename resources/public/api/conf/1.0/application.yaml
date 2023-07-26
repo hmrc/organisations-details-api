@@ -517,8 +517,8 @@ components:
           type: string
           description: The date the employee count was taken.
           example: 2019-03
-    VatPeriods:
-      title: VatPeriods
+    VatPeriod:
+      title: VatPeriod
       type: object
       properties:
         periodKey:
@@ -574,7 +574,7 @@ components:
         vatPeriods:
           type: array
           items:
-            $ref: '#/components/schemas/VatPeriods'
+            $ref: '#/components/schemas/VatPeriod'
           description: Mandatory. An array of VAT period represented as objects.
     EmployeeCount:
       title: EmployeeCount

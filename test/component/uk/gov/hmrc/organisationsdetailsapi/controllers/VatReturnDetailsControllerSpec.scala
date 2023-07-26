@@ -21,7 +21,7 @@ import component.uk.gov.hmrc.organisationsdetailsapi.stubs.{AuthStub, BaseSpec, 
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK, TOO_MANY_REQUESTS}
 import play.api.libs.json.{JsObject, Json}
 import scalaj.http.Http
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
 import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatPeriodsDetailsResponse
 
@@ -39,7 +39,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
     val extractDate = "2023-04-10"
     val appDateIncorrect = "foo"
 
-    val validVatIfResponse: IfVatReturnDetailsResponse = IfVatReturnDetailsResponse(
+    val validVatIfResponse: IfVatReturnsDetailsResponse = IfVatReturnsDetailsResponse(
       vrn = Some(vrn),
       appDate = Some("20160425"),
       extractDate = Some("2023-04-10"),

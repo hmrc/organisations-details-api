@@ -59,7 +59,7 @@ class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
     } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/vat")
   }
 
-  def validateAppDate(appDate: String): Unit =
+  private def validateAppDate(appDate: String): Unit =
     if (!appDate.matches("^[0-9]{8}$"))
       throw new BadRequestException("AppDate is incorrect")
 }
