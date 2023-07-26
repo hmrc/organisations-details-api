@@ -417,10 +417,10 @@ paths:
                       extractDate: "2023-04-10"
                       vatPeriods:
                         - periodKey: "23AG"
-                          billingPeriodFromDate: "2023-08-30"
+                          billingPeriodFromDate: "2023-08-01"
                           billingPeriodToDate: "2023-08-30"
                           numDaysAssessed: 30
-                          box6Total: 6542
+                          box6Total: 6542.34
                           returnType: "Regular Return"
                           source: "VMF"
         '400':
