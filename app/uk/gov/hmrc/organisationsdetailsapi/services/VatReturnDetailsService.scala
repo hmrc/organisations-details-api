@@ -19,7 +19,7 @@ package uk.gov.hmrc.organisationsdetailsapi.services
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatPeriodsDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnsDetailsResponse
 
 import java.util.UUID
 import javax.inject.{Inject, Named}
@@ -36,7 +36,7 @@ class VatReturnDetailsService @Inject()(
   extends BaseService(retryDelay, organisationsMatchingConnector) {
 
   def get(matchId: UUID, appDate: String, scopes: Iterable[String])
-         (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[VatPeriodsDetailsResponse] = {
+         (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[VatReturnsDetailsResponse] = {
     organisationsMatchingConnector.resolveVat(matchId).flatMap { vatMatch =>
       val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, "vat")
       val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq("vat"))
@@ -45,7 +45,7 @@ class VatReturnDetailsService @Inject()(
         fallbackFunction = withRetry {
           ifConnector.getVatReturnDetails(matchId.toString, vatMatch.vrn, appDate, Some(fieldsQuery))
         }
-          .map(VatPeriodsDetailsResponse.fromIfResponse)
+          .map(VatReturnsDetailsResponse.fromIfResponse)
       )
 
     }

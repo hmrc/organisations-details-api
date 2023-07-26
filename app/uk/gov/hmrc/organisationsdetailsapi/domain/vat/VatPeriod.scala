@@ -29,7 +29,7 @@ case class VatPeriod(
                        source: Option[String]
                      )
 
-object VatReturn {
+object VatPeriod {
   implicit val vatPeriodFormat = Json.format[VatPeriod]
 
   def fromIfResponse(ifData: IfVatPeriod): VatPeriod = {

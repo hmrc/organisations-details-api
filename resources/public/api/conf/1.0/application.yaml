@@ -407,7 +407,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/VatReturnDetailsResponse'
+                  - $ref: '#/components/schemas/VatReturnsDetailsResponse'
                   - example:
                       _links:
                         self:
@@ -549,8 +549,8 @@ components:
           type: String
           description: The source.
           example: "VMF"
-    VatReturnDetailsResponse:
-      title: VatReturnDetailsResponse
+    VatReturnsDetailsResponse:
+      title: VatReturnsDetailsResponse
       required:
         - _links
       type: object

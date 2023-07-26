@@ -31,7 +31,7 @@ import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepositoryConfiguration
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatPeriodsDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnsDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.services._
 
 import java.util.UUID
@@ -106,7 +106,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
           )
           )
 
-        val response: VatPeriodsDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
+        val response: VatReturnsDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
 
         response.vrn.get shouldBe vrn
         response.vatPeriods.get.length shouldBe 1
@@ -174,7 +174,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
           )
           )
 
-        val response: VatPeriodsDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
+        val response: VatReturnsDetailsResponse = Await.result(vatReturnDetailsService.get(matchIdUUID, appDate, scopes), 10 seconds)
 
         verify(mockIfConnector, times(2))
           .getVatReturnDetails(any(), any(), any(), any())(any(), any(), any())

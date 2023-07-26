@@ -23,7 +23,7 @@ import play.api.libs.json.{JsObject, Json}
 import scalaj.http.Http
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{IfVatPeriod, IfVatReturnsDetailsResponse}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationVatMatch
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatPeriodsDetailsResponse
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnsDetailsResponse
 
 import java.util.UUID
 import scala.util.Random
@@ -57,7 +57,7 @@ class VatReturnDetailsControllerSpec extends BaseSpec {
       )
     )
 
-    val validResponse: VatPeriodsDetailsResponse = VatPeriodsDetailsResponse(
+    val validResponse: VatReturnsDetailsResponse = VatReturnsDetailsResponse(
       vrn = Some(vrn),
       appDate = Some(appDate),
       extractDate = Some(extractDate),
