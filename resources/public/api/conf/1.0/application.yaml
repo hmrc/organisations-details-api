@@ -575,7 +575,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VatPeriod'
-          description: Mandatory. An array of VAT period represented as objects.
+          description: An array of VAT period represented as objects.
     EmployeeCount:
       title: EmployeeCount
       required:
