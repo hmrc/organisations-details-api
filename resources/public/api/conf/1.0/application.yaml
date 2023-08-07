@@ -365,6 +365,8 @@ paths:
         <p>This endpoint will return all available accounting periods within the 48 months before the latest accounting period end date.</p>
 
         <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+        
+        <p>Fields marked *Conditional Mandatory* are mandatory but are only shown if the scope of the client application is entitled to see it. </p>
       operationId: GetAnOrganisationsVatReturnDetails
       parameters:
         - name: matchId
@@ -523,19 +525,19 @@ components:
       properties:
         periodKey:
           type: string
-          description: The VAT period (VMF) or Period Assignment Key (ETMP VAT) for the return being reported.
+          description: The VAT period (VMF) or Period Assignment Key (ETMP VAT) for the return being reported. *Conditional Mandatory*
           example: "23AG"
         billingPeriodFromDate:
           type: String
-          description: The date the VAT period return starts. Date Format is in yyyy-MM-dd (ISO 8601).
+          description: The date the VAT period return starts. Date Format is in yyyy-MM-dd (ISO 8601). *Conditional Mandatory*
           example: "2023-08-30"
         billingPeriodToDate:
           type: String
-          description: The date the VAT period return ends. Date Format is in yyyy-MM-dd (ISO 8601).
+          description: The date the VAT period return ends. Date Format is in yyyy-MM-dd (ISO 8601). *Conditional Mandatory*
           example: "2023-08-30"
         numDaysAssessed:
           type: String
-          description: The number of days between billingPeriodFromDate and billingPeriodToDate inclusively.
+          description: The number of days between billingPeriodFromDate and billingPeriodToDate inclusively. *Conditional Mandatory*
           example: 30
         box6Total:
           type: String
@@ -543,11 +545,11 @@ components:
           example: 6542
         returnType:
           type: String
-          description: Return received date if populated then 'Regular return' else if CA issued then 'Central Assessment' else 'ICR Issued' from VMF/VLDS.
+          description: Return received date if populated then 'Regular return' else if CA issued then 'Central Assessment' else 'ICR Issued' from VMF/VLDS. *Conditional Mandatory*
           example: "Regular Return"
         source:
           type: String
-          description: Sourced from “ADR(ETMP)” or “VMF”
+          description: Sourced from “ADR(ETMP)” or “VMF”. *Conditional Mandatory*
           example: "VMF"
     VatReturnsDetailsResponse:
       title: VatReturnsDetailsResponse
@@ -561,21 +563,21 @@ components:
             - description: A list of links for possible actions related to this endpoint.
         vrn:
           type: string
-          description: The VRN that was passed in.
+          description: The VRN that was passed in. *Conditional Mandatory*
           example: "123456789"
         appDate:
           type: String
-          description: The date of the application. Date Format is in yyyyMMdd.
+          description: The date of the application. Date Format is in yyyyMMdd. *Conditional Mandatory*
           example: "20160425"
         extractDate:
           type: string
-          description: The latest extract loaded into the Data Tables. (Can be different to the date the API is called) Date Format is in yyyy-MM-dd (ISO 8601).
+          description: The latest extract loaded into the Data Tables. (Can be different to the date the API is called) Date Format is in yyyy-MM-dd (ISO 8601). *Conditional Mandatory*
           example: "2023-04-10"
         vatPeriods:
           type: array
           items:
             $ref: '#/components/schemas/VatPeriod'
-          description: An array of VAT period represented as objects.
+          description: An array of VAT period represented as objects. *Conditional Mandatory*
     EmployeeCount:
       title: EmployeeCount
       required:
