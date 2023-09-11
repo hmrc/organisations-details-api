@@ -44,8 +44,7 @@ class VatReturnDetailsService @Inject()(
         VatCacheId(matchId, cacheKey),
         fallbackFunction = withRetry {
           ifConnector.getVatReturnDetails(matchId.toString, vatMatch.vrn, appDate, Some(fieldsQuery))
-        }
-          .map(VatReturnsDetailsResponse.fromIfResponse)
+        }.map(VatReturnsDetailsResponse.fromIfResponse)
       )
 
     }

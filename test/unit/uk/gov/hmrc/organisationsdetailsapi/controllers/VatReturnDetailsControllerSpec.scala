@@ -82,7 +82,7 @@ class VatReturnDetailsControllerSpec
         numDaysAssessed = Some(30),
         box6Total = Some(6542),
         returnType = Some("Regular Return"),
-        source = Some("VMF")
+        source = Some("ADR(ETMP)")
       )
     )
     )

@@ -424,7 +424,7 @@ paths:
                           numDaysAssessed: 30
                           box6Total: 6542.34
                           returnType: "Regular Return"
-                          source: "VMF"
+                          source: "ADR(ETMP)"
         '400':
           description: Bad Request
           headers: { }
@@ -550,7 +550,7 @@ components:
         source:
           type: String
           description: Sourced from “ADR(ETMP)” or “VMF”. *Conditional Mandatory*
-          example: "VMF"
+          example: "ADR(ETMP)"
     VatReturnsDetailsResponse:
       title: VatReturnsDetailsResponse
       required:
