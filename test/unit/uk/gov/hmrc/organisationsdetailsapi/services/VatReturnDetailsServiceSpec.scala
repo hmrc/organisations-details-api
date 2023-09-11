@@ -98,7 +98,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
             Some(appDate),
             Some(extractionDate),
             Some(Seq(
-              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
+              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("ADR(ETMP)")
               )
             )
             )
@@ -166,7 +166,7 @@ class VatReturnDetailsServiceSpec extends AnyWordSpec with Matchers {
             Some(appDate),
             Some(extractionDate),
             Some(Seq(
-              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("VMF")
+              IfVatPeriod(Some("23AG"), Some("2023-08-30"), Some("2023-08-30"), Some(30), Some(6542), Some("Regular Return"), Some("ADR(ETMP)")
               )
             )
             )
