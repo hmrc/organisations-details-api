@@ -84,6 +84,6 @@ case class SaCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
   lazy val id: String = s"$matchId-$cacheKey-self-assessment"
 }
 
-case class VatCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
-  lazy val id: String = s"$matchId-$cacheKey-vat"
+case class VatCacheId(matchId: UUID, appDate: String, cacheKey: String) extends CacheIdBase {
+  lazy val id: String = s"$matchId-$appDate-$cacheKey-vat"
 }
