@@ -41,7 +41,7 @@ class VatReturnDetailsService @Inject()(
       val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, "vat")
       val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq("vat"))
       cacheService.get(
-        VatCacheId(matchId, cacheKey),
+        VatCacheId(matchId, appDate, cacheKey),
         fallbackFunction = withRetry {
           ifConnector.getVatReturnDetails(matchId.toString, vatMatch.vrn, appDate, Some(fieldsQuery))
         }.map(VatReturnsDetailsResponse.fromIfResponse)
