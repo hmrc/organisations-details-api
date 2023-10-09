@@ -17,18 +17,18 @@
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import play.api.libs.json._
-import play.api.mvc.{ ControllerComponents, Request, RequestHeader, Result }
-import play.api.{ Logger, Logging }
+import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
+import play.api.{Logger, Logging}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{ AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments }
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException, NotFoundException, TooManyRequestException }
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 abstract class BaseApiController(cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions with PrivilegedAuthentication {
 
@@ -104,19 +104,6 @@ trait PrivilegedAuthentication extends AuthorisedFunctions with Logging {
 
     else {
       val predicate = authPredicate(endpointScopes)
-      logger.info(
-        s"""Auth details for:
-           |matchId: $matchId
-           |endpointScopes: ${endpointScopes.toList}
-           |authPredicate: $predicate
-           |""".stripMargin)
-
-      logger.info(
-        s"""Auth details (2):
-           |matchId: $matchId
-           |authorisation: ${hc.authorization.map("****" + _.value.drop(10).dropRight(4) + "****").mkString}
-           |authorisation2: ${request.headers.get("Authorization").map("****" + _.drop(10).dropRight(4) + "****").mkString}""".stripMargin)
-
       authorised(predicate).retrieve(Retrievals.allEnrolments) {
         scopes => {
 
