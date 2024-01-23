@@ -27,18 +27,18 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, TOO_MANY_REQUESTS, UNAUTHORIZED}
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.{FakeRequest, Helpers}
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.controllers.VatReturnDetailsController
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriod
-import uk.gov.hmrc.organisationsdetailsapi.domain.vat.{VatPeriod, VatReturnsDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnsDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, VatReturnDetailsService}
 import utils.TestSupport
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.UUID
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.failed
 
