@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.services
 
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch
 
@@ -29,6 +29,6 @@ abstract class BaseService(retryDelay: Int, organisationsMatchingConnector: Orga
     organisationsMatchingConnector.resolve(matchId)
 
   protected def withRetry[T](body: => Future[T])(implicit ec: ExecutionContext): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
+    case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 }
