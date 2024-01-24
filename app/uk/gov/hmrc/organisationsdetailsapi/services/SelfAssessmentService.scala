@@ -17,7 +17,7 @@
 package uk.gov.hmrc.organisationsdetailsapi.services
 
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.{IfConnector, OrganisationsMatchingConnector}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
 import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.SelfAssessmentResponse
@@ -55,6 +55,6 @@ class SelfAssessmentService @Inject()(
   }
 
   private def withRetry[T](body: => Future[T])(implicit ec: ExecutionContext): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
+    case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 }

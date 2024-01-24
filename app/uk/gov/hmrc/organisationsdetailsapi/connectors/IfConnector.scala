@@ -138,23 +138,23 @@ class IfConnector @Inject()(
         s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
 
-    case Upstream5xxResponse(msg, code, _, _) =>
-      logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
+    case UpstreamErrorResponse.Upstream5xxResponse(m) =>
+      logger.warn(s"Integration Framework Upstream5xxResponse encountered: ${m.statusCode}")
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: ${m.message}")
       Future.failed(new InternalServerException("Something went wrong."))
 
-    case UpstreamErrorResponse((msg, 400, _, _)) if requestUrl.contains("/vat") && msg.contains("INVALID_DATE") =>
+    case UpstreamErrorResponse(msg, 400, _, _) if requestUrl.contains("/vat") && msg.contains("INVALID_DATE") =>
       logger.warn(s"Integration Framework returned invalid appDate error")
       val invalidAppDate = request.getQueryString("appDate").mkString
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Invalid appDate: $invalidAppDate. $msg")
       Future.failed(new BadRequestException(s"Invalid appDate: $invalidAppDate"))
 
-    case Upstream4xxResponse(msg, 429, _, _) =>
+    case UpstreamErrorResponse(msg, 429, _, _) =>
       logger.warn(s"IF Rate limited: $msg")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
 
-    case Upstream4xxResponse(msg, 404, _, _) =>
+    case UpstreamErrorResponse(msg, 404, _, _) =>
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       if (msg.contains("NO_DATA_FOUND") || msg.contains("NO_VAT_RETURNS_DETAIL_FOUND")) {
         noDataFound(requestUrl)
@@ -163,7 +163,7 @@ class IfConnector @Inject()(
         Future.failed(new InternalServerException("Something went wrong."))
       }
 
-    case Upstream4xxResponse(msg, code, _, _) =>
+    case UpstreamErrorResponse(msg, code, _, _) =>
       logger.warn(s"Integration Framework Upstream4xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       Future.failed(new InternalServerException("Something went wrong."))
