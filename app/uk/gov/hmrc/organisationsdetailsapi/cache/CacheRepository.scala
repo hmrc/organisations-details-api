@@ -31,6 +31,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+import uk.gov.hmrc.play.http.logging.Mdc.preservingMdc
+
 @Singleton
 class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
                                 configuration: Configuration,
@@ -72,22 +74,26 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
       )
     )
 
-    collection.replaceOne(
-      Filters.equal("id", toBson(id)), entry, ReplaceOptions().upsert(true)
-    ).toFuture()
+    preservingMdc {
+      collection.replaceOne(
+        Filters.equal("id", toBson(id)), entry, ReplaceOptions().upsert(true)
+      ).toFuture()
+    }
   }
 
   def fetchAndGetEntry[T](id: String)(
     implicit formats: Format[T]): Future[Option[T]] = {
     val decryptor = new JsonDecryptor[T]()
 
-    collection
-      .find(Filters.equal("id", toBson(id)))
-      .headOption()
-      .map {
-        case Some(entry) => decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
-        case None => None
-      }
+    preservingMdc {
+      collection
+        .find(Filters.equal("id", toBson(id)))
+        .headOption()
+        .map {
+          case Some(entry) => decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
+          case None => None
+        }
+    }
   }
 }
 
