@@ -26,15 +26,13 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CacheService @Inject()(
-                              cachingClient: CacheRepository,
-                              conf: CacheRepositoryConfiguration)(implicit ec: ExecutionContext) {
+class CacheService @Inject() (cachingClient: CacheRepository, conf: CacheRepositoryConfiguration)(implicit
+  ec: ExecutionContext
+) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: CacheIdBase,
-                     fallbackFunction: => Future[T]): Future[T] = {
-
+  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
     if (cacheEnabled)
       cachingClient.fetchAndGetEntry[T](cacheId.id) flatMap {
         case Some(value) =>
@@ -44,17 +42,14 @@ class CacheService @Inject()(
             cachingClient.cache(cacheId.id, result)
             result
           }
-      } else {
+      }
+    else {
       fallbackFunction
     }
 
-  }
-
-  def fetch[T: Format](matchId: UUID): Future[Option[T]] = {
+  def fetch[T: Format](matchId: UUID): Future[Option[T]] =
     cachingClient.fetchAndGetEntry(matchId.toString)
-  }
 }
-
 
 trait CacheIdBase {
   val id: String
@@ -70,11 +65,12 @@ case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheI
 }
 
 case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, employeeCountRequest: NumberOfEmployeesRequest)
-  extends CacheIdBase {
+    extends CacheIdBase {
 
   lazy val from: String = employeeCountRequest.fromDate
   lazy val to: String = employeeCountRequest.toDate
-  lazy val payeReferences: String = employeeCountRequest.payeReference.map(entry => entry.schemeReference + entry.districtNumber).reduce(_ + _)
+  lazy val payeReferences: String =
+    employeeCountRequest.payeReference.map(entry => entry.schemeReference + entry.districtNumber).reduce(_ + _)
   lazy val encoded: String = encodeVal(payeReferences)
 
   lazy val id: String = s"$matchId-$from-$to-$encoded-$cacheKey-number-of-employees"

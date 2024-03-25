@@ -27,7 +27,7 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class OrganisationsMatchingConnector @Inject()(httpClient: HttpClient, servicesConfig: ServicesConfig) {
+class OrganisationsMatchingConnector @Inject() (httpClient: HttpClient, servicesConfig: ServicesConfig) {
 
   private val serviceUrl = servicesConfig.baseUrl("organisations-matching-api")
 

@@ -24,14 +24,21 @@ import scala.util.matching.Regex
 
 case class TaxYear(taxyear: Option[String], businessSalesTurnover: Option[Double])
 
-case class SelfAssessmentReturnDetailResponse(utr: Option[String], startDate: Option[String], taxPayerType: Option[String], taxSolvencyStatus: Option[String], taxYears: Option[Seq[TaxYear]])
+case class SelfAssessmentReturnDetailResponse(
+  utr: Option[String],
+  startDate: Option[String],
+  taxPayerType: Option[String],
+  taxSolvencyStatus: Option[String],
+  taxYears: Option[Seq[TaxYear]]
+)
 
 object SelfAssessmentReturnDetail {
 
   val taxYearPattern: Regex = "^20[0-9]{2}$".r
   val utrPattern: Regex = "^[0-9]{10}$".r
   val taxPayerTypePattern: Regex = "^[A-Z][a-zA-Z]{3,24}$".r
-  val datePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
+  val datePattern: Regex =
+    "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
 
   def taxSolvencyStatusValidator(value: String): Boolean = value == "S" || value == "I"
 
@@ -39,11 +46,11 @@ object SelfAssessmentReturnDetail {
     (
       (JsPath \ "taxyear").readNullable[String](pattern(taxYearPattern, "Tax Year is in the incorrect Format")) and
         (JsPath \ "businessSalesTurnover").readNullable[Double]
-      )(TaxYear.apply _),
+    )(TaxYear.apply _),
     (
       (JsPath \ "taxyear").writeNullable[String] and
         (JsPath \ "businessSalesTurnover").writeNullable[Double]
-      )(unlift(TaxYear.unapply))
+    )(unlift(TaxYear.unapply))
   )
 
   implicit val selfAssessmentResponseFormat: Format[SelfAssessmentReturnDetailResponse] = Format(
@@ -53,13 +60,13 @@ object SelfAssessmentReturnDetail {
         (JsPath \ "taxpayerType").readNullable[String](pattern(taxPayerTypePattern, "Invalid taxpayer type")) and
         (JsPath \ "taxSolvencyStatus").readNullable[String](verifying(taxSolvencyStatusValidator)) and
         (JsPath \ "taxyears").readNullable[Seq[TaxYear]]
-      )(SelfAssessmentReturnDetailResponse.apply _),
+    )(SelfAssessmentReturnDetailResponse.apply _),
     (
       (JsPath \ "utr").writeNullable[String] and
         (JsPath \ "startDate").writeNullable[String] and
         (JsPath \ "taxpayerType").writeNullable[String] and
         (JsPath \ "taxSolvencyStatus").writeNullable[String] and
         (JsPath \ "taxyears").writeNullable[Seq[TaxYear]]
-      )(unlift(SelfAssessmentReturnDetailResponse.unapply))
+    )(unlift(SelfAssessmentReturnDetailResponse.unapply))
   )
 }

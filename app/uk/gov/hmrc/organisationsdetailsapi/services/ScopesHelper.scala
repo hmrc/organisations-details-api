@@ -24,68 +24,75 @@ import uk.gov.hmrc.organisationsdetailsapi.config.EndpointConfig
 import java.util.UUID
 import javax.inject.Inject
 
-class ScopesHelper @Inject()(scopesService: ScopesService) {
+class ScopesHelper @Inject() (scopesService: ScopesService) {
 
-  /**
-   * @param scopes      The list of scopes associated with the user
-   * @param endpoints   The endpoints for which to construct the query string
-   * @param employerRef The emploher reference
-   * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
-   */
-  def getQueryStringWithParameterisedFilters(scopes: Iterable[String],
-                                             endpoints: List[String],
-                                             employerRef: String): String = {
+  /** @param scopes
+    *   The list of scopes associated with the user
+    * @param endpoints
+    *   The endpoints for which to construct the query string
+    * @param employerRef
+    *   The emploher reference
+    * @return
+    *   A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
+    */
+  def getQueryStringWithParameterisedFilters(
+    scopes: Iterable[String],
+    endpoints: List[String],
+    employerRef: String
+  ): String = {
     val queryString = getQueryStringFor(scopes, endpoints)
     queryString.replace("<employerRef>", employerRef)
   }
 
-  /**
-   * @param scopes      The list of scopes associated with the user
-   * @param endpoint    The endpoint for which to construct the query string
-   * @param employerRef The employer reference
-   * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
-   */
-  def getQueryStringWithParameterisedFilters(scopes: Iterable[String],
-                                             endpoint: String,
-                                             employerRef: String): String =
+  /** @param scopes
+    *   The list of scopes associated with the user
+    * @param endpoint
+    *   The endpoint for which to construct the query string
+    * @param employerRef
+    *   The employer reference
+    * @return
+    *   A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
+    */
+  def getQueryStringWithParameterisedFilters(scopes: Iterable[String], endpoint: String, employerRef: String): String =
     getQueryStringFor(scopes, endpoint).replace("<employerRef>", employerRef)
 
-
-  /**
-   * @param scopes   The list of scopes associated with the user
-   * @param endpoint The endpoint for which to construct the query string
-   * @return A google fields-style query string with the fields determined by the provided endpoint and scopes
-   */
+  /** @param scopes
+    *   The list of scopes associated with the user
+    * @param endpoint
+    *   The endpoint for which to construct the query string
+    * @return
+    *   A google fields-style query string with the fields determined by the provided endpoint and scopes
+    */
   def getQueryStringFor(scopes: Iterable[String], endpoint: String): String = {
     val filters = scopesService.getValidFilters(scopes, List(endpoint))
-    s"${PathTree(scopesService.getIfDataPaths(scopes, List(endpoint))).toString}${
-      if (filters.nonEmpty)
+    s"${PathTree(scopesService.getIfDataPaths(scopes, List(endpoint))).toString}${if (filters.nonEmpty)
         s"&filter=${filters.mkString("&filter=")}"
-      else ""
-    }"
+      else ""}"
   }
 
-  /**
-   * @param scopes    The list of scopes associated with the user
-   * @param endpoints The endpoints for which to construct the query string
-   * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
-   */
-  def getQueryStringFor(scopes: Iterable[String],
-                        endpoints: List[String]): String = {
+  /** @param scopes
+    *   The list of scopes associated with the user
+    * @param endpoints
+    *   The endpoints for which to construct the query string
+    * @return
+    *   A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
+    */
+  def getQueryStringFor(scopes: Iterable[String], endpoints: List[String]): String = {
     val filters = scopesService.getValidFilters(scopes, endpoints)
-    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${
-      if (filters.nonEmpty)
+    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${if (filters.nonEmpty)
         s"&filter=${filters.mkString("&filter=")}"
-      else ""
-    }"
+      else ""}"
   }
 
-  /**
-   * @param endpoint The endpoint that the user has called
-   * @param scopes   The list of scopes associated with the user
-   * @param data     The data to be returned from the endpoint
-   * @return A HalResource containing data, and a list of valid links determined by the provided scopes
-   */
+  /** @param endpoint
+    *   The endpoint that the user has called
+    * @param scopes
+    *   The list of scopes associated with the user
+    * @param data
+    *   The data to be returned from the endpoint
+    * @return
+    *   A HalResource containing data, and a list of valid links determined by the provided scopes
+    */
   def getHalResponse(endpoint: String, scopes: List[String], data: Option[JsValue]): HalResource = {
 
     val internalEndpoints = scopesService
@@ -104,11 +111,13 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     state(data) ++ linksSeq(hateoasLinks)
   }
 
-  def getHalLinks(matchId: UUID,
-                  excludeList: Option[List[String]],
-                  scopes: Iterable[String],
-                  allowedList: Option[List[String]],
-                  excludeInternal: Boolean = false): HalResource = {
+  def getHalLinks(
+    matchId: UUID,
+    excludeList: Option[List[String]],
+    scopes: Iterable[String],
+    allowedList: Option[List[String]],
+    excludeInternal: Boolean = false
+  ): HalResource = {
 
     val links = if (excludeInternal) {
       getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getExternalEndpoints(scopes))
@@ -121,20 +130,22 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
   }
 
   private def getAllHalLinks(
-                              matchId: UUID,
-                              excludeList: Option[List[String]],
-                              allowedList: Option[List[String]],
-                              getEndpoints: () => Iterable[EndpointConfig]): Seq[HalLink] =
-
+    matchId: UUID,
+    excludeList: Option[List[String]],
+    allowedList: Option[List[String]],
+    getEndpoints: () => Iterable[EndpointConfig]
+  ): Seq[HalLink] =
     getEndpoints()
       .filter(c =>
         !excludeList.getOrElse(List()).contains(c.name) &&
-          allowedList.getOrElse(getEndpoints().map(e => e.name).toList).contains(c.name))
+          allowedList.getOrElse(getEndpoints().map(e => e.name).toList).contains(c.name)
+      )
       .map(endpoint =>
         HalLink(
           rel = endpoint.name,
           href = endpoint.link.replace("<matchId>", s"$matchId"),
-          title = Some(endpoint.title)))
+          title = Some(endpoint.title)
+        )
+      )
       .toSeq
 }
-

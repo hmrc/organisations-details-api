@@ -27,19 +27,22 @@ case class PayeReference(districtNumber: String, schemeReference: String);
 case class NumberOfEmployeesRequest(fromDate: String, toDate: String, payeReference: Seq[PayeReference])
 
 object NumberOfEmployeesRequest {
-  val datePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
+  val datePattern: Regex =
+    "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
   val districtPattern: Regex = "^[0-9]{3}$".r
   val schemeRefPattern: Regex = "^[a-zA-Z0-9]{1,10}$".r
 
   implicit val referencesReads: Format[PayeReference] = Format[PayeReference](
     (
-      (JsPath \ "districtNumber").read[String](pattern(districtPattern, "District number is in the incorrect format")) and
-        (JsPath \ "schemeReference").read[String](pattern(schemeRefPattern, "Scheme reference is in the incorrect format"))
-      )(PayeReference.apply _),
+      (JsPath \ "districtNumber")
+        .read[String](pattern(districtPattern, "District number is in the incorrect format")) and
+        (JsPath \ "schemeReference")
+          .read[String](pattern(schemeRefPattern, "Scheme reference is in the incorrect format"))
+    )(PayeReference.apply _),
     (
       (JsPath \ "districtNumber").write[String] and
         (JsPath \ "schemeReference").write[String]
-      )(unlift(PayeReference.unapply))
+    )(unlift(PayeReference.unapply))
   )
 
   implicit val numberOfEmployeesRequestReads: Format[NumberOfEmployeesRequest] = Format[NumberOfEmployeesRequest](
@@ -47,11 +50,11 @@ object NumberOfEmployeesRequest {
       (JsPath \ "fromDate").read[String](pattern(datePattern, "fromDate is in the incorrect format")) and
         (JsPath \ "toDate").read[String](pattern(datePattern, "endDate is in the incorrect format")) and
         (JsPath \ "payeReference").read[Seq[PayeReference]]
-      )(NumberOfEmployeesRequest.apply _),
+    )(NumberOfEmployeesRequest.apply _),
     (
       (JsPath \ "fromDate").write[String] and
         (JsPath \ "toDate").write[String] and
         (JsPath \ "payeReference").write[Seq[PayeReference]]
-      )(unlift(NumberOfEmployeesRequest.unapply))
+    )(unlift(NumberOfEmployeesRequest.unapply))
   )
 }

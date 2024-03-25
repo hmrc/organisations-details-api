@@ -34,17 +34,16 @@ object ErrorResponses {
   case object ErrorNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource can not be found")
 
   case class ErrorInternalServer(errorMessage: String = "Failed to process request")
-    extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", message = errorMessage)
+      extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", message = errorMessage)
 
   case object ErrorTooManyRequests extends ErrorResponse(TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", "Rate limit exceeded")
 
   case class ErrorUnauthorized(errorMessage: String) extends ErrorResponse(UNAUTHORIZED, "UNAUTHORIZED", errorMessage)
 
   case class ErrorInvalidRequest(errorMessage: String)
-    extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
+      extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
 
-  case class ErrorPayloadRequired()
-    extends ErrorResponse(BAD_REQUEST, "PAYLOAD_REQUIRED", "Payload is required")
+  case class ErrorPayloadRequired() extends ErrorResponse(BAD_REQUEST, "PAYLOAD_REQUIRED", "Payload is required")
 
   class ValidationException(message: String) extends RuntimeException(message)
 

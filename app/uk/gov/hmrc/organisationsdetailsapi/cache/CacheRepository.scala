@@ -34,32 +34,28 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class SensitiveT[T](override val decryptedValue: T) extends Sensitive[T]
 @Singleton
-class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
-                                configuration: Configuration,
-                                mongo: MongoComponent)(implicit ec: ExecutionContext
-                               ) extends PlayMongoRepository[Entry](
-  mongoComponent = mongo,
-  collectionName = cacheConfig.collName,
-  domainFormat = Entry.format,
-  replaceIndexes = true,
-  indexes = Seq(
-    IndexModel(
-      ascending("id"),
-      IndexOptions().name("_id").
-        unique(true).
-        background(false).
-        sparse(true)),
-    IndexModel(
-      ascending("modifiedDetails.lastUpdated"),
-      IndexOptions().name("lastUpdatedIndex").
-        background(false).
-        expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
-) {
+class CacheRepository @Inject() (
+  val cacheConfig: CacheRepositoryConfiguration,
+  configuration: Configuration,
+  mongo: MongoComponent
+)(implicit ec: ExecutionContext)
+    extends PlayMongoRepository[Entry](
+      mongoComponent = mongo,
+      collectionName = cacheConfig.collName,
+      domainFormat = Entry.format,
+      replaceIndexes = true,
+      indexes = Seq(
+        IndexModel(ascending("id"), IndexOptions().name("_id").unique(true).background(false).sparse(true)),
+        IndexModel(
+          ascending("modifiedDetails.lastUpdated"),
+          IndexOptions().name("lastUpdatedIndex").background(false).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)
+        )
+      )
+    ) {
 
   implicit lazy val crypto: Encrypter with Decrypter = new ApplicationCrypto(configuration.underlying).JsonCrypto
 
-  def cache[T](id: String, value: T)(
-    implicit formats: Format[T]) = {
+  def cache[T](id: String, value: T)(implicit formats: Format[T]) = {
 
     val jsonEncryptor = JsonEncryption.sensitiveEncrypter[T, SensitiveT[T]]
     val encryptedValue: JsValue = jsonEncryptor.writes(SensitiveT[T](value))
@@ -74,14 +70,17 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
     )
 
     preservingMdc {
-      collection.replaceOne(
-        Filters.equal("id", toBson(id)), entry, ReplaceOptions().upsert(true)
-      ).toFuture()
+      collection
+        .replaceOne(
+          Filters.equal("id", toBson(id)),
+          entry,
+          ReplaceOptions().upsert(true)
+        )
+        .toFuture()
     }
   }
 
-  def fetchAndGetEntry[T](id: String)(
-    implicit formats: Format[T]): Future[Option[T]] = {
+  def fetchAndGetEntry[T](id: String)(implicit formats: Format[T]): Future[Option[T]] = {
     val decryptor = JsonEncryption.sensitiveDecrypter[T, SensitiveT[T]](SensitiveT.apply)
 
     preservingMdc {
@@ -90,14 +89,14 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
         .headOption()
         .map {
           case Some(entry) => decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
-          case None => None
+          case None        => None
         }
     }
   }
 }
 
 @Singleton
-class CacheRepositoryConfiguration @Inject()(configuration: Configuration) {
+class CacheRepositoryConfiguration @Inject() (configuration: Configuration) {
 
   lazy val cacheEnabled = configuration
     .getOptional[Boolean](

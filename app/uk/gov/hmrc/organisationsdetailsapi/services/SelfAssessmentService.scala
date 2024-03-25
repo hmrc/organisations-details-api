@@ -26,33 +26,36 @@ import java.util.UUID
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class SelfAssessmentService @Inject()(
-                                       scopesHelper: ScopesHelper,
-                                       scopesService: ScopesService,
-                                       cacheService: CacheService,
-                                       ifConnector: IfConnector,
-                                       organisationsMatchingConnector: OrganisationsMatchingConnector,
-                                       @Named("retryDelay") retryDelay: Int
-                                     ) {
+class SelfAssessmentService @Inject() (
+  scopesHelper: ScopesHelper,
+  scopesService: ScopesService,
+  cacheService: CacheService,
+  ifConnector: IfConnector,
+  organisationsMatchingConnector: OrganisationsMatchingConnector,
+  @Named("retryDelay") retryDelay: Int
+) {
 
-  def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[SelfAssessmentResponse] = {
-    organisationsMatchingConnector.resolve(matchId).flatMap {
-      organisationMatch =>
-        val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, endpoint)
-        val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint))
-        cacheService
-          .get(
-            cacheId = SaCacheId(matchId, cacheKey),
-            fallbackFunction = withRetry {
-              ifConnector.getSaReturnDetails(
-                matchId.toString,
-                organisationMatch.utr,
-                Some(fieldsQuery)
-              )
-            }
-          ).map(SelfAssessmentResponse.create)
+  def get(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext
+  ): Future[SelfAssessmentResponse] =
+    organisationsMatchingConnector.resolve(matchId).flatMap { organisationMatch =>
+      val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, endpoint)
+      val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint))
+      cacheService
+        .get(
+          cacheId = SaCacheId(matchId, cacheKey),
+          fallbackFunction = withRetry {
+            ifConnector.getSaReturnDetails(
+              matchId.toString,
+              organisationMatch.utr,
+              Some(fieldsQuery)
+            )
+          }
+        )
+        .map(SelfAssessmentResponse.create)
     }
-  }
 
   private def withRetry[T](body: => Future[T])(implicit ec: ExecutionContext): Future[T] = body recoverWith {
     case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body

@@ -27,7 +27,7 @@ object NumberOfEmployeesResponse {
 
     val payeRef = (payeReferenceAndCount.payeReference, payeReferenceAndCount.districtNumber) match {
       case (Some(payeRef), Some(districtNum)) => Some(s"$districtNum/$payeRef")
-      case (_, _) => None
+      case (_, _)                             => None
     }
 
     NumberOfEmployeesResponse(
@@ -40,5 +40,5 @@ object NumberOfEmployeesResponse {
     (
       (JsPath \ "payeReference").writeNullable[String] and
         (JsPath \ "counts").writeNullable[Seq[NumberOfEmployeeCounts]]
-      )(unlift(NumberOfEmployeesResponse.unapply))
+    )(unlift(NumberOfEmployeesResponse.unapply))
 }

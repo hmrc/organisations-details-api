@@ -30,31 +30,37 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class SelfAssessmentController @Inject()(val authConnector: AuthConnector,
-                                         cc: ControllerComponents,
-                                         selfAssessmentService: SelfAssessmentService,
-                                         implicit val auditHelper: AuditHelper,
-                                         scopesService: ScopesService)
-                                        (implicit ec: ExecutionContext) extends BaseApiController(cc) with PrivilegedAuthentication {
+class SelfAssessmentController @Inject() (
+  val authConnector: AuthConnector,
+  cc: ControllerComponents,
+  selfAssessmentService: SelfAssessmentService,
+  implicit val auditHelper: AuditHelper,
+  scopesService: ScopesService
+)(implicit ec: ExecutionContext)
+    extends BaseApiController(cc) with PrivilegedAuthentication {
 
   override val logger: Logger = Logger(classOf[SelfAssessmentController].getName)
 
-  def selfAssessment(matchId: UUID): Action[AnyContent] = Action.async {
-    implicit request =>
-      authenticate(scopesService.getEndPointScopes("self-assessment"), matchId.toString) { authScopes =>
+  def selfAssessment(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    authenticate(scopesService.getEndPointScopes("self-assessment"), matchId.toString) { authScopes =>
+      val correlationId = validateCorrelationId(request)
 
-        val correlationId = validateCorrelationId(request)
+      selfAssessmentService.get(matchId, "self-assessment", authScopes).map { selfAssessment =>
+        val selfLink = HalLink("self", s"/organisations/details/self-assessment?matchId=$matchId")
 
-        selfAssessmentService.get(matchId, "self-assessment", authScopes).map { selfAssessment =>
-          val selfLink = HalLink("self", s"/organisations/details/self-assessment?matchId=$matchId")
+        val response = Json.toJson(state(selfAssessment) ++ selfLink)
 
-          val response = Json.toJson(state(selfAssessment) ++ selfLink)
+        auditHelper.auditApiResponse(
+          correlationId.toString,
+          matchId.toString,
+          authScopes.mkString(","),
+          request,
+          selfLink.toString,
+          Some(Json.toJson(selfAssessment))
+        )
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(selfAssessment)))
-
-          Ok(response)
-        }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/self-assessment")
+        Ok(response)
+      }
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/self-assessment")
   }
 }

@@ -25,7 +25,7 @@ class MatchUuidQueryStringBinder extends QueryStringBindable[UUID] {
 
   private val parameterName = "matchId"
 
-  override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, UUID]] = {
+  override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, UUID]] =
     Option(Try(params.get(parameterName) flatMap (_.headOption) match {
       case Some(parameterValue) =>
         if (UuidValidator.validate(parameterValue)) {
@@ -35,7 +35,6 @@ class MatchUuidQueryStringBinder extends QueryStringBindable[UUID] {
         }
       case None => Left(s"$parameterName is required")
     }) getOrElse Left(s"$parameterName format is invalid"))
-  }
 
   override def unbind(key: String, uuid: UUID) = s"$key=${uuid.toString}"
 
