@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.audit.models
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsValue, Json, OFormat}
 
 case class ApiResponseEventModelWithResponse(deviceId: String,
                                              input: String,
@@ -31,5 +31,5 @@ case class ApiResponseEventModelWithResponse(deviceId: String,
                                              response: Option[JsValue])
 
 object ApiResponseEventModelWithResponse {
-  implicit val formatApiResponseEventModel = Json.format[ApiResponseEventModelWithResponse]
+  implicit val formatApiResponseEventModel: OFormat[ApiResponseEventModelWithResponse] = Json.format[ApiResponseEventModelWithResponse]
 }

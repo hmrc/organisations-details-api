@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.vat
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriod
 
 case class VatPeriod(
@@ -30,7 +30,7 @@ case class VatPeriod(
                      )
 
 object VatPeriod {
-  implicit val vatPeriodFormat = Json.format[VatPeriod]
+  implicit val vatPeriodFormat: OFormat[VatPeriod] = Json.format[VatPeriod]
 
   def fromIfResponse(ifData: IfVatPeriod): VatPeriod = {
     VatPeriod(

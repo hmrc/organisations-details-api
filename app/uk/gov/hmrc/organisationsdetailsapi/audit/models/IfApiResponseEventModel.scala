@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.audit.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class IfApiResponseEventModel(deviceId: String,
                                    input: String,
@@ -30,6 +30,6 @@ case class IfApiResponseEventModel(deviceId: String,
                                    ifResponse: String)
 
 object IfApiResponseEventModel {
-  implicit val formatIfApiResponseEventModel = Json.format[IfApiResponseEventModel]
+  implicit val formatIfApiResponseEventModel: OFormat[IfApiResponseEventModel] = Json.format[IfApiResponseEventModel]
 }
 

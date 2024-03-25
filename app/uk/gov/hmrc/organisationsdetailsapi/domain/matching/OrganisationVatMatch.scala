@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.matching
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 import java.util.UUID
 
 case class OrganisationVatMatch(matchId: UUID, vrn: String)
 
 object OrganisationVatMatch {
-  implicit val organisationVatMatchFormat = Json.format[OrganisationVatMatch]
+  implicit val organisationVatMatchFormat: OFormat[OrganisationVatMatch] = Json.format[OrganisationVatMatch]
 }
