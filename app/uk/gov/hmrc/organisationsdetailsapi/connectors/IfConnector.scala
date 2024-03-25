@@ -27,18 +27,18 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeC
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatReturnsDetailsResponse._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnsDetailsResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, IfVatReturnsDetailsResponse, SelfAssessmentReturnDetailResponse}
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IfConnector @Inject()(
-                             servicesConfig: ServicesConfig,
-                             http: HttpClient,
-                             val auditHelper: AuditHelper,
-                           ) {
+class IfConnector @Inject() (
+  servicesConfig: ServicesConfig,
+  http: HttpClient,
+  val auditHelper: AuditHelper
+) {
 
   private val logger = Logger(classOf[IfConnector].getName)
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
@@ -52,54 +52,50 @@ class IfConnector @Inject()(
     "microservice.services.integration-framework.environment"
   )
 
-  def getCtReturnDetails(matchId: String, utr: String, filter: Option[String])(
-    implicit hc: HeaderCarrier,
+  def getCtReturnDetails(matchId: String, utr: String, filter: Option[String])(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[CorporationTaxReturnDetailsResponse] = {
+    ec: ExecutionContext
+  ): Future[CorporationTaxReturnDetailsResponse] = {
 
     val corporationTaxUrl =
-      s"$baseUrl/organisations/corporation-tax/$utr/return/details${
-        filter.map(f => s"?fields=$f").getOrElse("")
-      }"
+      s"$baseUrl/organisations/corporation-tax/$utr/return/details${filter.map(f => s"?fields=$f").getOrElse("")}"
 
     call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
   }
 
-  def getVatReturnDetails(matchId: String, vrn: String, appDate: String, filter: Option[String])(
-    implicit hc: HeaderCarrier,
+  def getVatReturnDetails(matchId: String, vrn: String, appDate: String, filter: Option[String])(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[IfVatReturnsDetailsResponse] = {
+    ec: ExecutionContext
+  ): Future[IfVatReturnsDetailsResponse] = {
 
     val vatTaxUrl =
-      s"$baseUrl/organisations/vat/$vrn/returns-details?appDate=$appDate${
-        filter.map(f => s"&fields=$f").getOrElse("")
-      }"
+      s"$baseUrl/organisations/vat/$vrn/returns-details?appDate=$appDate${filter.map(f => s"&fields=$f").getOrElse("")}"
 
     call[IfVatReturnsDetailsResponse](vatTaxUrl, matchId)
   }
 
-  def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(
-    implicit hc: HeaderCarrier,
+  def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[SelfAssessmentReturnDetailResponse] = {
+    ec: ExecutionContext
+  ): Future[SelfAssessmentReturnDetailResponse] = {
 
     val detailsUrl =
-      s"$baseUrl/organisations/self-assessment/$utr/return/details${
-        filter.map(f => s"?fields=$f").getOrElse("")
-      }"
+      s"$baseUrl/organisations/self-assessment/$utr/return/details${filter.map(f => s"?fields=$f").getOrElse("")}"
 
     call[SelfAssessmentReturnDetailResponse](detailsUrl, matchId)
   }
 
-  def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest, filter: Option[String])(
-    implicit hc: HeaderCarrier,
+  def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest, filter: Option[String])(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[EmployeeCountResponse] = {
+    ec: ExecutionContext
+  ): Future[EmployeeCountResponse] = {
 
     val detailsUrl =
-      s"$baseUrl/organisations/employers/employee/counts${
-        filter.map(f => s"?fields=$f").getOrElse("")
-      }"
+      s"$baseUrl/organisations/employers/employee/counts${filter.map(f => s"?fields=$f").getOrElse("")}"
 
     post[EmployeeCountRequest, EmployeeCountResponse](detailsUrl, matchId, body)
   }
@@ -108,34 +104,61 @@ class IfConnector @Inject()(
 
   def setHeaders(requestHeader: RequestHeader): Seq[(String, String)] = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
-    "Environment" -> integrationFrameworkEnvironment,
-    "CorrelationId" -> extractCorrelationId(requestHeader)
+    "Environment"             -> integrationFrameworkEnvironment,
+    "CorrelationId"           -> extractCorrelationId(requestHeader)
   )
 
-  private def call[T](url: String, matchId: String)
-                     (implicit rds: HttpReads[T], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.GET[T](url, headers = setHeaders(request)) map { response =>
-      auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
-      response
-    }, extractCorrelationId(request), matchId, request, url)
+  private def call[T](url: String, matchId: String)(implicit
+    rds: HttpReads[T],
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext
+  ) =
+    recover(
+      http.GET[T](url, headers = setHeaders(request)) map { response =>
+        auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
+        response
+      },
+      extractCorrelationId(request),
+      matchId,
+      request,
+      url
+    )
 
-  private def post[I, O](url: String, matchId: String, body: I)
-                        (implicit wts: Writes[I], reads: HttpReads[O], hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.POST[I, O](url, body, headers = setHeaders(request)) map { response =>
-      auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
-      response
-    }, extractCorrelationId(request), matchId, request, url)
+  private def post[I, O](url: String, matchId: String, body: I)(implicit
+    wts: Writes[I],
+    reads: HttpReads[O],
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext
+  ) =
+    recover(
+      http.POST[I, O](url, body, headers = setHeaders(request)) map { response =>
+        auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
+        response
+      },
+      extractCorrelationId(request),
+      matchId,
+      request,
+      url
+    )
 
-  private def recover[A](x: Future[A],
-                         correlationId: String,
-                         matchId: String,
-                         request: RequestHeader,
-                         requestUrl: String)
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = x.recoverWith {
+  private def recover[A](
+    x: Future[A],
+    correlationId: String,
+    matchId: String,
+    request: RequestHeader,
+    requestUrl: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = x.recoverWith {
     case validationError: JsValidationException =>
       logger.warn("Integration Framework JsValidationException encountered")
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl,
-        s"Error parsing IF response: ${validationError.errors}")
+      auditHelper.auditIfApiFailure(
+        correlationId,
+        matchId,
+        request,
+        requestUrl,
+        s"Error parsing IF response: ${validationError.errors}"
+      )
       Future.failed(new InternalServerException("Something went wrong."))
 
     case UpstreamErrorResponse.Upstream5xxResponse(m) =>
@@ -146,7 +169,13 @@ class IfConnector @Inject()(
     case UpstreamErrorResponse(msg, 400, _, _) if requestUrl.contains("/vat") && msg.contains("INVALID_DATE") =>
       logger.warn(s"Integration Framework returned invalid appDate error")
       val invalidAppDate = request.getQueryString("appDate").mkString
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Invalid appDate: $invalidAppDate. $msg")
+      auditHelper.auditIfApiFailure(
+        correlationId,
+        matchId,
+        request,
+        requestUrl,
+        s"Invalid appDate: $invalidAppDate. $msg"
+      )
       Future.failed(new BadRequestException(s"Invalid appDate: $invalidAppDate"))
 
     case UpstreamErrorResponse(msg, 429, _, _) =>

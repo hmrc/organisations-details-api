@@ -30,31 +30,37 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class CorporationTaxController @Inject()(val authConnector: AuthConnector,
-                                         cc: ControllerComponents,
-                                         corporationTaxService: CorporationTaxService,
-                                         implicit val auditHelper: AuditHelper,
-                                         scopesService: ScopesService)
-                                        (implicit ec: ExecutionContext) extends BaseApiController(cc) with PrivilegedAuthentication {
+class CorporationTaxController @Inject() (
+  val authConnector: AuthConnector,
+  cc: ControllerComponents,
+  corporationTaxService: CorporationTaxService,
+  implicit val auditHelper: AuditHelper,
+  scopesService: ScopesService
+)(implicit ec: ExecutionContext)
+    extends BaseApiController(cc) with PrivilegedAuthentication {
 
   override val logger: Logger = Logger(classOf[CorporationTaxController].getName)
 
-  def corporationTax(matchId: UUID): Action[AnyContent] = Action.async {
-    implicit request =>
-      authenticate(scopesService.getEndPointScopes("corporation-tax"), matchId.toString) { authScopes =>
+  def corporationTax(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    authenticate(scopesService.getEndPointScopes("corporation-tax"), matchId.toString) { authScopes =>
+      val correlationId = validateCorrelationId(request)
 
-        val correlationId = validateCorrelationId(request)
+      corporationTaxService.get(matchId, "corporation-tax", authScopes).map { corporationTax =>
+        val selfLink = HalLink("self", s"/organisations/details/corporation-tax?matchId=$matchId")
 
-        corporationTaxService.get(matchId, "corporation-tax", authScopes).map { corporationTax =>
-          val selfLink = HalLink("self", s"/organisations/details/corporation-tax?matchId=$matchId")
+        val response = Json.toJson(state(corporationTax) ++ selfLink)
 
-          val response = Json.toJson(state(corporationTax) ++ selfLink)
+        auditHelper.auditApiResponse(
+          correlationId.toString,
+          matchId.toString,
+          authScopes.mkString(","),
+          request,
+          selfLink.toString,
+          Some(Json.toJson(corporationTax))
+        )
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(corporationTax)))
-
-          Ok(response)
-        }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
+        Ok(response)
+      }
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
   }
 }

@@ -21,49 +21,44 @@ import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOption
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
 import uk.gov.hmrc.crypto._
-import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
+import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.play.http.logging.Mdc.preservingMdc
 
 import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-import uk.gov.hmrc.play.http.logging.Mdc.preservingMdc
-
+case class SensitiveT[T](override val decryptedValue: T) extends Sensitive[T]
 @Singleton
-class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
-                                configuration: Configuration,
-                                mongo: MongoComponent)(implicit ec: ExecutionContext
-                               ) extends PlayMongoRepository[Entry](
-  mongoComponent = mongo,
-  collectionName = cacheConfig.collName,
-  domainFormat = Entry.format,
-  replaceIndexes = true,
-  indexes = Seq(
-    IndexModel(
-      ascending("id"),
-      IndexOptions().name("_id").
-        unique(true).
-        background(false).
-        sparse(true)),
-    IndexModel(
-      ascending("modifiedDetails.lastUpdated"),
-      IndexOptions().name("lastUpdatedIndex").
-        background(false).
-        expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
-) {
+class CacheRepository @Inject() (
+  val cacheConfig: CacheRepositoryConfiguration,
+  configuration: Configuration,
+  mongo: MongoComponent
+)(implicit ec: ExecutionContext)
+    extends PlayMongoRepository[Entry](
+      mongoComponent = mongo,
+      collectionName = cacheConfig.collName,
+      domainFormat = Entry.format,
+      replaceIndexes = true,
+      indexes = Seq(
+        IndexModel(ascending("id"), IndexOptions().name("_id").unique(true).background(false).sparse(true)),
+        IndexModel(
+          ascending("modifiedDetails.lastUpdated"),
+          IndexOptions().name("lastUpdatedIndex").background(false).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)
+        )
+      )
+    ) {
 
-  implicit lazy val crypto: Encrypter with Decrypter = new ApplicationCrypto(
-    configuration.underlying).JsonCrypto
+  implicit lazy val crypto: Encrypter with Decrypter = new ApplicationCrypto(configuration.underlying).JsonCrypto
 
-  def cache[T](id: String, value: T)(
-    implicit formats: Format[T]) = {
+  def cache[T](id: String, value: T)(implicit formats: Format[T]) = {
 
-    val jsonEncryptor = new JsonEncryptor[T]()
-    val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
+    val jsonEncryptor = JsonEncryption.sensitiveEncrypter[T, SensitiveT[T]]
+    val encryptedValue: JsValue = jsonEncryptor.writes(SensitiveT[T](value))
 
     val entry = new Entry(
       id,
@@ -75,15 +70,18 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
     )
 
     preservingMdc {
-      collection.replaceOne(
-        Filters.equal("id", toBson(id)), entry, ReplaceOptions().upsert(true)
-      ).toFuture()
+      collection
+        .replaceOne(
+          Filters.equal("id", toBson(id)),
+          entry,
+          ReplaceOptions().upsert(true)
+        )
+        .toFuture()
     }
   }
 
-  def fetchAndGetEntry[T](id: String)(
-    implicit formats: Format[T]): Future[Option[T]] = {
-    val decryptor = new JsonDecryptor[T]()
+  def fetchAndGetEntry[T](id: String)(implicit formats: Format[T]): Future[Option[T]] = {
+    val decryptor = JsonEncryption.sensitiveDecrypter[T, SensitiveT[T]](SensitiveT.apply)
 
     preservingMdc {
       collection
@@ -91,14 +89,14 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
         .headOption()
         .map {
           case Some(entry) => decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
-          case None => None
+          case None        => None
         }
     }
   }
 }
 
 @Singleton
-class CacheRepositoryConfiguration @Inject()(configuration: Configuration) {
+class CacheRepositoryConfiguration @Inject() (configuration: Configuration) {
 
   lazy val cacheEnabled = configuration
     .getOptional[Boolean](

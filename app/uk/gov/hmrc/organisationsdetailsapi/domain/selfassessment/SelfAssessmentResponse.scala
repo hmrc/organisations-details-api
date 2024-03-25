@@ -22,7 +22,11 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAsses
 
 import java.time.LocalDate
 
-case class SelfAssessmentResponse(selfAssessmentStartDate: Option[LocalDate], taxSolvencyStatus: Option[String], taxReturns: Option[Seq[SelfAssessmentReturn]])
+case class SelfAssessmentResponse(
+  selfAssessmentStartDate: Option[LocalDate],
+  taxSolvencyStatus: Option[String],
+  taxReturns: Option[Seq[SelfAssessmentReturn]]
+)
 
 object SelfAssessmentResponse {
 
@@ -30,12 +34,14 @@ object SelfAssessmentResponse {
     SelfAssessmentResponse(
       selfAssessmentReturnDetailsResponse.startDate.map(LocalDate.parse),
       selfAssessmentReturnDetailsResponse.taxSolvencyStatus,
-      selfAssessmentReturnDetailsResponse.taxYears.map(x => x.map(t => SelfAssessmentReturn(t.businessSalesTurnover, t.taxyear)))
+      selfAssessmentReturnDetailsResponse.taxYears.map(x =>
+        x.map(t => SelfAssessmentReturn(t.businessSalesTurnover, t.taxyear))
+      )
     )
 
   implicit val selfAssessmentResponseWrites: Writes[SelfAssessmentResponse] = (
     (JsPath \ "selfAssessmentStartDate").writeNullable[LocalDate] and
       (JsPath \ "taxSolvencyStatus").writeNullable[String] and
       (JsPath \ "taxReturns").writeNullable[Seq[SelfAssessmentReturn]]
-    )(unlift(SelfAssessmentResponse.unapply))
+  )(unlift(SelfAssessmentResponse.unapply))
 }

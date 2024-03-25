@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import controllers.Assets
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -28,9 +28,10 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class DocumentationController @Inject()(cc: ControllerComponents, assets: Assets, config: Configuration)
-                                       (implicit ec: ExecutionContext, materializer: Materializer)
-  extends BackendController(cc) {
+class DocumentationController @Inject() (cc: ControllerComponents, assets: Assets, config: Configuration)(implicit
+  ec: ExecutionContext,
+  materializer: Materializer
+) extends BackendController(cc) {
 
   private lazy val v1EndpointsEnabled: Boolean =
     config
@@ -47,9 +48,8 @@ class DocumentationController @Inject()(cc: ControllerComponents, assets: Assets
       .withHeaders(CONTENT_TYPE -> JSON)
   }
 
-  def specification(version: String, file: String): Action[AnyContent] = {
+  def specification(version: String, file: String): Action[AnyContent] =
     CORSActionBuilder(config).async { implicit request =>
       assets.at(s"/public/api/conf/$version", file)(request)
     }
-  }
 }

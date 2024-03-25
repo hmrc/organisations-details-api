@@ -4,6 +4,7 @@ TwirlKeys.templateImports := Seq.empty
 
 val appName = "organisations-details-api"
 
+lazy val ItTest = config("it") extend Test
 lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq(
     "uk.gov.hmrc.organisationsdetailsapi.utils.Binders._"))
@@ -31,11 +32,10 @@ def componentFilter(name: String): Boolean = name startsWith "component"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
-  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     onLoadMessage                    := "",
     majorVersion                     := 0,
-    scalaVersion                     := "2.13.8",
+    scalaVersion                     := "2.13.12",
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test(),
     scalacOptions += "-Wconf:src=routes/.*:s",
     Test / testOptions := Seq(Tests.Filter(unitFilter))
@@ -44,16 +44,16 @@ lazy val microservice = Project(appName, file("."))
   .settings(playSettings)
 
   // Integration tests
-  .configs(IntegrationTest)
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+  .configs(ItTest)
+  .settings(inConfig(ItTest)(Defaults.testSettings): _*)
   .settings(
-    IntegrationTest / Keys.fork := true,
-    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(
+    ItTest / Keys.fork := true,
+    ItTest / unmanagedSourceDirectories := (ItTest / baseDirectory)(
       base => Seq(base / "test")).value,
-    IntegrationTest / testOptions := Seq(Tests.Filter(intTestFilter)),
-    IntegrationTest / testGrouping := oneForkedJvmPerTest(
-      (IntegrationTest / definedTests).value),
-    IntegrationTest / parallelExecution := false
+    ItTest / testOptions := Seq(Tests.Filter(intTestFilter)),
+    ItTest / testGrouping := oneForkedJvmPerTest(
+      (ItTest / definedTests).value),
+    ItTest / parallelExecution := false
   )
   .configs(ComponentTest)
   .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)

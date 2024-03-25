@@ -30,24 +30,25 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class BaseApiController(cc: ControllerComponents) extends BackendController(cc) with AuthorisedFunctions with PrivilegedAuthentication {
+abstract class BaseApiController(cc: ControllerComponents)
+    extends BackendController(cc) with AuthorisedFunctions with PrivilegedAuthentication {
 
   protected override val logger: Logger = play.api.Logger(this.getClass)
 
   protected override implicit def hc(implicit rh: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequest(rh)
 
-  def withValidJson[T](f: T => Future[Result])(implicit request: Request[JsValue],
-                                               r: Reads[T]): Future[Result] =
+  def withValidJson[T](f: T => Future[Result])(implicit request: Request[JsValue], r: Reads[T]): Future[Result] =
     request.body.validate[T] match {
       case JsSuccess(t, _) => f(t)
       case JsError(_) =>
         Future.failed(new BadRequestException("Malformed payload"))
     }
 
-  def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
-                       (implicit request: RequestHeader,
-                        auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
+  def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)(implicit
+    request: RequestHeader,
+    auditHelper: AuditHelper
+  ): PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException =>
       logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
@@ -74,15 +75,13 @@ abstract class BaseApiController(cc: ControllerComponents) extends BackendContro
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorNotFound.toHttpResponse
     case e: Exception =>
-      logger.error("Unexpected exception",e)
+      logger.error("Unexpected exception", e)
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
   }
 }
 
-case class SchemaValidationError(keyword: String,
-                                 msgs: Seq[String],
-                                 instancePath: String)
+case class SchemaValidationError(keyword: String, msgs: Seq[String], instancePath: String)
 
 object SchemaValidationError {
   implicit val format: OFormat[SchemaValidationError] = Json.format
@@ -93,32 +92,28 @@ trait PrivilegedAuthentication extends AuthorisedFunctions with Logging {
   def authPredicate(scopes: Iterable[String]): Predicate =
     scopes.map(Enrolment(_): Predicate).reduce(_ or _)
 
-  def authenticate(endpointScopes: Iterable[String],
-                   matchId: String)
-                  (f: Iterable[String] => Future[Result])
-                  (implicit hc: HeaderCarrier,
-                   request: RequestHeader,
-                   auditHelper: AuditHelper, ec: ExecutionContext): Future[Result] = {
-
+  def authenticate(endpointScopes: Iterable[String], matchId: String)(f: Iterable[String] => Future[Result])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    auditHelper: AuditHelper,
+    ec: ExecutionContext
+  ): Future[Result] =
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
-
     else {
       val predicate = authPredicate(endpointScopes)
-      authorised(predicate).retrieve(Retrievals.allEnrolments) {
-        scopes => {
-
+      authorised(predicate)
+        .retrieve(Retrievals.allEnrolments) { scopes =>
           auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
 
           f(scopes.enrolments.map(e => e.key))
         }
-      }.recoverWith {
-        case e: InsufficientEnrolments =>
-          logger.error(s"$matchId - insufficient enrollments", e)
-          Future.failed(e)
-        case e: AuthorisationException =>
-          logger.error(s"$matchId - authorisation exception", e)
-          Future.failed(e)
-      }
+        .recoverWith {
+          case e: InsufficientEnrolments =>
+            logger.error(s"$matchId - insufficient enrollments", e)
+            Future.failed(e)
+          case e: AuthorisationException =>
+            logger.error(s"$matchId - authorisation exception", e)
+            Future.failed(e)
+        }
     }
-  }
 }

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.matching
 
-import play.api.libs.json.{ Format, Json }
+import play.api.libs.json.{Format, Json}
 
 import java.util.UUID
 

@@ -16,23 +16,23 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.vat
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriod
 
 case class VatPeriod(
-                       periodKey: Option[String],
-                       billingPeriodFromDate: Option[String],
-                       billingPeriodToDate: Option[String],
-                       numDaysAssessed: Option[Int],
-                       box6Total: Option[Double],
-                       returnType: Option[String],
-                       source: Option[String]
-                     )
+  periodKey: Option[String],
+  billingPeriodFromDate: Option[String],
+  billingPeriodToDate: Option[String],
+  numDaysAssessed: Option[Int],
+  box6Total: Option[Double],
+  returnType: Option[String],
+  source: Option[String]
+)
 
 object VatPeriod {
-  implicit val vatPeriodFormat = Json.format[VatPeriod]
+  implicit val vatPeriodFormat: OFormat[VatPeriod] = Json.format[VatPeriod]
 
-  def fromIfResponse(ifData: IfVatPeriod): VatPeriod = {
+  def fromIfResponse(ifData: IfVatPeriod): VatPeriod =
     VatPeriod(
       ifData.periodKey,
       ifData.billingPeriodFromDate,
@@ -42,5 +42,4 @@ object VatPeriod {
       ifData.returnType,
       ifData.source
     )
-  }
 }

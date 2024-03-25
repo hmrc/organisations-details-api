@@ -27,19 +27,18 @@ import uk.gov.hmrc.play.bootstrap.http.RequestHandler
 import javax.inject.Inject
 import scala.util.Try
 
-class VersioningRequestHandler @Inject()(webCommands: WebCommands,
-                                         optDevContext: OptionalDevContext,
-                                         config: Configuration,
-                                         router: Router,
-                                         errorHandler: HttpErrorHandler,
-                                         httpConfiguration: HttpConfiguration,
-                                         filters: HttpFilters)
-  extends RequestHandler(webCommands, optDevContext, router, errorHandler, httpConfiguration, filters) {
+class VersioningRequestHandler @Inject() (
+  webCommands: WebCommands,
+  optDevContext: OptionalDevContext,
+  config: Configuration,
+  router: Router,
+  errorHandler: HttpErrorHandler,
+  httpConfiguration: HttpConfiguration,
+  filters: HttpFilters
+) extends RequestHandler(webCommands, optDevContext, router, errorHandler, httpConfiguration, filters) {
 
   private lazy val unversionedContexts =
-    Try(config.getOptional[Seq[String]]("versioning.unversionedContexts"))
-      .toOption
-      .flatten
+    Try(config.getOptional[Seq[String]]("versioning.unversionedContexts")).toOption.flatten
       .getOrElse(Seq.empty)
 
   override def routeRequest(request: RequestHeader): Option[Handler] = {

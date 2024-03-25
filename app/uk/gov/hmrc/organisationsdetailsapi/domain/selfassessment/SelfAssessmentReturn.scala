@@ -25,7 +25,5 @@ object SelfAssessmentReturn {
   implicit val selfAssessmentReturnWrites: Writes[SelfAssessmentReturn] = (
     (JsPath \ "totalBusinessSalesTurnover").writeNullable[Double] and
       (JsPath \ "taxYear").writeNullable[String]
-    )(unlift(SelfAssessmentReturn.unapply))
+  )(unlift(SelfAssessmentReturn.unapply))
 }
-
-

@@ -23,10 +23,17 @@ import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.NumberOfEmpl
 
 import scala.util.matching.Regex
 
+case class EmployeeCountResponse(
+  startDate: Option[String],
+  endDate: Option[String],
+  references: Option[Seq[PayeReferenceAndCount]]
+)
 
-case class EmployeeCountResponse(startDate: Option[String], endDate: Option[String], references: Option[Seq[PayeReferenceAndCount]])
-
-case class PayeReferenceAndCount(districtNumber: Option[String], payeReference: Option[String], counts: Option[Seq[Count]])
+case class PayeReferenceAndCount(
+  districtNumber: Option[String],
+  payeReference: Option[String],
+  counts: Option[Seq[Count]]
+)
 
 case class EmployeeCountRequest(startDate: String, endDate: String, references: Seq[PayeReference])
 
@@ -50,31 +57,34 @@ object Count {
     (
       (JsPath \ "dateTaken").readNullable[String](pattern(datePattern, "Date is in incorrect format")) and
         (JsPath \ "employeeCount").readNullable[Int](verifying[Int](isInRangeAndWholeNumber))
-      )(Count.apply _),
+    )(Count.apply _),
     (
       (JsPath \ "dateTaken").writeNullable[String] and
         (JsPath \ "employeeCount").writeNullable[Int]
-      )(unlift(Count.unapply))
+    )(unlift(Count.unapply))
   )
 }
 
 object EmployeeCountResponse {
 
-  val datePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
+  val datePattern: Regex =
+    "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
   val districtPattern: Regex = "^[0-9]{3}$".r
   val payeRefPattern: Regex = "^[a-zA-Z0-9]{1,10}$".r
 
   implicit val referencesFormat: Format[PayeReferenceAndCount] = Format(
     (
-      (JsPath \ "districtNumber").readNullable[String](pattern(districtPattern, "District number is in the incorrect format")) and
-        (JsPath \ "payeReference").readNullable[String](pattern(payeRefPattern, "Paye reference is in the incorrect format")) and
+      (JsPath \ "districtNumber")
+        .readNullable[String](pattern(districtPattern, "District number is in the incorrect format")) and
+        (JsPath \ "payeReference")
+          .readNullable[String](pattern(payeRefPattern, "Paye reference is in the incorrect format")) and
         (JsPath \ "counts").readNullable[Seq[Count]]
-      )(PayeReferenceAndCount.apply _),
+    )(PayeReferenceAndCount.apply _),
     (
       (JsPath \ "districtNumber").writeNullable[String] and
         (JsPath \ "payeReference").writeNullable[String] and
         (JsPath \ "counts").writeNullable[Seq[Count]]
-      )(unlift(PayeReferenceAndCount.unapply))
+    )(unlift(PayeReferenceAndCount.unapply))
   )
 
   implicit val ifEmployeeCountFormat: Format[EmployeeCountResponse] = Format(
@@ -82,30 +92,32 @@ object EmployeeCountResponse {
       (JsPath \ "startDate").readNullable[String](pattern(datePattern, "startDate is in the incorrect format")) and
         (JsPath \ "endDate").readNullable[String](pattern(datePattern, "endDate is in the incorrect format")) and
         (JsPath \ "references").readNullable[Seq[PayeReferenceAndCount]]
-      )(EmployeeCountResponse.apply _),
+    )(EmployeeCountResponse.apply _),
     (
       (JsPath \ "startDate").writeNullable[String] and
         (JsPath \ "endDate").writeNullable[String] and
         (JsPath \ "references").writeNullable[Seq[PayeReferenceAndCount]]
-      )(unlift(EmployeeCountResponse.unapply))
+    )(unlift(EmployeeCountResponse.unapply))
   )
 }
 
 object EmployeeCountRequest {
 
-  val datePattern: Regex = "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
+  val datePattern: Regex =
+    "^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$".r
   val districtPattern: Regex = "^[0-9]{3}$".r
   val payeRefPattern: Regex = "^[a-zA-Z0-9]{1,10}$".r
 
   implicit val referencesFormat: Format[PayeReference] = Format(
     (
-      (JsPath \ "districtNumber").read[String](pattern(districtPattern, "District number is in the incorrect format")) and
+      (JsPath \ "districtNumber")
+        .read[String](pattern(districtPattern, "District number is in the incorrect format")) and
         (JsPath \ "payeReference").read[String](pattern(payeRefPattern, "Paye reference is in the incorrect format"))
-      )(PayeReference.apply _),
+    )(PayeReference.apply _),
     (
       (JsPath \ "districtNumber").write[String] and
         (JsPath \ "payeReference").write[String]
-      )(unlift(PayeReference.unapply))
+    )(unlift(PayeReference.unapply))
   )
 
   implicit val ifEmployeeCountRequestFormat: Format[EmployeeCountRequest] = Format(
@@ -113,12 +125,12 @@ object EmployeeCountRequest {
       (JsPath \ "startDate").read[String](pattern(datePattern, "startDate is in the incorrect format")) and
         (JsPath \ "endDate").read[String](pattern(datePattern, "endDate is in the incorrect format")) and
         (JsPath \ "references").read[Seq[PayeReference]]
-      )(EmployeeCountRequest.apply _),
+    )(EmployeeCountRequest.apply _),
     (
       (JsPath \ "startDate").write[String] and
         (JsPath \ "endDate").write[String] and
         (JsPath \ "references").write[Seq[PayeReference]]
-      )(unlift(EmployeeCountRequest.unapply))
+    )(unlift(EmployeeCountRequest.unapply))
   )
 
   def createFromRequest(request: NumberOfEmployeesRequest): EmployeeCountRequest =

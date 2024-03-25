@@ -30,12 +30,14 @@ import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import uk.gov.hmrc.http.BadRequestException
 
-class VatReturnDetailsController @Inject()(val authConnector: AuthConnector,
-                                           cc: ControllerComponents,
-                                           vatService: VatReturnDetailsService,
-                                           implicit val auditHelper: AuditHelper,
-                                           scopesService: ScopesService)
-                                          (implicit ec: ExecutionContext) extends BaseApiController(cc) {
+class VatReturnDetailsController @Inject() (
+  val authConnector: AuthConnector,
+  cc: ControllerComponents,
+  vatService: VatReturnDetailsService,
+  implicit val auditHelper: AuditHelper,
+  scopesService: ScopesService
+)(implicit ec: ExecutionContext)
+    extends BaseApiController(cc) {
   def vat(matchId: UUID, appDate: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopesService.getEndPointScopes("vat"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)

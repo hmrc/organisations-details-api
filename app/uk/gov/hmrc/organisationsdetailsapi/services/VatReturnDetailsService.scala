@@ -25,18 +25,20 @@ import java.util.UUID
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class VatReturnDetailsService @Inject()(
-                                         scopesHelper: ScopesHelper,
-                                         scopesService: ScopesService,
-                                         cacheService: CacheService,
-                                         ifConnector: IfConnector,
-                                         organisationsMatchingConnector: OrganisationsMatchingConnector,
-                                         @Named("retryDelay") retryDelay: Int
-                                       )
-  extends BaseService(retryDelay, organisationsMatchingConnector) {
+class VatReturnDetailsService @Inject() (
+  scopesHelper: ScopesHelper,
+  scopesService: ScopesService,
+  cacheService: CacheService,
+  ifConnector: IfConnector,
+  organisationsMatchingConnector: OrganisationsMatchingConnector,
+  @Named("retryDelay") retryDelay: Int
+) extends BaseService(retryDelay, organisationsMatchingConnector) {
 
-  def get(matchId: UUID, appDate: String, scopes: Iterable[String])
-         (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[VatReturnsDetailsResponse] = {
+  def get(matchId: UUID, appDate: String, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext
+  ): Future[VatReturnsDetailsResponse] =
     organisationsMatchingConnector.resolveVat(matchId).flatMap { vatMatch =>
       val fieldsQuery = scopesHelper.getQueryStringFor(scopes.toList, "vat")
       val cacheKey = scopesService.getValidFieldsForCacheKey(scopes.toList, Seq("vat"))
@@ -48,5 +50,4 @@ class VatReturnDetailsService @Inject()(
       )
 
     }
-  }
 }

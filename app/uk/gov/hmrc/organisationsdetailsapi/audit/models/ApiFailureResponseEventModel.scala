@@ -16,20 +16,22 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.audit.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
-case class ApiFailureResponseEventModel(deviceId: String,
-                                        input: String,
-                                        method: String,
-                                        userAgent: String,
-                                        apiVersion: String,
-                                        matchId: String,
-                                        correlationId: Option[String],
-                                        applicationId: String,
-                                        requestUrl: String,
-                                        response: String)
+case class ApiFailureResponseEventModel(
+  deviceId: String,
+  input: String,
+  method: String,
+  userAgent: String,
+  apiVersion: String,
+  matchId: String,
+  correlationId: Option[String],
+  applicationId: String,
+  requestUrl: String,
+  response: String
+)
 
 object ApiFailureResponseEventModel {
-  implicit val formatApiFailureResponseEventModel = Json.format[ApiFailureResponseEventModel]
+  implicit val formatApiFailureResponseEventModel: OFormat[ApiFailureResponseEventModel] =
+    Json.format[ApiFailureResponseEventModel]
 }
-
