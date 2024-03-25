@@ -10,7 +10,6 @@ object AppDependencies {
 
   val compile = Seq(
     s"$hmrc.mongo"        %% s"hmrc-mongo-$playVersion"         % hmrcMongoVersion,
-    hmrc                  %% s"bootstrap-backend-$playVersion"  % bootstrapVersion,
     "uk.gov.hmrc"         %% s"play-hmrc-api-$playVersion"      % "8.0.0",
     hmrc                  %% s"play-hal-$playVersion"           % "4.0.0",
     hmrc                  %% s"crypto-json-$playVersion"        % "7.6.0",
