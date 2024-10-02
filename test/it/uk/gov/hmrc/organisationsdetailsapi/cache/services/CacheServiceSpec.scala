@@ -29,13 +29,12 @@ import uk.gov.hmrc.organisationsdetailsapi.services.{CacheIdBase, CacheService}
 
 import scala.concurrent.Future
 
-class CacheServiceSpec
-  extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
+class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   trait AppBuilder {
-    val app: Application = new GuiceApplicationBuilder().build()
+    val app: Application = new GuiceApplicationBuilder().configure("metrics.jvm" -> false).build()
   }
 
   "cache service" - {
