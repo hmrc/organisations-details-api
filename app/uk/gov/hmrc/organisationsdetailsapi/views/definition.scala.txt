@@ -4,23 +4,6 @@
     v1Status: String
 )
 {
-  "scopes": [
-    {
-      "key": "assigned",
-      "name": "The scopes you have been assigned",
-      "description": "An OAuth 2.0 Bearer Token with the scopes you have been assigned"
-    },
-    {
-      "key": "read:organisations-details-ho-ssp",
-      "name": "The organisations details scope for HO SSP",
-      "description": "Scope for accessing organisations details, to be used for HO SSP"
-    },
-    {
-      "key": "read:organisations-details-ho-suv",
-      "name": "The organisations details scope for HO SUV",
-      "description": "Scope for accessing organisations details, to be used for HO Scale-Up Visa"
-    }
-  ],
     "api": {
       "name": "Organisations Details",
       "description": "Retrieves details information for an organisation",
