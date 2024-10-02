@@ -6,8 +6,8 @@ val appName = "organisations-details-api"
 
 lazy val ItTest = config("it") extend Test
 lazy val playSettings: Seq[Setting[_]] = Seq(
-  routesImport ++= Seq(
-    "uk.gov.hmrc.organisationsdetailsapi.utils.Binders._"))
+  routesImport ++= Seq("uk.gov.hmrc.organisationsdetailsapi.utils.Binders._")
+)
 
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
@@ -15,7 +15,7 @@ lazy val scoverageSettings = {
     // Semicolon-separated list of regexs matching classes to exclude
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;" +
       ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;" +
-      //All after this is due to Early project and getting pipelines up and running. May be removed later.
+      // All after this is due to Early project and getting pipelines up and running. May be removed later.
       "uk.gov.hmrc.organisationsdetailsapi.views;" +
       ".*DocumentationController*;" +
       "uk.gov.hmrc.organisationsdetailsapi.handlers;" +
@@ -31,12 +31,12 @@ def unitFilter(name: String): Boolean = name startsWith "unit"
 def componentFilter(name: String): Boolean = name startsWith "component"
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
-    onLoadMessage                    := "",
-    majorVersion                     := 0,
-    scalaVersion                     := "2.13.12",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test(),
+    onLoadMessage := "",
+    majorVersion := 0,
+    scalaVersion := "2.13.12",
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test(),
     scalacOptions += "-Wconf:src=routes/.*:s",
     Test / testOptions := Seq(Tests.Filter(unitFilter))
   )
@@ -48,11 +48,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(inConfig(ItTest)(Defaults.testSettings): _*)
   .settings(
     ItTest / Keys.fork := true,
-    ItTest / unmanagedSourceDirectories := (ItTest / baseDirectory)(
-      base => Seq(base / "test")).value,
+    ItTest / unmanagedSourceDirectories := (ItTest / baseDirectory)(base => Seq(base / "test")).value,
     ItTest / testOptions := Seq(Tests.Filter(intTestFilter)),
-    ItTest / testGrouping := oneForkedJvmPerTest(
-      (ItTest / definedTests).value),
     ItTest / parallelExecution := false
   )
   .configs(ComponentTest)
@@ -64,9 +61,11 @@ lazy val microservice = Project(appName, file("."))
     ComponentTest / parallelExecution := false
   )
   .settings(scoverageSettings: _*)
-  .settings(resolvers ++= Seq(
-    Resolver.jcenterRepo
-  ))
+  .settings(
+    resolvers ++= Seq(
+      Resolver.jcenterRepo
+    )
+  )
   .settings(Compile / unmanagedResourceDirectories += baseDirectory.value / "resources")
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
