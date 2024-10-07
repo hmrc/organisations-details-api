@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.organisationsdetailsapi.services
 
-import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -183,7 +183,7 @@ class NumberOfEmployeesServiceSpec extends AnyWordSpec with Matchers {
         when(mockScopesService.getValidFieldsForCacheKey(scopes.toList, Seq(endpoint)))
           .thenReturn("DEF")
 
-        when(mockIfConnector.getEmployeeCount(refEq(matchId), eqTo(utr), eqTo(ifRequest), eqTo(Some("ABC")))(any(), any(), any()))
+        when(mockIfConnector.getEmployeeCount(eqTo(matchId), eqTo(utr), eqTo(ifRequest), eqTo(Some("ABC")))(any(), any(), any()))
           .thenReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
           .thenReturn(Future.successful(EmployeeCountResponse(
             Some("2019-10-01"),
