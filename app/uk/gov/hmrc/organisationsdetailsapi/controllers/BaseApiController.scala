@@ -22,7 +22,7 @@ import play.api.{Logger, Logging}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, TooManyRequestException}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -49,9 +49,9 @@ abstract class BaseApiController(cc: ControllerComponents)
     request: RequestHeader,
     auditHelper: AuditHelper
   ): PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException =>
-      logger.warn("Controllers MatchNotFoundException encountered")
-      auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
+    case UpstreamErrorResponse(_, 404, _, _) =>
+      logger.warn("Controllers UpstreamErrorResponse encountered")
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, "UpstreamErrorResponse")
       ErrorNotFound.toHttpResponse
     case e: InsufficientEnrolments =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)

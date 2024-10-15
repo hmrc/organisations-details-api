@@ -24,9 +24,11 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Application
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
 import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -50,7 +52,7 @@ class OrganisationsMatchingConnectorSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
+  override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled" -> false,
@@ -67,7 +69,7 @@ class OrganisationsMatchingConnectorSpec
 
 
   val config: ServicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
-  val httpClient: HttpClient = fakeApplication.injector.instanceOf[HttpClient]
+  val httpClient: HttpClientV2 = fakeApplication.injector.instanceOf[HttpClientV2]
 
   val organisationsMatchingConnector: OrganisationsMatchingConnector = new OrganisationsMatchingConnector(httpClient, config)
 
@@ -106,19 +108,6 @@ class OrganisationsMatchingConnectorSpec
         result.utr shouldBe "1234567890"
       })
 
-    }
-
-    "resolve unsuccessfully when returned an invalid payload" in {
-
-      val matchId = "75a07eb6-2459-438a-bc5e-9cbb563675ee"
-      val matchIdUUID = UUID.fromString(matchId)
-
-      val jsonResponse = ""
-
-      stubWithResponseStatus(NOT_FOUND, jsonResponse, matchId)
-      assertThrows[MatchNotFoundException] {
-        Await.result(organisationsMatchingConnector.resolve(matchIdUUID), 2.seconds)
-      }
     }
   }
 

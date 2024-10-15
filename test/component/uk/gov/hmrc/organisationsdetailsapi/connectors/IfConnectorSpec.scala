@@ -20,9 +20,9 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.matching.EqualToJsonPattern
-import org.mockito.ArgumentMatchers.{ any, contains, matches }
+import org.mockito.ArgumentMatchers.{any, contains, matches}
 import org.mockito.Mockito
-import org.mockito.Mockito.{ times, verify }
+import org.mockito.Mockito.{times, verify}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -33,15 +33,16 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{ HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException }
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, InternalServerException, NotFoundException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{ CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, SelfAssessmentReturnDetailResponse, IfVatReturnsDetailsResponse }
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.{ IfHelpers, TestSupport }
+import utils.{IfHelpers, TestSupport}
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext
@@ -90,7 +91,7 @@ class IfConnectorSpec
 
 
     val config: ServicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
-    val httpClient: HttpClient = fakeApplication.injector.instanceOf[HttpClient]
+    val httpClient: HttpClientV2 = fakeApplication.injector.instanceOf[HttpClientV2]
     val auditHelper: AuditHelper = mock[AuditHelper]
 
     val underTest = new IfConnector(config, httpClient, auditHelper)

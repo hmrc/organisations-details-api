@@ -17,27 +17,29 @@
 package uk.gov.hmrc.organisationsdetailsapi.connectors
 
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch._
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.{OrganisationMatch, OrganisationVatMatch}
-import uk.gov.hmrc.organisationsdetailsapi.errorhandler.ErrorResponses.MatchNotFoundException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class OrganisationsMatchingConnector @Inject() (httpClient: HttpClient, servicesConfig: ServicesConfig) {
+class OrganisationsMatchingConnector @Inject() (httpClient: HttpClientV2, servicesConfig: ServicesConfig) {
 
   private val serviceUrl = servicesConfig.baseUrl("organisations-matching-api")
 
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] =
-    httpClient.GET[OrganisationMatch](s"$serviceUrl/match-record/$matchId") recover {
-      case UpstreamErrorResponse(_, 404, _, _) => throw new MatchNotFoundException
-    }
+  def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] = {
+    httpClient
+      .get(url"$serviceUrl/match-record/$matchId")
+      .execute[OrganisationMatch]
+  }
 
-  def resolveVat(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationVatMatch] =
-    httpClient.GET[OrganisationVatMatch](s"$serviceUrl/match-record/vat/$matchId") recover {
-      case UpstreamErrorResponse(_, 404, _, _) => throw new MatchNotFoundException
-    }
+  def resolveVat(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationVatMatch] = {
+    httpClient
+      .get(url"$serviceUrl/match-record/vat/$matchId")
+      .execute[OrganisationVatMatch]
+  }
 }

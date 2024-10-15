@@ -17,17 +17,17 @@
 package uk.gov.hmrc.organisationsdetailsapi.connectors
 
 import play.api.Logger
-import play.api.libs.json.Writes
+import play.api.libs.json.{Json, Writes}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountRequest._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.EmployeeCountResponse._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatReturnsDetailsResponse._
-import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.{CorporationTaxReturnDetailsResponse, EmployeeCountRequest, EmployeeCountResponse, IfVatReturnsDetailsResponse, SelfAssessmentReturnDetailResponse}
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.SelfAssessmentReturnDetail._
+import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework._
 import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.validateCorrelationId
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -35,9 +35,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IfConnector @Inject() (
-  servicesConfig: ServicesConfig,
-  http: HttpClient,
-  val auditHelper: AuditHelper
+                              servicesConfig: ServicesConfig,
+                              http: HttpClientV2,
+                              val auditHelper: AuditHelper
 ) {
 
   private val logger = Logger(classOf[IfConnector].getName)
@@ -89,9 +89,9 @@ class IfConnector @Inject() (
   }
 
   def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest, filter: Option[String])(implicit
-    hc: HeaderCarrier,
-    request: RequestHeader,
-    ec: ExecutionContext
+                                                                                                         hc: HeaderCarrier,
+                                                                                                         request: RequestHeader,
+                                                                                                         ec: ExecutionContext
   ): Future[EmployeeCountResponse] = {
 
     val detailsUrl =
@@ -102,7 +102,7 @@ class IfConnector @Inject() (
 
   private def extractCorrelationId(requestHeader: RequestHeader) = validateCorrelationId(requestHeader).toString
 
-  def setHeaders(requestHeader: RequestHeader): Seq[(String, String)] = Seq(
+  private def setHeaders(requestHeader: RequestHeader): Seq[(String, String)] = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
     "Environment"             -> integrationFrameworkEnvironment,
     "CorrelationId"           -> extractCorrelationId(requestHeader)
@@ -115,10 +115,13 @@ class IfConnector @Inject() (
     ec: ExecutionContext
   ) =
     recover(
-      http.GET[T](url, headers = setHeaders(request)) map { response =>
-        auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
-        response
-      },
+      http.get(url"$url")
+        .transform(_.addHttpHeaders(setHeaders(request): _*))
+        .execute[T]
+          map { response =>
+          auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
+          response
+        },
       extractCorrelationId(request),
       matchId,
       request,
@@ -126,14 +129,17 @@ class IfConnector @Inject() (
     )
 
   private def post[I, O](url: String, matchId: String, body: I)(implicit
-    wts: Writes[I],
-    reads: HttpReads[O],
-    hc: HeaderCarrier,
-    request: RequestHeader,
-    ec: ExecutionContext
+                                                                wts: Writes[I],
+                                                                reads: HttpReads[O],
+                                                                hc: HeaderCarrier,
+                                                                request: RequestHeader,
+                                                                ec: ExecutionContext
   ) =
     recover(
-      http.POST[I, O](url, body, headers = setHeaders(request)) map { response =>
+      http.post(url"$url")
+        .transform(_.addHttpHeaders(setHeaders(request): _*))
+        .withBody(Json.toJson(body)).execute[O]
+        map { response =>
         auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
         response
       },

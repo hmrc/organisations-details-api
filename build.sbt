@@ -5,7 +5,7 @@ TwirlKeys.templateImports := Seq.empty
 val appName = "organisations-details-api"
 
 lazy val ItTest = config("it") extend Test
-lazy val playSettings: Seq[Setting[_]] = Seq(
+lazy val playSettings: Seq[Setting[?]] = Seq(
   routesImport ++= Seq("uk.gov.hmrc.organisationsdetailsapi.utils.Binders._")
 )
 
@@ -45,7 +45,7 @@ lazy val microservice = Project(appName, file("."))
 
   // Integration tests
   .configs(ItTest)
-  .settings(inConfig(ItTest)(Defaults.testSettings): _*)
+  .settings(inConfig(ItTest)(Defaults.testSettings) *)
   .settings(
     ItTest / Keys.fork := true,
     ItTest / unmanagedSourceDirectories := (ItTest / baseDirectory)(base => Seq(base / "test")).value,
@@ -53,14 +53,13 @@ lazy val microservice = Project(appName, file("."))
     ItTest / parallelExecution := false
   )
   .configs(ComponentTest)
-  .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
+  .settings(inConfig(ComponentTest)(Defaults.testSettings) *)
   .settings(
     ComponentTest / testOptions := Seq(Tests.Filter(componentFilter)),
     ComponentTest / unmanagedSourceDirectories := (ComponentTest / baseDirectory)(base => Seq(base / "test")).value,
-    ComponentTest / testGrouping := oneForkedJvmPerTest((ComponentTest / definedTests).value),
     ComponentTest / parallelExecution := false
   )
-  .settings(scoverageSettings: _*)
+  .settings(scoverageSettings *)
   .settings(
     resolvers ++= Seq(
       Resolver.jcenterRepo
@@ -68,8 +67,4 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(Compile / unmanagedResourceDirectories += baseDirectory.value / "resources")
 
-def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
-  tests.map { test =>
-    new Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
-  }
 lazy val ComponentTest = config("component") extend Test
