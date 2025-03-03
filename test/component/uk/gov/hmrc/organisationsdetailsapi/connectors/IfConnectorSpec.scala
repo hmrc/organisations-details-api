@@ -34,7 +34,7 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, InternalServerException, NotFoundException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
@@ -159,7 +159,7 @@ class IfConnectorSpec
           .withQueryParam("fields", equalTo("fields(A,B,C)"))
           .willReturn(aResponse().withStatus(400).withBody("BAD_REQUEST")))
 
-      intercept[InternalServerException] {
+      intercept[BadRequestException] {
         await(
           underTest.getCtReturnDetails(UUID.randomUUID().toString, utr, Some("fields(A,B,C)"))(
             hc,
@@ -552,7 +552,7 @@ class IfConnectorSpec
           .withHeader("CorrelationId", equalTo(sampleCorrelationId))
           .willReturn(aResponse().withStatus(400).withBody(jsonResponse)))
 
-      intercept[InternalServerException] {
+      intercept[BadRequestException] {
         await(
           underTest.getEmployeeCount(UUID.randomUUID().toString, utr, employeeCountRequest, None)(
             hc,

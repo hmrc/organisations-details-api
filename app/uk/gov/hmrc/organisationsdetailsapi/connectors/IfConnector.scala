@@ -184,6 +184,17 @@ class IfConnector @Inject() (
       )
       Future.failed(new BadRequestException(s"Invalid appDate: $invalidAppDate"))
 
+    case UpstreamErrorResponse(msg, 400, _, _) =>
+      logger.warn("Bad Request")
+      auditHelper.auditIfApiFailure(
+        correlationId,
+        matchId,
+        request,
+        requestUrl,
+        s"Bad Request. $msg"
+      )
+      Future.failed(new BadRequestException("Bad Request"))
+
     case UpstreamErrorResponse(msg, 429, _, _) =>
       logger.warn(s"IF Rate limited: $msg")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"IF Rate limited: $msg")
