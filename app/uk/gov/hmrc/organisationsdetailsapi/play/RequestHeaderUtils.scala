@@ -81,7 +81,7 @@ object RequestHeaderUtils {
     }
 
   private def getUuidFromString(uuidString: String) =
-    if (UuidValidator.validate(uuidString)) {
+    if UuidValidator.validate(uuidString) then {
       UUID.fromString(uuidString)
     } else {
       throw new BadRequestException("Malformed CorrelationId")

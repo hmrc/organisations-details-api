@@ -23,6 +23,7 @@ import org.scalatest.wordspec.AsyncWordSpec
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
+import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.organisationsdetailsapi.cache.CacheRepository
 import utils.TestSupport

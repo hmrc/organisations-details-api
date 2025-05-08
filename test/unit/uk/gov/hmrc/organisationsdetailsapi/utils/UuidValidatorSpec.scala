@@ -28,13 +28,13 @@ class UuidValidatorSpec extends AnyWordSpec with Matchers with ScalaCheckPropert
   private val invalidUuid = "0-0-0-0-0"
 
   "Return true on a valid UUID" in {
-    forAll { uuid: UUID =>
+    forAll { (uuid: UUID) =>
       UuidValidator.validate(uuid.toString) shouldBe true
     }
   }
 
   "Return true on a valid upper-cased UUID" in {
-    forAll { uuid: UUID =>
+    forAll { (uuid: UUID) =>
       UuidValidator.validate(uuid.toString.toUpperCase) shouldBe true
     }
   }

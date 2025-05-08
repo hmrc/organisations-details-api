@@ -61,7 +61,7 @@ object Count {
     (
       (JsPath \ "dateTaken").writeNullable[String] and
         (JsPath \ "employeeCount").writeNullable[Int]
-    )(unlift(Count.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }
 
@@ -84,7 +84,7 @@ object EmployeeCountResponse {
       (JsPath \ "districtNumber").writeNullable[String] and
         (JsPath \ "payeReference").writeNullable[String] and
         (JsPath \ "counts").writeNullable[Seq[Count]]
-    )(unlift(PayeReferenceAndCount.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val ifEmployeeCountFormat: Format[EmployeeCountResponse] = Format(
@@ -97,7 +97,7 @@ object EmployeeCountResponse {
       (JsPath \ "startDate").writeNullable[String] and
         (JsPath \ "endDate").writeNullable[String] and
         (JsPath \ "references").writeNullable[Seq[PayeReferenceAndCount]]
-    )(unlift(EmployeeCountResponse.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }
 
@@ -117,7 +117,7 @@ object EmployeeCountRequest {
     (
       (JsPath \ "districtNumber").write[String] and
         (JsPath \ "payeReference").write[String]
-    )(unlift(PayeReference.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val ifEmployeeCountRequestFormat: Format[EmployeeCountRequest] = Format(
@@ -130,7 +130,7 @@ object EmployeeCountRequest {
       (JsPath \ "startDate").write[String] and
         (JsPath \ "endDate").write[String] and
         (JsPath \ "references").write[Seq[PayeReference]]
-    )(unlift(EmployeeCountRequest.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   def createFromRequest(request: NumberOfEmployeesRequest): EmployeeCountRequest =

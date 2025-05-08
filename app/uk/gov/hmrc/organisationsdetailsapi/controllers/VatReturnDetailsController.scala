@@ -17,6 +17,7 @@
 package uk.gov.hmrc.organisationsdetailsapi.controllers
 
 import play.api.libs.json.Json
+import play.api.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
@@ -62,6 +63,6 @@ class VatReturnDetailsController @Inject() (
   }
 
   private def validateAppDate(appDate: String): Unit =
-    if (!appDate.matches("^[0-9]{8}$"))
+    if !appDate.matches("^[0-9]{8}$") then
       throw new BadRequestException("AppDate is incorrect")
 }

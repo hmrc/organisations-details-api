@@ -51,7 +51,7 @@ object CorporationTaxReturnDetails {
       (JsPath \ "apStartDate").writeNullable[String] and
         (JsPath \ "apEndDate").writeNullable[String] and
         (JsPath \ "turnover").writeNullable[Int]
-    )(unlift(AccountingPeriod.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val corporationTaxReturnDetailsResponseFormat: Format[CorporationTaxReturnDetailsResponse] =
@@ -68,6 +68,6 @@ object CorporationTaxReturnDetails {
           (JsPath \ "taxpayerStartDate").writeNullable[String] and
           (JsPath \ "taxSolvencyStatus").writeNullable[String] and
           (JsPath \ "accountingPeriods").writeNullable[Seq[AccountingPeriod]]
-      )(unlift(CorporationTaxReturnDetailsResponse.unapply))
+      )(o => Tuple.fromProductTyped(o))
     )
 }

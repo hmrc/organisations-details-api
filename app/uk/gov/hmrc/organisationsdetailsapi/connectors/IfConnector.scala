@@ -21,6 +21,7 @@ import play.api.libs.json.{Json, Writes}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.CorporationTaxReturnDetails._
@@ -202,7 +203,7 @@ class IfConnector @Inject() (
 
     case UpstreamErrorResponse(msg, 404, _, _) =>
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
-      if (msg.contains("NO_DATA_FOUND") || msg.contains("NO_VAT_RETURNS_DETAIL_FOUND")) {
+      if msg.contains("NO_DATA_FOUND") || msg.contains("NO_VAT_RETURNS_DETAIL_FOUND") then {
         noDataFound(requestUrl)
       } else {
         logger.warn(s"Integration Framework Upstream4xxResponse encountered: 404")
@@ -225,13 +226,13 @@ class IfConnector @Inject() (
     lazy val emptyCtReturn = CorporationTaxReturnDetailsResponse(None, None, None, Some(Seq()))
     lazy val emptySaReturn = SelfAssessmentReturnDetailResponse(None, None, None, None, Some(Seq()))
 
-    if (url.contains("counts"))
+    if url.contains("counts") then
       Future.successful(emptyEmployeeCountResponse.asInstanceOf[A])
-    else if (url.contains("corporation-tax"))
+    else if url.contains("corporation-tax") then
       Future.successful(emptyCtReturn.asInstanceOf[A])
-    else if (url.contains("self-assessment"))
+    else if url.contains("self-assessment") then
       Future.successful(emptySaReturn.asInstanceOf[A])
-    else if (url.contains("vat"))
+    else if url.contains("vat") then
       Future.failed(new NotFoundException("VAT details could not be found"))
     else
       Future.failed(new InternalServerException("Something went wrong."))

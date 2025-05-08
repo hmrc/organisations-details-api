@@ -31,5 +31,5 @@ object NumberOfEmployeeCounts {
     (
       (JsPath \ "numberOfEmployees").writeNullable[Int] and
         (JsPath \ "dateOfCount").writeNullable[String]
-    )(unlift(NumberOfEmployeeCounts.unapply))
+    )(o => Tuple.fromProductTyped(o))
 }

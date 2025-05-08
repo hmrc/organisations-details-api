@@ -19,6 +19,7 @@ package uk.gov.hmrc.organisationsdetailsapi.controllers
 import play.api.Logger
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
+import play.api.hal._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector

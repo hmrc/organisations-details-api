@@ -41,5 +41,5 @@ object CorporationTaxResponse {
     (JsPath \ "dateOfRegistration").writeNullable[LocalDate] and
       (JsPath \ "taxSolvencyStatus").writeNullable[String] and
       (JsPath \ "accountingPeriods").writeNullable[Seq[AccountingPeriod]]
-  )(unlift(CorporationTaxResponse.unapply))
+  )(o => Tuple.fromProductTyped(o))
 }

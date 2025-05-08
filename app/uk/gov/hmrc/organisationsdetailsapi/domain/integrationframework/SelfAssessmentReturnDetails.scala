@@ -50,7 +50,7 @@ object SelfAssessmentReturnDetail {
     (
       (JsPath \ "taxyear").writeNullable[String] and
         (JsPath \ "businessSalesTurnover").writeNullable[Double]
-    )(unlift(TaxYear.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val selfAssessmentResponseFormat: Format[SelfAssessmentReturnDetailResponse] = Format(
@@ -67,6 +67,6 @@ object SelfAssessmentReturnDetail {
         (JsPath \ "taxpayerType").writeNullable[String] and
         (JsPath \ "taxSolvencyStatus").writeNullable[String] and
         (JsPath \ "taxyears").writeNullable[Seq[TaxYear]]
-    )(unlift(SelfAssessmentReturnDetailResponse.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }

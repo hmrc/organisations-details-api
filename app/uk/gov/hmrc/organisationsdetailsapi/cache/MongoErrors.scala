@@ -19,6 +19,6 @@ package uk.gov.hmrc.organisationsdetailsapi.cache
 object MongoErrors {
   object Duplicate {
     def unapply(ex: Exception): Option[Exception] =
-      if (ex.getMessage.contains("E11000")) Some(ex) else None
+      if ex.getMessage.contains("E11000") then Some(ex) else None
   }
 }

@@ -98,7 +98,7 @@ trait PrivilegedAuthentication extends AuthorisedFunctions with Logging {
     auditHelper: AuditHelper,
     ec: ExecutionContext
   ): Future[Result] =
-    if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
+    if endpointScopes.isEmpty then throw new Exception("No scopes defined")
     else {
       val predicate = authPredicate(endpointScopes)
       authorised(predicate)

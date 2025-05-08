@@ -33,7 +33,7 @@ class CacheService @Inject() (cachingClient: CacheRepository, conf: CacheReposit
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
   def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
-    if (cacheEnabled)
+    if cacheEnabled then
       cachingClient.fetchAndGetEntry[T](cacheId.id) flatMap {
         case Some(value) =>
           Future.successful(value)
@@ -61,7 +61,7 @@ trait CacheIdBase {
 }
 
 case class CorporationTaxCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
-  lazy val id: String = s"$matchId-$cacheKey-corporation-tax"
+   val id: String = s"$matchId-$cacheKey-corporation-tax"
 }
 
 case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, employeeCountRequest: NumberOfEmployeesRequest)
@@ -73,13 +73,13 @@ case class NumberOfEmployeesCacheId(matchId: UUID, cacheKey: String, employeeCou
     employeeCountRequest.payeReference.map(entry => entry.schemeReference + entry.districtNumber).reduce(_ + _)
   lazy val encoded: String = encodeVal(payeReferences)
 
-  lazy val id: String = s"$matchId-$from-$to-$encoded-$cacheKey-number-of-employees"
+   val id: String = s"$matchId-$from-$to-$encoded-$cacheKey-number-of-employees"
 }
 
 case class SaCacheId(matchId: UUID, cacheKey: String) extends CacheIdBase {
-  lazy val id: String = s"$matchId-$cacheKey-self-assessment"
+   val id: String = s"$matchId-$cacheKey-self-assessment"
 }
 
 case class VatCacheId(matchId: UUID, appDate: String, cacheKey: String) extends CacheIdBase {
-  lazy val id: String = s"$matchId-$appDate-$cacheKey-vat"
+   val id: String = s"$matchId-$appDate-$cacheKey-vat"
 }

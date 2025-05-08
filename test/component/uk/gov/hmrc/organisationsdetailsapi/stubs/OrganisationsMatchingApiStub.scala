@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 
 import java.util.UUID
 
-object OrganisationsMatchingApiStub extends MockHost(9657) {
+object OrganisationsMatchingApiStub extends MockHost(6000) {
 
   def willRespondWith(matchId: String, responseCode: Int, responseBody: String = ""): Unit =
     mock.register(

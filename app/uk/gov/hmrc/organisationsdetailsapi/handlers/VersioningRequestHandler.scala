@@ -43,7 +43,7 @@ class VersioningRequestHandler @Inject() (
 
   override def routeRequest(request: RequestHeader): Option[Handler] = {
     val requestContext = extractUriContext(request)
-    if (unversionedContexts.contains(requestContext)) {
+    if unversionedContexts.contains(requestContext) then {
       super.routeRequest(request)
     } else {
       super.routeRequest(getVersionedRequest(request))

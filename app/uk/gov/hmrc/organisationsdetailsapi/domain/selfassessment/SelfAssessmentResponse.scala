@@ -43,5 +43,5 @@ object SelfAssessmentResponse {
     (JsPath \ "selfAssessmentStartDate").writeNullable[LocalDate] and
       (JsPath \ "taxSolvencyStatus").writeNullable[String] and
       (JsPath \ "taxReturns").writeNullable[Seq[SelfAssessmentReturn]]
-  )(unlift(SelfAssessmentResponse.unapply))
+  )(o => Tuple.fromProductTyped(o))
 }
