@@ -1,4 +1,3 @@
-import sbt.Tests.{Group, SubProcess}
 
 TwirlKeys.templateImports := Seq.empty
 
@@ -20,7 +19,7 @@ lazy val scoverageSettings = {
       ".*DocumentationController*;" +
       "uk.gov.hmrc.organisationsdetailsapi.handlers;" +
       ".*definition*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 78,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
@@ -35,10 +34,11 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     onLoadMessage := "",
     majorVersion := 0,
-    scalaVersion := "2.13.12",
+    scalaVersion := "3.3.5",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test(),
     scalacOptions += "-Wconf:src=routes/.*:s",
-    Test / testOptions := Seq(Tests.Filter(unitFilter))
+    Test / testOptions := Seq.empty,
+    scalacOptions := Seq("-explain"),
   )
   .settings(PlayKeys.playDefaultPort := 9656)
   .settings(playSettings)

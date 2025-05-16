@@ -15,10 +15,7 @@
  */
 
 package uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees
-
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads.pattern
-import play.api.libs.json.{Format, JsPath}
+import play.api.libs.json.{Format, JsPath, Json}
 
 import scala.util.matching.Regex
 
@@ -32,29 +29,7 @@ object NumberOfEmployeesRequest {
   val districtPattern: Regex = "^[0-9]{3}$".r
   val schemeRefPattern: Regex = "^[a-zA-Z0-9]{1,10}$".r
 
-  implicit val referencesReads: Format[PayeReference] = Format[PayeReference](
-    (
-      (JsPath \ "districtNumber")
-        .read[String](pattern(districtPattern, "District number is in the incorrect format")) and
-        (JsPath \ "schemeReference")
-          .read[String](pattern(schemeRefPattern, "Scheme reference is in the incorrect format"))
-    )(PayeReference.apply _),
-    (
-      (JsPath \ "districtNumber").write[String] and
-        (JsPath \ "schemeReference").write[String]
-    )(unlift(PayeReference.unapply))
-  )
+  implicit val referencesReads: Format[PayeReference] = Json.format
 
-  implicit val numberOfEmployeesRequestReads: Format[NumberOfEmployeesRequest] = Format[NumberOfEmployeesRequest](
-    (
-      (JsPath \ "fromDate").read[String](pattern(datePattern, "fromDate is in the incorrect format")) and
-        (JsPath \ "toDate").read[String](pattern(datePattern, "endDate is in the incorrect format")) and
-        (JsPath \ "payeReference").read[Seq[PayeReference]]
-    )(NumberOfEmployeesRequest.apply _),
-    (
-      (JsPath \ "fromDate").write[String] and
-        (JsPath \ "toDate").write[String] and
-        (JsPath \ "payeReference").write[Seq[PayeReference]]
-    )(unlift(NumberOfEmployeesRequest.unapply))
-  )
+  implicit val numberOfEmployeesRequestReads: Format[NumberOfEmployeesRequest] = Json.format
 }

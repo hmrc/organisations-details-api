@@ -20,6 +20,7 @@ import play.api.Logger
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json
+import play.api.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper

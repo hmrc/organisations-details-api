@@ -63,7 +63,7 @@ object ApiConfig {
     val config = rootConfig.getConfig(path)
 
     def parseConfig(path: String): Option[PathTree] =
-      if (config.hasPath(path)) {
+      if config.hasPath(path) then {
         val keys: List[String] = config
           .getConfig(path)
           .entrySet()
@@ -73,7 +73,7 @@ object ApiConfig {
         Some(PathTree(keys, "\\."))
       } else None
 
-    def getStringList(key: String): List[String] = if (config.hasPath(key))
+    def getStringList(key: String): List[String] = if config.hasPath(key) then
       config.getStringList(key).asScala.toList
     else List()
 

@@ -41,5 +41,5 @@ object AccountingPeriod {
     (JsPath \ "accountingPeriodStartDate").writeNullable[LocalDate] and
       (JsPath \ "accountingPeriodEndDate").writeNullable[LocalDate] and
       (JsPath \ "turnover").writeNullable[Int]
-  )(unlift(AccountingPeriod.unapply))
+  )(o => Tuple.fromProductTyped(o))
 }

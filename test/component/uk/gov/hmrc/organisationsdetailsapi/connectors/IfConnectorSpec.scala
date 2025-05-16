@@ -65,12 +65,13 @@ class IfConnectorSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
+  override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled" -> false,
       "auditing.enabled" -> false,
       "auditing.traceRequests" -> false,
+      "metrics.jvm"-> false,
       "microservice.services.integration-framework.host" -> "127.0.0.1",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
@@ -85,13 +86,13 @@ class IfConnectorSpec
     val sampleCorrelationIdHeader: (String, String) = "CorrelationId" -> sampleCorrelationId
 
     implicit val ec: ExecutionContext =
-      fakeApplication.injector.instanceOf[ExecutionContext]
+      fakeApplication().injector.instanceOf[ExecutionContext]
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders(sampleCorrelationIdHeader)
 
 
-    val config: ServicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
-    val httpClient: HttpClientV2 = fakeApplication.injector.instanceOf[HttpClientV2]
+    val config: ServicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
+    val httpClient: HttpClientV2 = fakeApplication().injector.instanceOf[HttpClientV2]
     val auditHelper: AuditHelper = mock[AuditHelper]
 
     val underTest = new IfConnector(config, httpClient, auditHelper)

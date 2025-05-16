@@ -160,7 +160,7 @@ class VatReturnDetailsControllerSpec
 
     "fail when insufficient enrolments" in {
       when(mockScopesService.getEndPointScopes("vat")).thenReturn(Seq("test-scope"))
-      given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+      `given`(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
 

@@ -34,7 +34,7 @@ object PathTree {
 
   def apply(paths: Iterable[String], divider: String): PathTree = {
     def pathToNode(p: Iterable[String]): Node =
-      if (p.size == 1) {
+      if p.size == 1 then {
         L(p.head)
       } else {
         B(p.head, Seq(pathToNode(p.tail)))
@@ -107,7 +107,7 @@ case class B(value: String, children: Iterable[Node]) extends Node {
         B(
           a.get,
           a.children.map(n1 =>
-            if (b.hasChild(n1.get)) {
+            if b.hasChild(n1.get) then {
               merge(n1, b.getChild(n1.get).get)
             } else {
               n1

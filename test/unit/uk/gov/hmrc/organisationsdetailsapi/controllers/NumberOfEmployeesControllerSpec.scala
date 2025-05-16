@@ -103,14 +103,14 @@ class NumberOfEmployeesControllerSpec
         .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
       when(mockNumberOfEmployeesService.get(refEq(sampleMatchIdUUID), eqTo(sampleRequest), eqTo(Set("test-scope")))(any(), any(), any()))
-        .thenReturn(Some(Seq(
+        .thenReturn(Future.successful(Some(Seq(
           NumberOfEmployeesResponse(
             Some("123/RT882d"),
             Some(Seq(
               NumberOfEmployeeCounts(Some(1234), Some("2019-10"))
             ))
           )
-        )))
+        ))))
 
 
       val response = await(controller.numberOfEmployees(sampleMatchIdUUID)(fakeRequest.withBody(sampleRequestAsJson)))

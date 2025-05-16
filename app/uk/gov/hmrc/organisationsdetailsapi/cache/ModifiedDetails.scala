@@ -17,7 +17,7 @@
 package uk.gov.hmrc.organisationsdetailsapi.cache
 
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
-import play.api.libs.json.{Format, JsPath}
+import play.api.libs.json.{Format, JsPath, Json}
 
 import java.time.LocalDateTime
 
@@ -29,9 +29,6 @@ object ModifiedDetails {
       (JsPath \ "createdAt").read[LocalDateTime] and
         (JsPath \ "lastUpdated").read[LocalDateTime]
     )(ModifiedDetails.apply _),
-    (
-      (JsPath \ "createdAt").write[LocalDateTime] and
-        (JsPath \ "lastUpdated").write[LocalDateTime]
-    )(unlift(ModifiedDetails.unapply))
+      Json.writes[ModifiedDetails]
   )
 }

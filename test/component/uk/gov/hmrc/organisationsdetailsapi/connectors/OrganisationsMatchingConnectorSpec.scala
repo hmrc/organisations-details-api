@@ -52,24 +52,25 @@ class OrganisationsMatchingConnectorSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
+  override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled" -> false,
       "auditing.enabled" -> false,
+      "metrics.jvm"-> false,
       "microservice.services.organisations-matching-api.host" -> "localhost",
       "microservice.services.organisations-matching-api.port" -> "11122"
     )
     .build()
 
   implicit val ec: ExecutionContext =
-    fakeApplication.injector.instanceOf[ExecutionContext]
+    fakeApplication().injector.instanceOf[ExecutionContext]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
 
-  val config: ServicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
-  val httpClient: HttpClientV2 = fakeApplication.injector.instanceOf[HttpClientV2]
+  val config: ServicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
+  val httpClient: HttpClientV2 = fakeApplication().injector.instanceOf[HttpClientV2]
 
   val organisationsMatchingConnector: OrganisationsMatchingConnector = new OrganisationsMatchingConnector(httpClient, config)
 

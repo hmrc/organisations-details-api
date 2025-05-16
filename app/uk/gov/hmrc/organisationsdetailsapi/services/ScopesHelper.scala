@@ -65,7 +65,7 @@ class ScopesHelper @Inject() (scopesService: ScopesService) {
     */
   def getQueryStringFor(scopes: Iterable[String], endpoint: String): String = {
     val filters = scopesService.getValidFilters(scopes, List(endpoint))
-    s"${PathTree(scopesService.getIfDataPaths(scopes, List(endpoint))).toString}${if (filters.nonEmpty)
+    s"${PathTree(scopesService.getIfDataPaths(scopes, List(endpoint))).toString}${if filters.nonEmpty then
         s"&filter=${filters.mkString("&filter=")}"
       else ""}"
   }
@@ -79,7 +79,7 @@ class ScopesHelper @Inject() (scopesService: ScopesService) {
     */
   def getQueryStringFor(scopes: Iterable[String], endpoints: List[String]): String = {
     val filters = scopesService.getValidFilters(scopes, endpoints)
-    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${if (filters.nonEmpty)
+    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${if filters.nonEmpty then
         s"&filter=${filters.mkString("&filter=")}"
       else ""}"
   }
@@ -119,7 +119,7 @@ class ScopesHelper @Inject() (scopesService: ScopesService) {
     excludeInternal: Boolean = false
   ): HalResource = {
 
-    val links = if (excludeInternal) {
+    val links = if excludeInternal then {
       getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getExternalEndpoints(scopes))
     } else {
       getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getInternalEndpoints(scopes)) ++

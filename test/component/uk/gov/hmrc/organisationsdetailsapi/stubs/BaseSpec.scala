@@ -71,7 +71,7 @@ trait BaseSpec
     Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader, correlationIdHeaderMalformed)
 
   override protected def beforeEach(): Unit = {
-    mocks.foreach(m => if (!m.server.isRunning) m.server.start())
+    mocks.foreach(m => if !m.server.isRunning then m.server.start())
   }
 
   override protected def afterEach(): Unit =

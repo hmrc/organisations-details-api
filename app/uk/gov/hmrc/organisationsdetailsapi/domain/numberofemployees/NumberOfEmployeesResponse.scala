@@ -40,5 +40,6 @@ object NumberOfEmployeesResponse {
     (
       (JsPath \ "payeReference").writeNullable[String] and
         (JsPath \ "counts").writeNullable[Seq[NumberOfEmployeeCounts]]
-    )(unlift(NumberOfEmployeesResponse.unapply))
+   // )(unlift(NumberOfEmployeesResponse.unapply))
+    )(o => Tuple.fromProductTyped(o))
 }

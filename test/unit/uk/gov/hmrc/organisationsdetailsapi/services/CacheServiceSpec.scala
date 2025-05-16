@@ -47,7 +47,7 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    given(mockCacheConfig.cacheEnabled).willReturn(true)
+    `given`(mockCacheConfig.cacheEnabled).willReturn(true)
 
   }
 
@@ -55,7 +55,7 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
 
     "return the cached value for a given id" in new Setup {
 
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(Some(cachedValue)))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
 
@@ -63,7 +63,7 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
 
     "cache the result of the fallback function when no cached value exists for a given id" in new Setup {
 
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(None))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
@@ -73,7 +73,7 @@ class CacheServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with 
 
     "ignore the cache when caching is not enabled" in new Setup {
 
-      given(mockCacheConfig.cacheEnabled).willReturn(false)
+      `given`(mockCacheConfig.cacheEnabled).willReturn(false)
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verifyNoInteractions(mockClient)
 
