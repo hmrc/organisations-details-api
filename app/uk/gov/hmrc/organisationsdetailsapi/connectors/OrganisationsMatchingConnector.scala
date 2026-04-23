@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.connectors
 
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import play.api.mvc.RequestHeader
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
-import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch._
+import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch.*
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.{OrganisationMatch, OrganisationVatMatch}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -31,15 +32,22 @@ class OrganisationsMatchingConnector @Inject() (httpClient: HttpClientV2, servic
 
   private val serviceUrl = servicesConfig.baseUrl("organisations-matching-api")
 
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] = {
+   val setHeaders: RequestHeader => Seq[(String, String)] =
+    req => req.headers.get("CorrelationId")
+      .map(id => Seq("CorrelationId" -> id))
+      .getOrElse(Seq.empty)
+
+  def resolve(matchId: UUID)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[OrganisationMatch] = {
     httpClient
       .get(url"$serviceUrl/match-record/$matchId")
+      .transform(_.addHttpHeaders(setHeaders(request)*))
       .execute[OrganisationMatch]
   }
 
-  def resolveVat(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationVatMatch] = {
+  def resolveVat(matchId: UUID)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[OrganisationVatMatch] = {
     httpClient
       .get(url"$serviceUrl/match-record/vat/$matchId")
+      .transform(_.addHttpHeaders(setHeaders(request)*))
       .execute[OrganisationVatMatch]
   }
 }

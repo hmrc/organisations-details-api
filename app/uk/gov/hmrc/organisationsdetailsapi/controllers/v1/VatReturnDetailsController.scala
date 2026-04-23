@@ -14,42 +14,39 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.controllers
+package uk.gov.hmrc.organisationsdetailsapi.controllers.v1
 
-import play.api.Logger
 import play.api.hal.Hal.state
-import play.api.hal.HalLink
+import play.api.hal.*
 import play.api.libs.json.Json
-import play.api.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
-import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, SelfAssessmentService}
+import uk.gov.hmrc.organisationsdetailsapi.controllers.BaseApiController
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
+import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, VatReturnDetailsService}
 
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class SelfAssessmentController @Inject() (
+class VatReturnDetailsController @Inject() (
   val authConnector: AuthConnector,
   cc: ControllerComponents,
-  selfAssessmentService: SelfAssessmentService,
+  vatService: VatReturnDetailsService,
   implicit val auditHelper: AuditHelper,
   scopesService: ScopesService
 )(implicit ec: ExecutionContext)
-    extends BaseApiController(cc) with PrivilegedAuthentication {
-
-  override val logger: Logger = Logger(classOf[SelfAssessmentController].getName)
-
-  def selfAssessment(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
-    authenticate(scopesService.getEndPointScopes("self-assessment"), matchId.toString) { authScopes =>
+    extends BaseApiController(cc) {
+  def vat(matchId: UUID, appDate: String): Action[AnyContent] = Action.async { implicit request =>
+    authenticate(scopesService.getEndPointScopes("vat"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
+      validateAppDate(appDate)
+      vatService.get(matchId, appDate, authScopes).map { vatResponse =>
+        val selfLink = HalLink("self", s"/organisations/details/vat?matchId=$matchId&appDate=$appDate")
 
-      selfAssessmentService.get(matchId, "self-assessment", authScopes).map { selfAssessment =>
-        val selfLink = HalLink("self", s"/organisations/details/self-assessment?matchId=$matchId")
-
-        val response = Json.toJson(state(selfAssessment) ++ selfLink)
+        val response = Json.toJson(state(vatResponse) ++ selfLink)
 
         auditHelper.auditApiResponse(
           correlationId.toString,
@@ -57,11 +54,15 @@ class SelfAssessmentController @Inject() (
           authScopes.mkString(","),
           request,
           selfLink.toString,
-          Some(Json.toJson(selfAssessment))
+          Some(Json.toJson(response))
         )
 
         Ok(response)
       }
-    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/self-assessment")
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/vat")
   }
+
+  private def validateAppDate(appDate: String): Unit =
+    if !appDate.matches("^[0-9]{8}$") then
+      throw new BadRequestException("AppDate is incorrect")
 }

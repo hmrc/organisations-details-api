@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.organisationsdetailsapi.services
 
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
 import uk.gov.hmrc.organisationsdetailsapi.domain.matching.OrganisationMatch
@@ -25,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 abstract class BaseService(retryDelay: Int, organisationsMatchingConnector: OrganisationsMatchingConnector) {
 
-  protected def resolve(matchId: UUID)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[OrganisationMatch] =
+  protected def resolve(matchId: UUID)(implicit hc: HeaderCarrier, requestHeader: RequestHeader, ec: ExecutionContext): Future[OrganisationMatch] =
     organisationsMatchingConnector.resolve(matchId)
 
   protected def withRetry[T](body: => Future[T])(implicit ec: ExecutionContext): Future[T] = body recoverWith {

@@ -29,7 +29,7 @@ import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.SelfAssessmentController
+import uk.gov.hmrc.organisationsdetailsapi.controllers.v1.SelfAssessmentController
 import uk.gov.hmrc.organisationsdetailsapi.domain.selfassessment.{SelfAssessmentResponse, SelfAssessmentReturn}
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, SelfAssessmentService}
 import utils.TestSupport

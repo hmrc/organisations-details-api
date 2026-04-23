@@ -31,7 +31,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.http.{InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.VatReturnDetailsController
+import uk.gov.hmrc.organisationsdetailsapi.controllers.v1.VatReturnDetailsController
 import uk.gov.hmrc.organisationsdetailsapi.domain.integrationframework.IfVatPeriod
 import uk.gov.hmrc.organisationsdetailsapi.domain.vat.VatReturnsDetailsResponse
 import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, VatReturnDetailsService}

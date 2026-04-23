@@ -31,7 +31,7 @@ import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.controllers.NumberOfEmployeesController
+import uk.gov.hmrc.organisationsdetailsapi.controllers.v1.NumberOfEmployeesController
 import uk.gov.hmrc.organisationsdetailsapi.domain.numberofemployees.{NumberOfEmployeeCounts, NumberOfEmployeesRequest, NumberOfEmployeesResponse, PayeReference => RequestPayeReference}
 import uk.gov.hmrc.organisationsdetailsapi.services.{NumberOfEmployeesService, ScopesService}
 import utils.TestSupport

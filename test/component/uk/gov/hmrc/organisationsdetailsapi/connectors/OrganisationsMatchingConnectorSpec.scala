@@ -17,16 +17,19 @@
 package component.uk.gov.hmrc.organisationsdetailsapi.connectors
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.{Headers, RequestHeader}
+import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.organisationsdetailsapi.connectors.OrganisationsMatchingConnector
@@ -35,8 +38,8 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.TestSupport
 
 import java.util.UUID
-import scala.concurrent._
-import scala.concurrent.duration._
+import scala.concurrent.*
+import scala.concurrent.duration.*
 
 class OrganisationsMatchingConnectorSpec
   extends AnyWordSpec
@@ -67,6 +70,7 @@ class OrganisationsMatchingConnectorSpec
     fakeApplication().injector.instanceOf[ExecutionContext]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val rh: RequestHeader = FakeRequest()
 
 
   val config: ServicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
@@ -109,6 +113,23 @@ class OrganisationsMatchingConnectorSpec
         result.utr shouldBe "1234567890"
       })
 
+    }
+  }
+  "setHeaders" should {
+    "return header when CorrelationId is present" in {
+      val request = FakeRequest().withHeaders("CorrelationId" -> "188e9400-b636-4a3b-80ba-230a8c72b92a")
+
+      val result = organisationsMatchingConnector.setHeaders(request)
+
+      result mustBe Seq("CorrelationId" -> "188e9400-b636-4a3b-80ba-230a8c72b92a")
+    }
+
+    "return empty Seq when CorrelationId is missing" in {
+      val request = FakeRequest()
+
+      val result = organisationsMatchingConnector.setHeaders(request)
+
+      result mustBe Seq.empty
     }
   }
 
