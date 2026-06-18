@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.organisationsdetailsapi.controllers
+package uk.gov.hmrc.organisationsdetailsapi.controllers.v1
 
 import play.api.Logger
 import play.api.hal.Hal.state
-import play.api.hal.HalLink
-import play.api.hal._
+import play.api.hal.*
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.organisationsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils._
-import uk.gov.hmrc.organisationsdetailsapi.services.{CorporationTaxService, ScopesService}
+import uk.gov.hmrc.organisationsdetailsapi.controllers.{BaseApiController, PrivilegedAuthentication}
+import uk.gov.hmrc.organisationsdetailsapi.play.RequestHeaderUtils.*
+import uk.gov.hmrc.organisationsdetailsapi.services.{ScopesService, SelfAssessmentService}
 
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class CorporationTaxController @Inject() (
+class SelfAssessmentController @Inject() (
   val authConnector: AuthConnector,
   cc: ControllerComponents,
-  corporationTaxService: CorporationTaxService,
+  selfAssessmentService: SelfAssessmentService,
   implicit val auditHelper: AuditHelper,
   scopesService: ScopesService
 )(implicit ec: ExecutionContext)
     extends BaseApiController(cc) with PrivilegedAuthentication {
 
-  override val logger: Logger = Logger(classOf[CorporationTaxController].getName)
+  override val logger: Logger = Logger(classOf[SelfAssessmentController].getName)
 
-  def corporationTax(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
-    authenticate(scopesService.getEndPointScopes("corporation-tax"), matchId.toString) { authScopes =>
+  def selfAssessment(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    authenticate(scopesService.getEndPointScopes("self-assessment"), matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
 
-      corporationTaxService.get(matchId, "corporation-tax", authScopes).map { corporationTax =>
-        val selfLink = HalLink("self", s"/organisations/details/corporation-tax?matchId=$matchId")
+      selfAssessmentService.get(matchId, "self-assessment", authScopes).map { selfAssessment =>
+        val selfLink = HalLink("self", s"/organisations/details/self-assessment?matchId=$matchId")
 
-        val response = Json.toJson(state(corporationTax) ++ selfLink)
+        val response = Json.toJson(state(selfAssessment) ++ selfLink)
 
         auditHelper.auditApiResponse(
           correlationId.toString,
@@ -57,11 +57,11 @@ class CorporationTaxController @Inject() (
           authScopes.mkString(","),
           request,
           selfLink.toString,
-          Some(Json.toJson(corporationTax))
+          Some(Json.toJson(selfAssessment))
         )
 
         Ok(response)
       }
-    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/corporation-tax")
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/organisations/details/self-assessment")
   }
 }
