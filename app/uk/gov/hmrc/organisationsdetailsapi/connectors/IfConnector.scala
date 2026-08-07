@@ -34,6 +34,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class IfConnector @Inject() (
                               servicesConfig: ServicesConfig,
@@ -44,10 +45,21 @@ class IfConnector @Inject() (
   private val logger = Logger(classOf[IfConnector].getName)
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
 
-  private val integrationFrameworkBearerToken =
-    servicesConfig.getString(
-      "microservice.services.integration-framework.authorization-token"
+  private object BearerTokens {
+    private val common: Option[String] = getOptionalToken(
+      "integration-framework.authorization-token"
     )
+    val employeeCount: Option[String]  = getAPIIFToken("1706").orElse(common)
+    val corporationTax: Option[String] = getAPIIFToken("1708").orElse(common)
+    val selfAssessment: Option[String] = getAPIIFToken("1709").orElse(common)
+    val vat: Option[String]            = common
+
+    private def getAPIIFToken(apiNumber: String): Option[String] =
+      getOptionalToken(s"integration-framework.authorization-token.$apiNumber")
+
+    private def getOptionalToken(key: String): Option[String] =
+      Try(servicesConfig.getConfString(key, "")).toOption.filter(_.nonEmpty)
+  }
 
   private val integrationFrameworkEnvironment = servicesConfig.getString(
     "microservice.services.integration-framework.environment"
@@ -62,7 +74,7 @@ class IfConnector @Inject() (
     val corporationTaxUrl =
       s"$baseUrl/organisations/corporation-tax/$utr/return/details${filter.map(f => s"?fields=$f").getOrElse("")}"
 
-    call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId)
+    call[CorporationTaxReturnDetailsResponse](corporationTaxUrl, matchId, BearerTokens.corporationTax)
   }
 
   def getVatReturnDetails(matchId: String, vrn: String, appDate: String, filter: Option[String])(implicit
@@ -74,7 +86,7 @@ class IfConnector @Inject() (
     val vatTaxUrl =
       s"$baseUrl/organisations/vat/$vrn/returns-details?appDate=$appDate${filter.map(f => s"&fields=$f").getOrElse("")}"
 
-    call[IfVatReturnsDetailsResponse](vatTaxUrl, matchId)
+    call[IfVatReturnsDetailsResponse](vatTaxUrl, matchId, BearerTokens.vat)
   }
 
   def getSaReturnDetails(matchId: String, utr: String, filter: Option[String])(implicit
@@ -86,7 +98,7 @@ class IfConnector @Inject() (
     val detailsUrl =
       s"$baseUrl/organisations/self-assessment/$utr/return/details${filter.map(f => s"?fields=$f").getOrElse("")}"
 
-    call[SelfAssessmentReturnDetailResponse](detailsUrl, matchId)
+    call[SelfAssessmentReturnDetailResponse](detailsUrl, matchId, BearerTokens.selfAssessment)
   }
 
   def getEmployeeCount(matchId: String, utr: String, body: EmployeeCountRequest, filter: Option[String])(implicit
@@ -98,18 +110,21 @@ class IfConnector @Inject() (
     val detailsUrl =
       s"$baseUrl/organisations/employers/employee/counts${filter.map(f => s"?fields=$f").getOrElse("")}"
 
-    post[EmployeeCountRequest, EmployeeCountResponse](detailsUrl, matchId, body)
+    post[EmployeeCountRequest, EmployeeCountResponse](detailsUrl, matchId, body, BearerTokens.employeeCount)
   }
 
   private def extractCorrelationId(requestHeader: RequestHeader) = validateCorrelationId(requestHeader).toString
 
-  private def setHeaders(requestHeader: RequestHeader): Seq[(String, String)] = Seq(
-    HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
-    "Environment"             -> integrationFrameworkEnvironment,
-    "CorrelationId"           -> extractCorrelationId(requestHeader)
-  )
+  private def setHeaders(
+    requestHeader: RequestHeader,
+    bearerToken: Option[String]
+  ): Seq[(String, String)] =
+    bearerToken.map(token => HeaderNames.authorisation -> s"Bearer $token").toSeq ++ Seq(
+      "Environment"   -> integrationFrameworkEnvironment,
+      "CorrelationId" -> extractCorrelationId(requestHeader)
+    )
 
-  private def call[T](url: String, matchId: String)(implicit
+  private def call[T](url: String, matchId: String, bearerToken: Option[String])(implicit
     rds: HttpReads[T],
     hc: HeaderCarrier,
     request: RequestHeader,
@@ -117,7 +132,7 @@ class IfConnector @Inject() (
   ) =
     recover(
       http.get(url"$url")
-        .transform(_.addHttpHeaders(setHeaders(request)*))
+        .transform(_.addHttpHeaders(setHeaders(request, bearerToken)*))
         .execute[T]
           map { response =>
           auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
@@ -129,7 +144,7 @@ class IfConnector @Inject() (
       url
     )
 
-  private def post[I, O](url: String, matchId: String, body: I)(implicit
+  private def post[I, O](url: String, matchId: String, body: I, bearerToken: Option[String])(implicit
                                                                 wts: Writes[I],
                                                                 reads: HttpReads[O],
                                                                 hc: HeaderCarrier,
@@ -138,7 +153,7 @@ class IfConnector @Inject() (
   ) =
     recover(
       http.post(url"$url")
-        .transform(_.addHttpHeaders(setHeaders(request)*))
+        .transform(_.addHttpHeaders(setHeaders(request, bearerToken)*))
         .withBody(Json.toJson(body)).execute[O]
         map { response =>
         auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response.toString)
