@@ -28,7 +28,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Application
+import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
@@ -60,7 +60,9 @@ class IfConnectorSpec
   val stubPort: Int = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "127.0.0.1"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
-  val integrationFrameworkAuthorizationToken = "IF_TOKEN"
+  val employeeCountAuthorizationToken = "IF_TOKEN_1706"
+  val corporationTaxAuthorizationToken = "IF_TOKEN_1708"
+  val selfAssessmentAuthorizationToken = "IF_TOKEN_1709"
   val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
 
   def externalServices: Seq[String] = Seq.empty
@@ -74,7 +76,9 @@ class IfConnectorSpec
       "metrics.jvm"-> false,
       "microservice.services.integration-framework.host" -> "127.0.0.1",
       "microservice.services.integration-framework.port" -> "11122",
-      "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
+      "microservice.services.integration-framework.authorization-token.1706" -> employeeCountAuthorizationToken,
+      "microservice.services.integration-framework.authorization-token.1708" -> corporationTaxAuthorizationToken,
+      "microservice.services.integration-framework.authorization-token.1709" -> selfAssessmentAuthorizationToken,
       "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment
     )
     .build()
@@ -96,6 +100,18 @@ class IfConnectorSpec
     val auditHelper: AuditHelper = mock[AuditHelper]
 
     val underTest = new IfConnector(config, httpClient, auditHelper)
+
+    def connectorWithCommonToken(token: String): IfConnector = {
+      val fallbackConfig = new ServicesConfig(Configuration.from(Map(
+        "microservice.services.integration-framework.protocol" -> "http",
+        "microservice.services.integration-framework.host" -> stubHost,
+        "microservice.services.integration-framework.port" -> stubPort,
+        "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment,
+        "microservice.services.integration-framework.authorization-token" -> token
+      )))
+
+      new IfConnector(fallbackConfig, httpClient, auditHelper)
+    }
   }
 
   override def beforeEach(): Unit = {
@@ -238,7 +254,7 @@ class IfConnectorSpec
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $corporationTaxAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
@@ -258,6 +274,29 @@ class IfConnectorSpec
 
       }
 
+      "fall back to the common authorization token when the 1708 token is absent" in new Setup {
+        val commonAuthorizationToken = "COMMON_IF_TOKEN"
+        val connector = connectorWithCommonToken(commonAuthorizationToken)
+
+        stubFor(
+          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $commonAuthorizationToken"))
+            .willReturn(okJson(Json.stringify(Json.toJson(taxReturn)))))
+
+        await(connector.getCtReturnDetails(matchId, utr, None)) shouldBe taxReturn
+      }
+
+      "omit the authorization header when neither the 1708 nor common token exists" in new Setup {
+        val connector = connectorWithCommonToken("")
+
+        stubFor(
+          get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
+            .withHeader(HeaderNames.authorisation, absent())
+            .willReturn(okJson(Json.stringify(Json.toJson(taxReturn)))))
+
+        await(connector.getCtReturnDetails(matchId, utr, None)) shouldBe taxReturn
+      }
+
       "successfully parse invalid CorporationTaxReturnDetailsResponse from IF response" in new Setup {
 
         Mockito.reset(underTest.auditHelper)
@@ -267,7 +306,7 @@ class IfConnectorSpec
         stubFor(
           get(urlPathMatching(s"/organisations/corporation-tax/$utr/return/details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $corporationTaxAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
@@ -327,7 +366,7 @@ class IfConnectorSpec
           get(urlPathMatching(s"/organisations/vat/$vrn/returns-details"))
             .withQueryParam("fields", equalTo("fields(A,B,C)"))
             .withQueryParam("appDate", equalTo(appDate))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, absent())
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
@@ -351,7 +390,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/$utr/return/details"))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $selfAssessmentAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
@@ -386,7 +425,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/$utr/return/details"))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $selfAssessmentAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
@@ -413,7 +452,7 @@ class IfConnectorSpec
 
         stubFor(
           get(urlPathMatching(s"/organisations/self-assessment/$utr/return/details"))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $selfAssessmentAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
@@ -445,7 +484,7 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $employeeCountAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(aResponse().withStatus(404).withBody(Json.stringify(Json.parse(
@@ -479,7 +518,7 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $employeeCountAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
@@ -509,7 +548,7 @@ class IfConnectorSpec
         stubFor(
           post(urlPathMatching(s"/organisations/employers/employee/counts"))
             .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
-            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $employeeCountAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
             .willReturn(okJson(jsonResponse)))
@@ -548,7 +587,7 @@ class IfConnectorSpec
       stubFor(
         post(urlPathMatching(s"/organisations/employers/employee/counts"))
           .withRequestBody(new EqualToJsonPattern(jsonRequest, true, true))
-          .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+          .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $employeeCountAuthorizationToken"))
           .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
           .withHeader("CorrelationId", equalTo(sampleCorrelationId))
           .willReturn(aResponse().withStatus(400).withBody(jsonResponse)))
